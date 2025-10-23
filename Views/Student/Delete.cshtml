@@ -1,0 +1,44 @@
+@model StudentApp.Models.Student
+
+@{
+    ViewData["Title"] = "Öğrenci Sil";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h4><i class="fas fa-exclamation-triangle me-2"></i>Öğrenci Sil</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Uyarı!</strong> Bu öğrenciyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
+                </div>
+                
+                <dl class="row">
+                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.FirstName)</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.FirstName)</dd>
+                    
+                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.LastName)</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.LastName)</dd>
+                    
+                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Email)</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.Email)</dd>
+                    
+                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.EnrollmentDate)</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.EnrollmentDate)</dd>
+                </dl>
+                
+                <form asp-action="Delete" method="post" class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>İptal
+                    </a>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i>Öğrenciyi Sil
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

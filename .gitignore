@@ -1,0 +1,115 @@
+# ------------------------------
+# .NET & Visual Studio
+# ------------------------------
+
+# Build sonuçları
+bin/
+obj/
+out/
+
+# Rider ve VSCode build cache
+.idea/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Temp dosyalar
+*.log
+*.vspscc
+*.vssscc
+*.tmp
+*.bak
+*.old
+*.orig
+
+# Visual Studio cache
+.vs/
+_ReSharper*/
+*.DotSettings.user
+
+# Paketler
+*.nupkg
+*.snupkg
+*.nuspec
+packages/
+**/packages/*
+!**/packages/build/
+*.package
+
+# Publish çıktıları
+**/publish/
+**/wwwroot/dist/
+**/wwwroot/lib/
+**/node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# ------------------------------
+# Entity Framework
+# ------------------------------
+Migrations/*.Designer.cs
+Migrations/*.resx
+# Migration klasörü dahil edilmek isteniyorsa aşağıyı kaldır:
+# /Migrations/
+
+# ------------------------------
+# Kullanıcı gizli ayarları / config
+# ------------------------------
+
+# Lokal appsettings dosyaları (deployment ortamında değişir)
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.json.user
+
+# User secrets (dotnet user-secrets)
+secrets.json
+
+# ------------------------------
+# Sistem dosyaları
+# ------------------------------
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# ------------------------------
+# Testler
+# ------------------------------
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+*.trx
+
+# ------------------------------
+# VS Code
+# ------------------------------
+.history/
+.ionide/
+
+# ------------------------------
+# Rider
+# ------------------------------
+.idea/
+*.iml
+
+# ------------------------------
+# Paket yöneticileri
+# ------------------------------
+node_modules/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ------------------------------
+# Docker / Container
+# ------------------------------
+docker-compose.override.yml
+*.pid
+*.seed
+*.pid.lock
