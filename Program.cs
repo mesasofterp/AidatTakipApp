@@ -13,6 +13,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Add custom services
 builder.Services.AddScoped<IOgrencilerService, OgrenciService>();
+builder.Services.AddScoped<IOdemePlanlariService, OdemePlanlariService>();
 
 var app = builder.Build();
 

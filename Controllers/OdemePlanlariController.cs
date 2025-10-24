@@ -13,7 +13,7 @@ namespace StudentApp.Controllers
             _odemePlaniService = odemePlanlariService;
         }
 
-        // GET: Student
+        // GET: OdemePlani
         public async Task<IActionResult> Index()
         {
             var odemePlanlari = await _odemePlaniService.GetAllOdemePlanlariAsync();
@@ -50,7 +50,7 @@ namespace StudentApp.Controllers
 
 
 
-        // GET: Student/Details/5
+        // GET: OdemePlani/Details/5
         public async Task<IActionResult> Details(long id)
         {
             var odemePlani = await _odemePlaniService.GetOdemePlaniByIdAsync(id);
@@ -62,7 +62,7 @@ namespace StudentApp.Controllers
             return View(odemePlani);
         }
 
-        // GET: Student/Edit/5
+        // GET: OdemePlani/Edit/5
         public async Task<IActionResult> Edit(long id)
         {
             var odemePlani = await _odemePlaniService.GetOdemePlaniByIdAsync(id);
@@ -74,7 +74,7 @@ namespace StudentApp.Controllers
             return View(odemePlani);
         }
 
-        // POST: Student/Edit/5
+        // POST: OdemePlani/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(long id, OdemePlanlari odemePlani)
@@ -106,7 +106,7 @@ namespace StudentApp.Controllers
             return View(odemePlani);
         }
 
-        // GET: Student/Delete/5
+        // GET: OdemePlani/Delete/5
         public async Task<IActionResult> Delete(long id)
         {
             var odemePlani = await _odemePlaniService.GetOdemePlaniByIdAsync(id);
@@ -118,7 +118,7 @@ namespace StudentApp.Controllers
             return View(odemePlani);
         }
 
-        // POST: Student/Delete/5
+        // POST: OdemePlani/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(long id)

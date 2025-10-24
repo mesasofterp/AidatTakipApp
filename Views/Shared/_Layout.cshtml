@@ -22,8 +22,8 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-dark bg-primary">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Student" asp-action="Index">
-                    <i class="fas fa-graduation-cap me-2"></i>Öğrenci Uygulaması
+                <a class="navbar-brand" asp-area="" asp-controller="Ogrenciler" asp-action="Index">
+                    <i class="fas fa-graduation-cap me-2"></i>Aidat Takip Uygulaması
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                     <span class="navbar-toggler-icon"></span>
@@ -31,14 +31,31 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Student" asp-action="Index">
-                                <i class="fas fa-list me-1"></i>Öğrenciler
+                            <a class="nav-link" asp-area="" asp-controller="Ogrenciler" asp-action="Index">
+                                <i class="fas fa-users me-1"></i>Öğrenciler
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Student" asp-action="Create">
-                                <i class="fas fa-plus me-1"></i>Öğrenci Ekle
+                            <a class="nav-link" asp-area="" asp-controller="OdemePlanlari" asp-action="Index">
+                                <i class="fas fa-calendar-alt me-1"></i>Ödeme Planları
                             </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-plus me-1"></i>Yeni Ekle
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Ogrenciler" asp-action="Create">
+                                        <i class="fas fa-user-plus me-1"></i>Yeni Öğrenci
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="OdemePlanlari" asp-action="Create">
+                                        <i class="fas fa-calendar-plus me-1"></i>Yeni Ödeme Planı
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
                 </div>
