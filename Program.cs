@@ -12,7 +12,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add custom services
-builder.Services.AddScoped<IStudentService, StudentService>();
+builder.Services.AddScoped<IOgrencilerService, OgrenciService>();
 
 var app = builder.Build();
 
@@ -32,7 +32,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Student}/{action=Index}/{id?}");
+    pattern: "{controller=Ogrenciler}/{action=Index}/{id?}");
 
 // Ensure database is created and migrated
 using (var scope = app.Services.CreateScope())

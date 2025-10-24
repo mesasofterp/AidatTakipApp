@@ -22,38 +22,192 @@ namespace StudentApp.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("StudentApp.Models.Student", b =>
+            modelBuilder.Entity("StudentApp.Models.Cinsiyetler", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("EnrollmentDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("LastName")
+                    b.Property<string>("Cinsiyet")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
+                    b.ToTable("Cinsiyetler", (string)null);
+                });
+
+            modelBuilder.Entity("StudentApp.Models.OdemePlanlari", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Aciklama")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Aktif")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("KursProgrami")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Taksit")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Tutar")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("Vade")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OdemePlanlari", (string)null);
+                });
+
+            modelBuilder.Entity("StudentApp.Models.OgrenciOdemeTakvimi", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Aciklama")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Aktif")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("BorcTutari")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("OdemeTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("OdenenTutar")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<long>("OgrenciId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OgrenciId");
+
+                    b.ToTable("OgrenciOdemeTakvimi", (string)null);
+                });
+
+            modelBuilder.Entity("StudentApp.Models.Ogrenciler", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Aciklama")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Aktif")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("CinsiyetId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("DogumTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("KayitTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("OdemePlanlariId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("OgrenciAdi")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("OgrenciSoyadi")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CinsiyetId");
+
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Students");
+                    b.HasIndex("OdemePlanlariId");
+
+                    b.ToTable("Ogrenciler", (string)null);
+                });
+
+            modelBuilder.Entity("StudentApp.Models.OgrenciOdemeTakvimi", b =>
+                {
+                    b.HasOne("StudentApp.Models.Ogrenciler", "Ogrenci")
+                        .WithMany()
+                        .HasForeignKey("OgrenciId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Ogrenci");
+                });
+
+            modelBuilder.Entity("StudentApp.Models.Ogrenciler", b =>
+                {
+                    b.HasOne("StudentApp.Models.Cinsiyetler", "Cinsiyet")
+                        .WithMany()
+                        .HasForeignKey("CinsiyetId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("StudentApp.Models.OdemePlanlari", "OdemePlanlari")
+                        .WithMany()
+                        .HasForeignKey("OdemePlanlariId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Cinsiyet");
+
+                    b.Navigation("OdemePlanlari");
                 });
 #pragma warning restore 612, 618
         }

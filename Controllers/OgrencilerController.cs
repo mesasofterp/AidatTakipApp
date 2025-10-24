@@ -4,20 +4,20 @@ using StudentApp.Services;
 
 namespace StudentApp.Controllers
 {
-    public class StudentController : Controller
+    public class OgrencilerController : Controller
     {
-        private readonly IStudentService _studentService;
+        private readonly IOgrencilerService _ogrenciService;
 
-        public StudentController(IStudentService studentService)
+        public OgrencilerController(IOgrencilerService ogrencilerService)
         {
-            _studentService = studentService;
+            _ogrenciService = ogrencilerService;
         }
 
         // GET: Student
         public async Task<IActionResult> Index()
         {
-            var students = await _studentService.GetAllStudentsAsync();
-            return View(students);
+            var ogrenciler = await _ogrenciService.GetAllOgrenciAsync();
+            return View(ogrenciler);
         }
 
         // GET: Student/Create
@@ -29,13 +29,13 @@ namespace StudentApp.Controllers
         // POST: Student/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Student student)
+        public async Task<IActionResult> Create(Ogrenciler ogrenci)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    await _studentService.AddStudentAsync(student);
+                    await _ogrenciService.AddOgrenciAsync(ogrenci);
                     TempData["SuccessMessage"] = "Öğrenci başarıyla eklendi!";
                     return RedirectToAction(nameof(Index));
                 }
@@ -45,39 +45,39 @@ namespace StudentApp.Controllers
                 }
             }
 
-            return View(student);
+            return View(ogrenci);
         }
 
         // GET: Student/Details/5
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(long id)
         {
-            var student = await _studentService.GetStudentByIdAsync(id);
-            if (student == null)
+            var ogrenci = await _ogrenciService.GetOgrenciByIdAsync(id);
+            if (ogrenci == null)
             {
                 return NotFound();
             }
 
-            return View(student);
+            return View(ogrenci);
         }
 
         // GET: Student/Edit/5
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(long id)
         {
-            var student = await _studentService.GetStudentByIdAsync(id);
-            if (student == null)
+            var ogrenci = await _ogrenciService.GetOgrenciByIdAsync(id);
+            if (ogrenci == null)
             {
                 return NotFound();
             }
 
-            return View(student);
+            return View(ogrenci);
         }
 
         // POST: Student/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Student student)
+        public async Task<IActionResult> Edit(long id, Ogrenciler ogrenci)
         {
-            if (id != student.Id)
+            if (id != ogrenci.Id)
             {
                 return NotFound();
             }
@@ -86,8 +86,8 @@ namespace StudentApp.Controllers
             {
                 try
                 {
-                    var updatedStudent = await _studentService.UpdateStudentAsync(student);
-                    if (updatedStudent == null)
+                    var updatedOgrenci = await _ogrenciService.UpdateOgrenciAsync(ogrenci);
+                    if (updatedOgrenci == null)
                     {
                         return NotFound();
                     }
@@ -101,29 +101,29 @@ namespace StudentApp.Controllers
                 }
             }
 
-            return View(student);
+            return View(ogrenci);
         }
 
         // GET: Student/Delete/5
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(long id)
         {
-            var student = await _studentService.GetStudentByIdAsync(id);
-            if (student == null)
+            var ogrenci = await _ogrenciService.GetOgrenciByIdAsync(id);
+            if (ogrenci == null)
             {
                 return NotFound();
             }
 
-            return View(student);
+            return View(ogrenci);
         }
 
         // POST: Student/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(long id)
         {
             try
             {
-                var result = await _studentService.DeleteStudentAsync(id);
+                var result = await _ogrenciService.DeleteOgrenciAsync(id);
                 if (result)
                 {
                     TempData["SuccessMessage"] = "Öğrenci başarıyla silindi!";

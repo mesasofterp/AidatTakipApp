@@ -1,4 +1,4 @@
-@model StudentApp.Models.Student
+@model StudentApp.Models.Ogrenciler
 
 @{
     ViewData["Title"] = "Öğrenci Detayları";
@@ -12,11 +12,11 @@
             </div>
             <div class="card-body">
                 <dl class="row">
-                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.FirstName)</dt>
-                    <dd class="col-sm-9">@Html.DisplayFor(model => model.FirstName)</dd>
+                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.OgrenciAdi)</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.OgrenciAdi)</dd>
                     
-                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.LastName)</dt>
-                    <dd class="col-sm-9">@Html.DisplayFor(model => model.LastName)</dd>
+                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.OgrenciSoyadi)</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.OgrenciSoyadi)</dd>
                     
                     <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Email)</dt>
                     <dd class="col-sm-9">
@@ -25,8 +25,8 @@
                         </a>
                     </dd>
                     
-                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.EnrollmentDate)</dt>
-                    <dd class="col-sm-9">@Html.DisplayFor(model => model.EnrollmentDate)</dd>
+                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.KayitTarihi)</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.KayitTarihi)</dd>
                 </dl>
                 
                 <div class="d-flex justify-content-between">
