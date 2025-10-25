@@ -7,7 +7,7 @@ namespace StudentApp.Models
         public bool IsDeleted { get; set; } = false;
         public bool Aktif { get; set; } = true;
         public int Version { get; set; } = 0;
-        public string Aciklama { get; set; }
+        public string? Aciklama { get; set; }
 
     }
 }
