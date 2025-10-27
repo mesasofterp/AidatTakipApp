@@ -6,39 +6,71 @@
 
 <div class="row justify-content-center">
     <div class="col-md-8">
-        <div class="card">
-            <div class="card-header bg-danger text-white">
-                <h4><i class="fas fa-exclamation-triangle me-2"></i>Öğrenci Sil</h4>
-            </div>
-            <div class="card-body">
-                <div class="alert alert-warning" role="alert">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    <strong>Uyarı!</strong> Bu öğrenciyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
-                </div>
-                
-                <dl class="row">
-                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.OgrenciAdi)</dt>
-                    <dd class="col-sm-9">@Html.DisplayFor(model => model.OgrenciAdi)</dd>
-                    
-                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.OgrenciSoyadi)</dt>
-                    <dd class="col-sm-9">@Html.DisplayFor(model => model.OgrenciSoyadi)</dd>
-                    
-                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Email)</dt>
-                    <dd class="col-sm-9">@Html.DisplayFor(model => model.Email)</dd>
-                    
-                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.KayitTarihi)</dt>
-                    <dd class="col-sm-9">@Html.DisplayFor(model => model.KayitTarihi)</dd>
-                </dl>
-                
-                <form asp-action="Delete" method="post" class="d-flex justify-content-between">
-                    <a asp-action="Index" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left me-1"></i>İptal
-                    </a>
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash me-1"></i>Öğrenciyi Sil
-                    </button>
-                </form>
-            </div>
-        </div>
+ <div class="card">
+    <div class="card-header bg-danger text-white">
+   <h4><i class="fas fa-exclamation-triangle me-2"></i>Öğrenci Sil</h4>
+   </div>
+  <div class="card-body">
+     <div class="alert alert-warning" role="alert">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    <strong>Uyarı!</strong> Bu öğrenciyi silmek istediğinizden emin misiniz?
+     <br/>
+      <small class="text-muted">
+    <strong>Not:</strong> Bu işlem öğrenciyi silecektir. 
+  Eğer sadece pasif yapmak istiyorsanız, liste sayfasından "Pasif Yap" butonunu kullanın.
+     </small>
+ </div>
+  
+   <dl class="row">
+ <dt class="col-sm-4">@Html.DisplayNameFor(model => model.OgrenciAdi)</dt>
+    <dd class="col-sm-8">
+     <i class="fas fa-user-circle me-1"></i>@Html.DisplayFor(model => model.OgrenciAdi)
+    </dd>
+ 
+       <dt class="col-sm-4">@Html.DisplayNameFor(model => model.OgrenciSoyadi)</dt>
+ <dd class="col-sm-8">@Html.DisplayFor(model => model.OgrenciSoyadi)</dd>
+      
+  <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Email)</dt>
+       <dd class="col-sm-8">
+  <a href="mailto:@Model.Email" class="text-decoration-none">
+   <i class="fas fa-envelope me-1"></i>@Html.DisplayFor(model => model.Email)
+ </a>
+</dd>
+
+      @if (Model.Cinsiyet != null)
+  {
+  <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Cinsiyet)</dt>
+     <dd class="col-sm-8">
+   <i class="fas @(Model.Cinsiyet.Cinsiyet == "Erkek" ? "fa-mars text-primary" : Model.Cinsiyet.Cinsiyet == "Kadın" ? "fa-venus text-danger" : "fa-genderless text-secondary") me-1"></i>
+           @Model.Cinsiyet.Cinsiyet
+  </dd>
+  }
+
+     @if (Model.OdemePlanlari != null)
+     {
+ <dt class="col-sm-4">@Html.DisplayNameFor(model => model.OdemePlanlari)</dt>
+       <dd class="col-sm-8">
+ <span class="badge bg-success">
+  <i class="fas fa-calendar-alt me-1"></i>@Model.OdemePlanlari.KursProgrami
+  </span>
+ </dd>
+  }
+         
+       <dt class="col-sm-4">@Html.DisplayNameFor(model => model.KayitTarihi)</dt>
+     <dd class="col-sm-8">
+   <i class="fas fa-calendar me-1"></i>@Model.KayitTarihi.ToString("dd.MM.yyyy")
+       </dd>
+    </dl>
+       
+  <form asp-action="Delete" method="post" class="d-flex justify-content-between">
+  <a asp-action="Index" class="btn btn-secondary">
+       <i class="fas fa-arrow-left me-1"></i>İptal
+     </a>
+<button type="submit" class="btn btn-danger">
+      <i class="fas fa-trash me-1"></i>Öğrenciyi Sil
+       </button>
+    </form>
+   </div>
+ </div>
     </div>
 </div>

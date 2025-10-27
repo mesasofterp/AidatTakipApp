@@ -6,13 +6,43 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2><i class="fas fa-calendar-alt me-2"></i>Ödeme Planları</h2>
-    <a asp-action="Create" class="btn btn-primary">
-        <i class="fas fa-plus me-1"></i>Yeni Ödeme Planı Ekle
-    </a>
+    <div>
+        <div class="form-check form-switch d-inline-block me-3">
+            <input class="form-check-input" type="checkbox" id="showPasifSwitch"
+                   @(ViewBag.ShowPasif == true ? "checked" : "")
+                   onchange="togglePasif(this.checked)">
+            <label class="form-check-label" for="showPasifSwitch">
+                <i class="fas fa-eye-slash me-1"></i>Pasif Kayıtları Göster
+            </label>
+        </div>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i>Yeni Ödeme Planı Ekle
+        </a>
+    </div>
 </div>
+
+<script>
+    function togglePasif(showPasif) {
+        const url = new URL(window.location);
+        url.searchParams.set('showPasif', showPasif);
+        window.location.href = url.toString();
+    }
+</script>
 
 @if (Model.Any())
 {
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-1"></i>
+        @if (ViewBag.ShowPasif == true)
+     {
+            <span>Toplam <strong>@Model.Count()</strong> ödeme planı bulundu (aktif ve pasif kayıtlar dahil).</span>
+        }
+     else
+        {
+            <span>Toplam <strong>@Model.Count()</strong> aktif ödeme planı bulundu.</span>
+   }
+    </div>
+
     <div class="table-responsive">
         <table class="table table-striped table-hover">
             <thead>
@@ -26,9 +56,9 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model.Where(x => !x.IsDeleted))
+                @foreach (var item in Model)
                 {
-                    <tr class="@(item.Aktif ? "" : "table-secondary")">
+                    <tr class="@(!item.Aktif ? "table-secondary" : "")">
                         <td>
                             <i class="fas fa-book me-1"></i>@Html.DisplayFor(modelItem => item.KursProgrami)
                         </td>
@@ -70,6 +100,26 @@
                                 <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning" title="Düzenle">
                                     <i class="fas fa-edit"></i>
                                 </a>
+                                @if (item.Aktif)
+                                {
+                                    <form asp-action="ToggleAktif" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <input type="hidden" name="aktif" value="false" />
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary" title="Pasif Yap" onclick="return confirm('Bu ödeme planını pasif yapmak istediğinizden emin misiniz?');">
+                                            <i class="fas fa-ban"></i>
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form asp-action="ToggleAktif" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <input type="hidden" name="aktif" value="true" />
+                                        <button type="submit" class="btn btn-sm btn-outline-success" title="Aktif Yap" onclick="return confirm('Bu ödeme planını aktif yapmak istediğinizden emin misiniz?');">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </form>
+                                }
                                 <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Sil">
                                     <i class="fas fa-trash"></i>
                                 </a>

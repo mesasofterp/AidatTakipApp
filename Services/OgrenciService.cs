@@ -15,9 +15,22 @@ namespace StudentApp.Services
 
         public async Task<IEnumerable<Ogrenciler>> GetAllOgrenciAsync()
         {
-            return await _context.Ogrenciler
+            return await GetAllOgrenciAsync(false);
+        }
+
+        public async Task<IEnumerable<Ogrenciler>> GetAllOgrenciAsync(bool includePasif)
+        {
+            var query = _context.Ogrenciler
                 .Include(s => s.Cinsiyet)
                 .Include(s => s.OdemePlanlari)
+                .Where(s => !s.IsDeleted);
+
+            if (!includePasif)
+            {
+                query = query.Where(s => s.Aktif);
+            }
+
+            return await query
                 .OrderBy(s => s.OgrenciSoyadi)
                 .ThenBy(s => s.OgrenciAdi)
                 .ToListAsync();
@@ -28,11 +41,16 @@ namespace StudentApp.Services
             return await _context.Ogrenciler
                 .Include(s => s.Cinsiyet)
                 .Include(s => s.OdemePlanlari)
+                .Where(s => !s.IsDeleted)
                 .FirstOrDefaultAsync(s => s.Id == id);
         }
 
         public async Task<Ogrenciler> AddOgrenciAsync(Ogrenciler ogrenci)
         {
+            ogrenci.IsDeleted = false;
+            ogrenci.Aktif = true;
+            ogrenci.Version = 0;
+
             _context.Ogrenciler.Add(ogrenci);
             await _context.SaveChangesAsync();
             return ogrenci;
@@ -40,7 +58,10 @@ namespace StudentApp.Services
 
         public async Task<Ogrenciler?> UpdateOgrenciAsync(Ogrenciler ogrenci)
         {
-            var existingOgrenci = await _context.Ogrenciler.FindAsync(ogrenci.Id);
+            var existingOgrenci = await _context.Ogrenciler
+                .Where(o => !o.IsDeleted)
+                .FirstOrDefaultAsync(o => o.Id == ogrenci.Id);
+
             if (existingOgrenci == null)
                 return null;
 
@@ -51,6 +72,7 @@ namespace StudentApp.Services
             existingOgrenci.DogumTarihi = ogrenci.DogumTarihi;
             existingOgrenci.CinsiyetId = ogrenci.CinsiyetId;
             existingOgrenci.OdemePlanlariId = ogrenci.OdemePlanlariId;
+            existingOgrenci.Version++;
 
             await _context.SaveChangesAsync();
             return existingOgrenci;
@@ -58,12 +80,34 @@ namespace StudentApp.Services
 
         public async Task<bool> DeleteOgrenciAsync(long id)
         {
-            var ogrenci = await _context.Ogrenciler.FindAsync(id);
+            var ogrenci = await _context.Ogrenciler
+                .Where(o => !o.IsDeleted)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
             if (ogrenci == null)
                 return false;
 
-            _context.Ogrenciler.Remove(ogrenci);
+            // Soft delete - IsDeleted'ý true yap
+            ogrenci.IsDeleted = true;
+            ogrenci.Aktif = false;
             await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> ToggleAktifAsync(long id, bool aktif)
+        {
+            var ogrenci = await _context.Ogrenciler
+                .Where(o => !o.IsDeleted)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (ogrenci == null)
+                return false;
+
+            ogrenci.Aktif = aktif;
+            ogrenci.Version++;
+            await _context.SaveChangesAsync();
+
             return true;
         }
     }

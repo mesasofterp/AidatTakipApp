@@ -25,7 +25,7 @@ namespace StudentApp.Controllers
         // GET: Student
     public async Task<IActionResult> Index(OgrencilerFilterViewModel filter)
   {
-      var ogrenciler = await _ogrenciService.GetAllOgrenciAsync();
+      var ogrenciler = await _ogrenciService.GetAllOgrenciAsync(filter.ShowPasif);
   
     // Filtreleme
     if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
@@ -33,35 +33,35 @@ namespace StudentApp.Controllers
       var searchTerm = filter.SearchTerm.ToLower();
      ogrenciler = ogrenciler.Where(o =>
      o.OgrenciAdi.ToLower().Contains(searchTerm) ||
-     o.OgrenciSoyadi.ToLower().Contains(searchTerm) ||
+   o.OgrenciSoyadi.ToLower().Contains(searchTerm) ||
       o.Email.ToLower().Contains(searchTerm)
     );
-   }
+ }
 
    if (filter.CinsiyetId.HasValue && filter.CinsiyetId.Value > 0)
       {
       ogrenciler = ogrenciler.Where(o => o.CinsiyetId == filter.CinsiyetId.Value);
-       }
+    }
 
-      if (filter.OdemePlanlariId.HasValue && filter.OdemePlanlariId.Value > 0)
-       {
+  if (filter.OdemePlanlariId.HasValue && filter.OdemePlanlariId.Value > 0)
+    {
     ogrenciler = ogrenciler.Where(o => o.OdemePlanlariId == filter.OdemePlanlariId.Value);
         }
 
-            // Yaş filtreleme
+     // Yaş filtreleme
   if (filter.MinYas.HasValue || filter.MaxYas.HasValue)
   {
 var today = DateTime.Now;
      ogrenciler = ogrenciler.Where(o =>
     {
-       var yas = today.Year - o.DogumTarihi.Year;
+var yas = today.Year - o.DogumTarihi.Year;
          if (today.DayOfYear < o.DogumTarihi.DayOfYear) yas--;
        
          var minOk = !filter.MinYas.HasValue || yas >= filter.MinYas.Value;
     var maxOk = !filter.MaxYas.HasValue || yas <= filter.MaxYas.Value;
   return minOk && maxOk;
   });
-       }
+     }
 
    // Sıralama
   ogrenciler = filter.SortBy?.ToLower() switch
@@ -72,14 +72,14 @@ var today = DateTime.Now;
       "email" => filter.SortOrder == "desc"
   ? ogrenciler.OrderByDescending(o => o.Email)
       : ogrenciler.OrderBy(o => o.Email),
-       "dogumtarihi" => filter.SortOrder == "desc"
+   "dogumtarihi" => filter.SortOrder == "desc"
          ? ogrenciler.OrderByDescending(o => o.DogumTarihi)
          : ogrenciler.OrderBy(o => o.DogumTarihi),
     "kayittarihi" => filter.SortOrder == "desc"
       ? ogrenciler.OrderByDescending(o => o.KayitTarihi)
   : ogrenciler.OrderBy(o => o.KayitTarihi),
    _ => filter.SortOrder == "desc"
-      ? ogrenciler.OrderByDescending(o => o.OgrenciSoyadi)
+    ? ogrenciler.OrderByDescending(o => o.OgrenciSoyadi)
   : ogrenciler.OrderBy(o => o.OgrenciSoyadi)
         };
 
@@ -88,16 +88,17 @@ var today = DateTime.Now;
     Ogrenciler = ogrenciler.ToList(),
      SearchTerm = filter.SearchTerm,
     CinsiyetId = filter.CinsiyetId,
-     OdemePlanlariId = filter.OdemePlanlariId,
-       MinYas = filter.MinYas,
-            MaxYas = filter.MaxYas,
+  OdemePlanlariId = filter.OdemePlanlariId,
+  MinYas = filter.MinYas,
+ MaxYas = filter.MaxYas,
+        ShowPasif = filter.ShowPasif,
    SortBy = filter.SortBy ?? "OgrenciSoyadi",
  SortOrder = filter.SortOrder ?? "asc",
      Cinsiyetler = await _cinsiyetlerService.GetAllCinsiyetlerAsync(),
   OdemePlanlari = await _odemePlanlariService.GetAllOdemePlanlariAsync()
   };
 
-          return View(viewModel);
+      return View(viewModel);
     }
 
         // GET: Student/Create
@@ -226,30 +227,57 @@ var today = DateTime.Now;
             try
             {
                 var result = await _ogrenciService.DeleteOgrenciAsync(id);
-                if (result)
-                {
-                    TempData["SuccessMessage"] = "Öğrenci başarıyla silindi!";
-                }
-                else
-                {
-                    TempData["ErrorMessage"] = "Öğrenci bulunamadı.";
-                }
-            }
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = "Öğrenci silinirken bir hata oluştu.";
-            }
+   if (result)
+     {
+     TempData["SuccessMessage"] = "Öğrenci başarıyla silindi!";
+    }
+  else
+ {
+            TempData["ErrorMessage"] = "Öğrenci bulunamadı.";
+   }
+    }
+    catch (Exception ex)
+    {
+ TempData["ErrorMessage"] = "Öğrenci silinirken bir hata oluştu.";
+    }
 
-            return RedirectToAction(nameof(Index));
+    return RedirectToAction(nameof(Index));
         }
 
-        private async Task LoadDropdownsAsync()
+        // POST: Student/ToggleAktif/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleAktif(long id, bool aktif)
         {
-            var odemePlanlari = await _odemePlanlariService.GetAllOdemePlanlariAsync();
-            ViewBag.OdemePlanlari = new SelectList(odemePlanlari, "Id", "KursProgrami");
+  try
+ {
+        var result = await _ogrenciService.ToggleAktifAsync(id, aktif);
+   if (result)
+   {
+        TempData["SuccessMessage"] = aktif 
+   ? "Öğrenci başarıyla aktif hale getirildi!" 
+     : "Öğrenci başarıyla pasif hale getirildi!";
+        }
+    else
+  {
+TempData["ErrorMessage"] = "Öğrenci bulunamadı.";
+}
+    }
+    catch (Exception ex)
+{
+  TempData["ErrorMessage"] = "Durum güncellenirken bir hata oluştu.";
+    }
 
-            var cinsiyetler = await _cinsiyetlerService.GetAllCinsiyetlerAsync();
-            ViewBag.Cinsiyetler = new SelectList(cinsiyetler, "Id", "Cinsiyet");
+    return RedirectToAction(nameof(Index));
+}
+
+private async Task LoadDropdownsAsync()
+{
+    var odemePlanlari = await _odemePlanlariService.GetAllOdemePlanlariAsync();
+    ViewBag.OdemePlanlari = new SelectList(odemePlanlari, "Id", "KursProgrami");
+
+    var cinsiyetler = await _cinsiyetlerService.GetAllCinsiyetlerAsync();
+    ViewBag.Cinsiyetler = new SelectList(cinsiyetler, "Id", "Cinsiyet");
         }
     }
 }

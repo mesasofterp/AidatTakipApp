@@ -6,10 +6,28 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2><i class="fas fa-users me-2"></i>Öğrenciler</h2>
-    <a asp-action="Create" class="btn btn-primary">
-   <i class="fas fa-plus me-1"></i>Yeni Öğrenci Ekle
-    </a>
+    <div>
+        <div class="form-check form-switch d-inline-block me-3">
+<input class="form-check-input" type="checkbox" id="showPasifSwitch" 
+                @(Model.ShowPasif ? "checked" : "")
+         onchange="togglePasif(this.checked)">
+            <label class="form-check-label" for="showPasifSwitch">
+  <i class="fas fa-eye-slash me-1"></i>Pasif Kayıtları Göster
+</label>
+        </div>
+        <a asp-action="Create" class="btn btn-primary">
+  <i class="fas fa-plus me-1"></i>Yeni Öğrenci Ekle
+        </a>
+    </div>
 </div>
+
+<script>
+function togglePasif(showPasif) {
+    const url = new URL(window.location);
+    url.searchParams.set('ShowPasif', showPasif);
+    window.location.href = url.toString();
+}
+</script>
 
 <!-- Filtreleme Paneli -->
 <div class="card mb-4">
@@ -96,7 +114,7 @@
      <!-- Butonlar -->
       <div class="col-md-6 d-flex align-items-end">
      <button type="submit" class="btn btn-primary me-2">
-           <i class="fas fa-search me-1"></i>Filtrele
+  <i class="fas fa-search me-1"></i>Filtrele
       </button>
         <a asp-action="Index" class="btn btn-secondary">
   <i class="fas fa-redo me-1"></i>Temizle
@@ -105,6 +123,7 @@
  </div>
  <input type="hidden" name="SortBy" value="@Model.SortBy" />
        <input type="hidden" name="SortOrder" value="@Model.SortOrder" />
+       <input type="hidden" name="ShowPasif" value="@Model.ShowPasif" />
   </form>
     </div>
     </div>
@@ -114,7 +133,14 @@
 {
     <div class="alert alert-info">
   <i class="fas fa-info-circle me-1"></i>
-        Toplam <strong>@Model.Ogrenciler.Count()</strong> öğrenci bulundu.
+        @if (Model.ShowPasif)
+        {
+     <span>Toplam <strong>@Model.Ogrenciler.Count()</strong> öğrenci bulundu (aktif ve pasif kayıtlar dahil).</span>
+        }
+        else
+        {
+       <span>Toplam <strong>@Model.Ogrenciler.Count()</strong> aktif öğrenci bulundu.</span>
+        }
     </div>
 
     <div class="table-responsive">
@@ -125,6 +151,7 @@
       <a asp-action="Index" asp-route-SortBy="OgrenciAdi" asp-route-SortOrder="@(Model.SortBy == "OgrenciAdi" && Model.SortOrder == "asc" ? "desc" : "asc")" 
      asp-route-SearchTerm="@Model.SearchTerm" asp-route-CinsiyetId="@Model.CinsiyetId" 
     asp-route-OdemePlanlariId="@Model.OdemePlanlariId" asp-route-MinYas="@Model.MinYas" asp-route-MaxYas="@Model.MaxYas"
+       asp-route-ShowPasif="@Model.ShowPasif"
        class="text-decoration-none text-dark">
     Ad
    @if (Model.SortBy == "OgrenciAdi")
@@ -137,10 +164,11 @@
       <a asp-action="Index" asp-route-SortBy="OgrenciSoyadi" asp-route-SortOrder="@(Model.SortBy == "OgrenciSoyadi" && Model.SortOrder == "asc" ? "desc" : "asc")"
   asp-route-SearchTerm="@Model.SearchTerm" asp-route-CinsiyetId="@Model.CinsiyetId"
        asp-route-OdemePlanlariId="@Model.OdemePlanlariId" asp-route-MinYas="@Model.MinYas" asp-route-MaxYas="@Model.MaxYas"
+       asp-route-ShowPasif="@Model.ShowPasif"
   class="text-decoration-none text-dark">
      Soyad
     @if (Model.SortBy == "OgrenciSoyadi")
-      {
+  {
    <i class="fas fa-sort-@(Model.SortOrder == "asc" ? "up" : "down")"></i>
      }
     </a>
@@ -149,10 +177,11 @@
     <a asp-action="Index" asp-route-SortBy="Email" asp-route-SortOrder="@(Model.SortBy == "Email" && Model.SortOrder == "asc" ? "desc" : "asc")"
       asp-route-SearchTerm="@Model.SearchTerm" asp-route-CinsiyetId="@Model.CinsiyetId"
    asp-route-OdemePlanlariId="@Model.OdemePlanlariId" asp-route-MinYas="@Model.MinYas" asp-route-MaxYas="@Model.MaxYas"
+       asp-route-ShowPasif="@Model.ShowPasif"
        class="text-decoration-none text-dark">
   Email
    @if (Model.SortBy == "Email")
-       {
+   {
        <i class="fas fa-sort-@(Model.SortOrder == "asc" ? "up" : "down")"></i>
    }
    </a>
@@ -160,13 +189,15 @@
    <th>Yaş</th>
       <th>Cinsiyet</th>
  <th>Ödeme Planı</th>
+<th>Durum</th>
    <th>
  <a asp-action="Index" asp-route-SortBy="KayitTarihi" asp-route-SortOrder="@(Model.SortBy == "KayitTarihi" && Model.SortOrder == "asc" ? "desc" : "asc")"
   asp-route-SearchTerm="@Model.SearchTerm" asp-route-CinsiyetId="@Model.CinsiyetId"
    asp-route-OdemePlanlariId="@Model.OdemePlanlariId" asp-route-MinYas="@Model.MinYas" asp-route-MaxYas="@Model.MaxYas"
+       asp-route-ShowPasif="@Model.ShowPasif"
     class="text-decoration-none text-dark">
-       Kayıt Tarihi
-      @if (Model.SortBy == "KayitTarihi")
+  Kayıt Tarihi
+ @if (Model.SortBy == "KayitTarihi")
      {
           <i class="fas fa-sort-@(Model.SortOrder == "asc" ? "up" : "down")"></i>
       }
@@ -184,7 +215,7 @@
     yas--;
    }
       
-     <tr>
+     <tr class="@(!item.Aktif ? "table-secondary" : "")">
        <td>@item.OgrenciAdi</td>
    <td>@item.OgrenciSoyadi</td>
         <td>
@@ -218,8 +249,22 @@
    <span class="text-muted">-</span>
     }
     </td>
-     <td>@item.KayitTarihi.ToString("dd.MM.yyyy")</td>
- <td class="text-center">
+     <td>
+     @if (item.Aktif)
+     {
+   <span class="badge bg-success">
+        <i class="fas fa-check me-1"></i>Aktif
+  </span>
+      }
+        else
+{
+   <span class="badge bg-secondary">
+        <i class="fas fa-times me-1"></i>Pasif
+    </span>
+    }
+    </td>
+<td>@item.KayitTarihi.ToString("dd.MM.yyyy")</td>
+<td class="text-center">
         <div class="btn-group" role="group">
        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info" title="Detayları Görüntüle">
    <i class="fas fa-eye"></i>
@@ -227,11 +272,31 @@
     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning" title="Düzenle">
       <i class="fas fa-edit"></i>
   </a>
-    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Sil">
-    <i class="fas fa-trash"></i>
-      </a>
-      </div>
-     </td>
+    @if (item.Aktif)
+{
+<form asp-action="ToggleAktif" method="post" class="d-inline">
+<input type="hidden" name="id" value="@item.Id" />
+<input type="hidden" name="aktif" value="false" />
+<button type="submit" class="btn btn-sm btn-outline-secondary" title="Pasif Yap" onclick="return confirm('Bu öğrenciyi pasif yapmak istediğinizden emin misiniz?');">
+<i class="fas fa-ban"></i>
+</button>
+</form>
+}
+else
+{
+<form asp-action="ToggleAktif" method="post" class="d-inline">
+<input type="hidden" name="id" value="@item.Id" />
+<input type="hidden" name="aktif" value="true" />
+<button type="submit" class="btn btn-sm btn-outline-success" title="Aktif Yap" onclick="return confirm('Bu öğrenciyi aktif yapmak istediğinizden emin misiniz?');">
+<i class="fas fa-check"></i>
+</button>
+</form>
+}
+<a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Sil">
+<i class="fas fa-trash"></i>
+</a>
+</div>
+</td>
   </tr>
    }
     </tbody>

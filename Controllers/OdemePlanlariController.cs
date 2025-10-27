@@ -14,9 +14,10 @@ namespace StudentApp.Controllers
         }
 
         // GET: OdemePlani
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(bool showPasif = false)
         {
-            var odemePlanlari = await _odemePlaniService.GetAllOdemePlanlariAsync();
+            var odemePlanlari = await _odemePlaniService.GetAllOdemePlanlariAsync(showPasif);
+            ViewBag.ShowPasif = showPasif;
             return View(odemePlanlari);
         }
 
@@ -138,6 +139,33 @@ namespace StudentApp.Controllers
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = "Ödeme planý silinirken bir hata oluþtu.";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // POST: OdemePlani/ToggleAktif/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleAktif(long id, bool aktif)
+        {
+            try
+            {
+                var result = await _odemePlaniService.ToggleAktifAsync(id, aktif);
+                if (result)
+                {
+                    TempData["SuccessMessage"] = aktif
+                        ? "Ödeme planý baþarýyla aktif hale getirildi!"
+                        : "Ödeme planý baþarýyla pasif hale getirildi!";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Ödeme planý bulunamadý.";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Durum güncellenirken bir hata oluþtu.";
             }
 
             return RedirectToAction(nameof(Index));

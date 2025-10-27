@@ -10,7 +10,8 @@ namespace StudentApp.Models.ViewModels
     public long? OdemePlanlariId { get; set; }
         public int? MinYas { get; set; }
         public int? MaxYas { get; set; }
-        
+      public bool ShowPasif { get; set; } = false;
+     
         // Sýralama parametreleri
       public string SortBy { get; set; } = "OgrenciSoyadi";
     public string SortOrder { get; set; } = "asc";
@@ -18,5 +19,5 @@ namespace StudentApp.Models.ViewModels
         // Dropdown listeleri
     public IEnumerable<Cinsiyetler>? Cinsiyetler { get; set; }
         public IEnumerable<OdemePlanlari>? OdemePlanlari { get; set; }
-    }
+ }
 }
