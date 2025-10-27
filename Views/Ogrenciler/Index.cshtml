@@ -1,4 +1,4 @@
-@model IEnumerable<StudentApp.Models.Ogrenciler>
+@model StudentApp.Models.ViewModels.OgrencilerFilterViewModel
 
 @{
     ViewData["Title"] = "Öğrenciler";
@@ -7,97 +7,266 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2><i class="fas fa-users me-2"></i>Öğrenciler</h2>
     <a asp-action="Create" class="btn btn-primary">
-        <i class="fas fa-plus me-1"></i>Yeni Öğrenci Ekle
+   <i class="fas fa-plus me-1"></i>Yeni Öğrenci Ekle
     </a>
 </div>
 
-@if (Model.Any())
+<!-- Filtreleme Paneli -->
+<div class="card mb-4">
+    <div class="card-header">
+     <h5 class="mb-0">
+      <i class="fas fa-filter me-2"></i>Filtreleme ve Arama
+   <button class="btn btn-sm btn-outline-secondary float-end" type="button" data-bs-toggle="collapse" data-bs-target="#filterPanel">
+          <i class="fas fa-chevron-down"></i>
+ </button>
+      </h5>
+  </div>
+    <div class="collapse show" id="filterPanel">
+ <div class="card-body">
+       <form asp-action="Index" method="get">
+     <div class="row g-3">
+      <!-- Arama -->
+     <div class="col-md-4">
+         <label class="form-label">
+       <i class="fas fa-search me-1"></i>Ara (Ad, Soyad, Email)
+       </label>
+      <input type="text" name="SearchTerm" value="@Model.SearchTerm" class="form-control" placeholder="Arama kelimesi..." />
+    </div>
+
+       <!-- Cinsiyet Filtresi -->
+       <div class="col-md-2">
+      <label class="form-label">
+<i class="fas fa-venus-mars me-1"></i>Cinsiyet
+</label>
+   <select name="CinsiyetId" class="form-select">
+       <option value="">Tümü</option>
+   @foreach (var cinsiyet in Model.Cinsiyetler ?? Enumerable.Empty<StudentApp.Models.Cinsiyetler>())
+        {
+     <option value="@cinsiyet.Id" selected="@(Model.CinsiyetId == cinsiyet.Id)">@cinsiyet.Cinsiyet</option>
+  }
+     </select>
+</div>
+
+    <!-- Ödeme Planı Filtresi -->
+       <div class="col-md-3">
+     <label class="form-label">
+      <i class="fas fa-calendar-alt me-1"></i>Ödeme Planı
+</label>
+      <select name="OdemePlanlariId" class="form-select">
+  <option value="">Tümü</option>
+    @foreach (var plan in Model.OdemePlanlari ?? Enumerable.Empty<StudentApp.Models.OdemePlanlari>())
+         {
+   <option value="@plan.Id" selected="@(Model.OdemePlanlariId == plan.Id)">@plan.KursProgrami</option>
+           }
+       </select>
+    </div>
+
+    <!-- Yaş Filtresi -->
+     <div class="col-md-3">
+    <label class="form-label">
+        <i class="fas fa-birthday-cake me-1"></i>Yaş Aralığı
+   </label>
+<div class="input-group">
+     <input type="number" name="MinYas" value="@Model.MinYas" class="form-control" placeholder="Min" min="0" max="120" />
+    <span class="input-group-text">-</span>
+     <input type="number" name="MaxYas" value="@Model.MaxYas" class="form-control" placeholder="Max" min="0" max="120" />
+</div>
+       </div>
+
+       <!-- Sıralama -->
+ <div class="col-md-6">
+    <label class="form-label">
+     <i class="fas fa-sort me-1"></i>Sırala
+     </label>
+   <div class="input-group">
+     <select name="SortBy" class="form-select">
+  <option value="OgrenciSoyadi" selected="@(Model.SortBy == "OgrenciSoyadi")">Soyad</option>
+        <option value="OgrenciAdi" selected="@(Model.SortBy == "OgrenciAdi")">Ad</option>
+    <option value="Email" selected="@(Model.SortBy == "Email")">Email</option>
+     <option value="DogumTarihi" selected="@(Model.SortBy == "DogumTarihi")">Doğum Tarihi</option>
+  <option value="KayitTarihi" selected="@(Model.SortBy == "KayitTarihi")">Kayıt Tarihi</option>
+ </select>
+   <select name="SortOrder" class="form-select" style="max-width: 150px;">
+  <option value="asc" selected="@(Model.SortOrder == "asc")">Artan</option>
+       <option value="desc" selected="@(Model.SortOrder == "desc")">Azalan</option>
+    </select>
+   </div>
+      </div>
+
+     <!-- Butonlar -->
+      <div class="col-md-6 d-flex align-items-end">
+     <button type="submit" class="btn btn-primary me-2">
+           <i class="fas fa-search me-1"></i>Filtrele
+      </button>
+        <a asp-action="Index" class="btn btn-secondary">
+  <i class="fas fa-redo me-1"></i>Temizle
+       </a>
+  </div>
+ </div>
+ <input type="hidden" name="SortBy" value="@Model.SortBy" />
+       <input type="hidden" name="SortOrder" value="@Model.SortOrder" />
+  </form>
+    </div>
+    </div>
+</div>
+
+@if (Model.Ogrenciler.Any())
 {
+    <div class="alert alert-info">
+  <i class="fas fa-info-circle me-1"></i>
+        Toplam <strong>@Model.Ogrenciler.Count()</strong> öğrenci bulundu.
+    </div>
+
     <div class="table-responsive">
         <table class="table table-striped table-hover">
-            <thead>
-                <tr>
-                    <th>@Html.DisplayNameFor(model => model.OgrenciAdi)</th>
-                    <th>@Html.DisplayNameFor(model => model.OgrenciSoyadi)</th>
-                    <th>@Html.DisplayNameFor(model => model.Email)</th>
-                    <th>Yaş</th>
-                    <th>@Html.DisplayNameFor(model => model.Cinsiyet)</th>
-                    <th>@Html.DisplayNameFor(model => model.OdemePlanlari)</th>
-                    <th>@Html.DisplayNameFor(model => model.KayitTarihi)</th>
-                    <th class="text-center">İşlemler</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    var yas = DateTime.Now.Year - item.DogumTarihi.Year;
-                    if (DateTime.Now.DayOfYear < item.DogumTarihi.DayOfYear)
-                    {
-                        yas--;
-                    }
-
-                    <tr>
-                        <td>@Html.DisplayFor(modelItem => item.OgrenciAdi)</td>
-                        <td>@Html.DisplayFor(modelItem => item.OgrenciSoyadi)</td>
-                        <td>
-                            <a href="mailto:@item.Email" class="text-decoration-none">
-                                <i class="fas fa-envelope me-1"></i>@Html.DisplayFor(modelItem => item.Email)
-                            </a>
-                        </td>
-                        <td>
-                            <span class="badge bg-info">@yas yaşında</span>
-                        </td>
-                        <td>
-                            @if (item.Cinsiyet != null)
-                            {
-                                <i class="fas @(item.Cinsiyet.Cinsiyet == "Erkek" ? "fa-mars text-primary" : item.Cinsiyet.Cinsiyet == "Kadın" ? "fa-venus text-danger" : "fa-genderless text-secondary") me-1"></i>
-                                @item.Cinsiyet.Cinsiyet
-                            }
-                            else
-                            {
-                                <span class="text-muted">-</span>
-                            }
-                        </td>
-                        <td>
-                            @if (item.OdemePlanlari != null)
-                            {
-                                <span class="badge bg-success">
-                                    <i class="fas fa-calendar-alt me-1"></i>@item.OdemePlanlari.KursProgrami
-                                </span>
-                            }
-                            else
-                            {
-                                <span class="text-muted">-</span>
-                            }
-                        </td>
-                        <td>@item.KayitTarihi.ToString("dd.MM.yyyy")</td>
-                        <td class="text-center">
-                            <div class="btn-group" role="group">
-                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info" title="Detayları Görüntüle">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning" title="Düzenle">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Sil">
-                                    <i class="fas fa-trash"></i>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
+     <thead>
+       <tr>
+          <th>
+      <a asp-action="Index" asp-route-SortBy="OgrenciAdi" asp-route-SortOrder="@(Model.SortBy == "OgrenciAdi" && Model.SortOrder == "asc" ? "desc" : "asc")" 
+     asp-route-SearchTerm="@Model.SearchTerm" asp-route-CinsiyetId="@Model.CinsiyetId" 
+    asp-route-OdemePlanlariId="@Model.OdemePlanlariId" asp-route-MinYas="@Model.MinYas" asp-route-MaxYas="@Model.MaxYas"
+       class="text-decoration-none text-dark">
+    Ad
+   @if (Model.SortBy == "OgrenciAdi")
+  {
+  <i class="fas fa-sort-@(Model.SortOrder == "asc" ? "up" : "down")"></i>
+      }
+   </a>
+   </th>
+    <th>
+      <a asp-action="Index" asp-route-SortBy="OgrenciSoyadi" asp-route-SortOrder="@(Model.SortBy == "OgrenciSoyadi" && Model.SortOrder == "asc" ? "desc" : "asc")"
+  asp-route-SearchTerm="@Model.SearchTerm" asp-route-CinsiyetId="@Model.CinsiyetId"
+       asp-route-OdemePlanlariId="@Model.OdemePlanlariId" asp-route-MinYas="@Model.MinYas" asp-route-MaxYas="@Model.MaxYas"
+  class="text-decoration-none text-dark">
+     Soyad
+    @if (Model.SortBy == "OgrenciSoyadi")
+      {
+   <i class="fas fa-sort-@(Model.SortOrder == "asc" ? "up" : "down")"></i>
+     }
+    </a>
+  </th>
+      <th>
+    <a asp-action="Index" asp-route-SortBy="Email" asp-route-SortOrder="@(Model.SortBy == "Email" && Model.SortOrder == "asc" ? "desc" : "asc")"
+      asp-route-SearchTerm="@Model.SearchTerm" asp-route-CinsiyetId="@Model.CinsiyetId"
+   asp-route-OdemePlanlariId="@Model.OdemePlanlariId" asp-route-MinYas="@Model.MinYas" asp-route-MaxYas="@Model.MaxYas"
+       class="text-decoration-none text-dark">
+  Email
+   @if (Model.SortBy == "Email")
+       {
+       <i class="fas fa-sort-@(Model.SortOrder == "asc" ? "up" : "down")"></i>
+   }
+   </a>
+  </th>
+   <th>Yaş</th>
+      <th>Cinsiyet</th>
+ <th>Ödeme Planı</th>
+   <th>
+ <a asp-action="Index" asp-route-SortBy="KayitTarihi" asp-route-SortOrder="@(Model.SortBy == "KayitTarihi" && Model.SortOrder == "asc" ? "desc" : "asc")"
+  asp-route-SearchTerm="@Model.SearchTerm" asp-route-CinsiyetId="@Model.CinsiyetId"
+   asp-route-OdemePlanlariId="@Model.OdemePlanlariId" asp-route-MinYas="@Model.MinYas" asp-route-MaxYas="@Model.MaxYas"
+    class="text-decoration-none text-dark">
+       Kayıt Tarihi
+      @if (Model.SortBy == "KayitTarihi")
+     {
+          <i class="fas fa-sort-@(Model.SortOrder == "asc" ? "up" : "down")"></i>
+      }
+     </a>
+ </th>
+    <th class="text-center">İşlemler</th>
+   </tr>
+  </thead>
+   <tbody>
+  @foreach (var item in Model.Ogrenciler)
+         {
+     var yas = DateTime.Now.Year - item.DogumTarihi.Year;
+      if (DateTime.Now.DayOfYear < item.DogumTarihi.DayOfYear)
+    {
+    yas--;
+   }
+      
+     <tr>
+       <td>@item.OgrenciAdi</td>
+   <td>@item.OgrenciSoyadi</td>
+        <td>
+  <a href="mailto:@item.Email" class="text-decoration-none">
+       <i class="fas fa-envelope me-1"></i>@item.Email
+          </a>
+       </td>
+      <td>
+   <span class="badge bg-info">@yas yaşında</span>
+        </td>
+       <td>
+     @if (item.Cinsiyet != null)
+     {
+   <i class="fas @(item.Cinsiyet.Cinsiyet == "Erkek" ? "fa-mars text-primary" : item.Cinsiyet.Cinsiyet == "Kadın" ? "fa-venus text-danger" : "fa-genderless text-secondary") me-1"></i>
+ @item.Cinsiyet.Cinsiyet
+    }
+      else
+    {
+      <span class="text-muted">-</span>
+        }
+    </td>
+ <td>
+  @if (item.OdemePlanlari != null)
+   {
+  <span class="badge bg-success">
+        <i class="fas fa-calendar-alt me-1"></i>@item.OdemePlanlari.KursProgrami
+  </span>
+      }
+        else
+{
+   <span class="text-muted">-</span>
+    }
+    </td>
+     <td>@item.KayitTarihi.ToString("dd.MM.yyyy")</td>
+ <td class="text-center">
+        <div class="btn-group" role="group">
+       <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info" title="Detayları Görüntüle">
+   <i class="fas fa-eye"></i>
+      </a>
+    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning" title="Düzenle">
+      <i class="fas fa-edit"></i>
+  </a>
+    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Sil">
+    <i class="fas fa-trash"></i>
+      </a>
+      </div>
+     </td>
+  </tr>
+   }
+    </tbody>
         </table>
     </div>
 }
 else
 {
     <div class="text-center py-5">
-        <i class="fas fa-user-graduate fa-3x text-muted mb-3"></i>
-        <h4 class="text-muted">Öğrenci bulunamadı</h4>
-        <p class="text-muted">İlk öğrencinizi ekleyerek başlayın.</p>
-        <a asp-action="Create" class="btn btn-primary">
-            <i class="fas fa-plus me-1"></i>İlk Öğrenciyi Ekle
-        </a>
+  <i class="fas fa-user-graduate fa-3x text-muted mb-3"></i>
+        <h4 class="text-muted">
+      @if (!string.IsNullOrWhiteSpace(Model.SearchTerm) || Model.CinsiyetId.HasValue || Model.OdemePlanlariId.HasValue || Model.MinYas.HasValue || Model.MaxYas.HasValue)
+   {
+         <span>Filtreye uygun öğrenci bulunamadı</span>
+ }
+       else
+   {
+      <span>Öğrenci bulunamadı</span>
+ }
+      </h4>
+  <p class="text-muted">
+       @if (!string.IsNullOrWhiteSpace(Model.SearchTerm) || Model.CinsiyetId.HasValue || Model.OdemePlanlariId.HasValue || Model.MinYas.HasValue || Model.MaxYas.HasValue)
+   {
+      <span>Farklı filtre kriterleri deneyin veya filtreleri temizleyin.</span>
+    }
+      else
+   {
+   <span>İlk öğrencinizi ekleyerek başlayın.</span>
+       }
+   </p>
+        <a asp-action="Index" class="btn btn-secondary me-2">
+ <i class="fas fa-redo me-1"></i>Filtreleri Temizle
+  </a>
+  <a asp-action="Create" class="btn btn-primary">
+      <i class="fas fa-plus me-1"></i>İlk Öğrenciyi Ekle
+ </a>
     </div>
 }
