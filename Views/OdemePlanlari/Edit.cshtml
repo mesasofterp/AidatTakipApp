@@ -6,77 +6,86 @@
 
 <div class="row justify-content-center">
     <div class="col-md-8">
-     <div class="card">
+   <div class="card">
        <div class="card-header">
    <h4><i class="fas fa-edit me-2"></i>Ödeme Planı Düzenle</h4>
    </div>
    <div class="card-body">
   <form asp-action="Edit" method="post">
    <input asp-for="Id" type="hidden" />
-      <input asp-for="IsDeleted" type="hidden" />
-          <input asp-for="Version" type="hidden" />
+    <input asp-for="IsDeleted" type="hidden" />
+   <input asp-for="Version" type="hidden" />
         <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
    
             <div class="mb-3">
      <label asp-for="KursProgrami" class="form-label"></label>
      <div class="input-group">
-      <span class="input-group-text"><i class="fas fa-book"></i></span>
+ <span class="input-group-text"><i class="fas fa-book"></i></span>
        <input asp-for="KursProgrami" class="form-control" placeholder="Örn: İngilizce Kursu, Matematik Dersi" />
       </div>
-          <span asp-validation-for="KursProgrami" class="text-danger"></span>
+       <span asp-validation-for="KursProgrami" class="text-danger"></span>
       </div>
+
+            <div class="mb-3">
+   <label asp-for="Tutar" class="form-label"></label>
+     <div class="input-group">
+      <span class="input-group-text"><i class="fas fa-lira-sign"></i></span>
+        <input asp-for="Tutar" type="number" step="0.01" class="form-control" min="0.01" placeholder="0.00" id="toplamTutar" />
+   </div>
+     <span asp-validation-for="Tutar" class="text-danger"></span>
+ <small class="form-text text-muted">Ödenecek toplam tutar</small>
+    </div>
      
       <div class="row">
-       <div class="col-md-6 mb-3">
+    <div class="col-md-6 mb-3">
   <label asp-for="Taksit" class="form-label"></label>
  <div class="input-group">
      <span class="input-group-text"><i class="fas fa-list-ol"></i></span>
-     <input asp-for="Taksit" type="number" class="form-control" min="1" placeholder="Taksit sayısı" />
-          </div>
+     <input asp-for="Taksit" type="number" class="form-control" min="1" placeholder="Taksit sayısı" id="taksitSayisi" />
+  </div>
   <span asp-validation-for="Taksit" class="text-danger"></span>
-       </div>
+            <small class="form-text text-muted">Toplam tutarın kaç parçada ödeneceği</small>
+ </div>
      
         <div class="col-md-6 mb-3">
           <label asp-for="Vade" class="form-label"></label>
-      <div class="input-group">
-            <span class="input-group-text"><i class="fas fa-calendar"></i></span>
-      <input asp-for="Vade" type="number" class="form-control" min="0" placeholder="Vade süresi (gün)" />
+   <div class="input-group">
+        <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+      <input asp-for="Vade" type="number" class="form-control" min="1" placeholder="Vade süresi (gün)" />
        </div>
 <span asp-validation-for="Vade" class="text-danger"></span>
-         <small class="form-text text-muted">İsteğe bağlı</small>
+    <small class="form-text text-muted">Tüm taksitlerin bitmesi beklenen süre (gün)</small>
       </div>
       </div>
-          
-   <div class="mb-3">
-              <label asp-for="Tutar" class="form-label"></label>
-       <div class="input-group">
-      <span class="input-group-text"><i class="fas fa-lira-sign"></i></span>
-        <input asp-for="Tutar" type="number" step="0.01" class="form-control" min="0" placeholder="0.00" />
-   </div>
-     <span asp-validation-for="Tutar" class="text-danger"></span>
+
+    <div class="alert alert-info" id="taksitHesap">
+        <h6><i class="fas fa-calculator me-1"></i>Taksit Hesaplaması</h6>
+     <p class="mb-1"><strong>Taksit Başına Tutar:</strong> <span id="taksitTutari">0,00 TL</span></p>
+  <p class="mb-0"><strong>Son Taksit Tutarı:</strong> <span id="sonTaksitTutari">0,00 TL</span></p>
+        <small class="text-muted">* Son taksit, kalan farkı kapsar</small>
     </div>
 
 <div class="mb-3">
     <div class="form-check form-switch">
 <input asp-for="Aktif" class="form-check-input" type="checkbox" />
     <label asp-for="Aktif" class="form-check-label"></label>
-        </div>
-         <small class="form-text text-muted">Aktif planlar kullanılabilir</small>
+</div>
+     <small class="form-text text-muted">Aktif planlar öğrenci kaydında seçilebilir</small>
    </div>
-    
+ 
   <div class="mb-3">
    <label asp-for="Aciklama" class="form-label"></label>
-       <textarea asp-for="Aciklama" class="form-control" rows="3" placeholder="Ödeme planı hakkında ek bilgiler..."></textarea>
+     <textarea asp-for="Aciklama" class="form-control" rows="3" placeholder="Ödeme planı hakkında ek bilgiler..."></textarea>
          <span asp-validation-for="Aciklama" class="text-danger"></span>
      </div>
      
-   <div class="alert alert-info">
+   <div class="alert alert-secondary">
         <i class="fas fa-info-circle me-1"></i>
     <small>Versiyon: @Model.Version</small>
-     </div>
+</div>
      
        <div class="d-flex justify-content-between">
-       <a asp-action="Index" class="btn btn-secondary">
+  <a asp-action="Index" class="btn btn-secondary">
          <i class="fas fa-arrow-left me-1"></i>İptal
       </a>
  <button type="submit" class="btn btn-primary">
@@ -85,10 +94,31 @@
            </div>
       </form>
      </div>
-        </div>
+      </div>
     </div>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+ function hesaplaTaksit() {
+   var toplamTutar = parseFloat(document.getElementById('toplamTutar').value) || 0;
+    var taksitSayisi = parseInt(document.getElementById('taksitSayisi').value) || 0;
+   
+      if (toplamTutar > 0 && taksitSayisi > 0) {
+           var taksitTutari = toplamTutar / taksitSayisi;
+     var normalTaksit = Math.floor(taksitTutari * 100) / 100;
+    var sonTaksit = toplamTutar - (normalTaksit * (taksitSayisi - 1));
+      
+          document.getElementById('taksitTutari').textContent = normalTaksit.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' TL';
+      document.getElementById('sonTaksitTutari').textContent = sonTaksit.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' TL';
+     }
+ }
+
+     // Sayfa yüklendiğinde hesapla
+        window.addEventListener('DOMContentLoaded', hesaplaTaksit);
+
+  document.getElementById('toplamTutar').addEventListener('input', hesaplaTaksit);
+        document.getElementById('taksitSayisi').addEventListener('input', hesaplaTaksit);
+    </script>
 }

@@ -56,18 +56,31 @@
        @if (Model.OdemePlanlari != null)
    {
       <div class="card bg-light">
-        <div class="card-body p-2">
-    <h6 class="mb-1">
+        <div class="card-body p-3">
+    <h6 class="mb-2">
          <i class="fas fa-book me-1"></i>@Model.OdemePlanlari.KursProgrami
      </h6>
-   <small class="text-muted">
-       <span class="badge bg-primary me-1">@Model.OdemePlanlari.Taksit Taksit</span>
-         <span class="badge bg-success">@Model.OdemePlanlari.Tutar.ToString("C2")</span>
-      @if (Model.OdemePlanlari.Vade.HasValue)
+<div class="row">
+       <div class="col-md-4">
+   <small class="text-muted d-block">Toplam Tutar</small>
+       <strong class="text-success">@Model.OdemePlanlari.Tutar.ToString("C2")</strong>
+    </div>
+       <div class="col-md-4">
+<small class="text-muted d-block">Taksit Sayısı</small>
+   <span class="badge bg-primary">@Model.OdemePlanlari.Taksit Taksit</span>
+   </div>
+     <div class="col-md-4">
+     <small class="text-muted d-block">Taksit Tutarı</small>
+  <strong class="text-info">@Model.OdemePlanlari.TaksitTutari.ToString("C2")</strong>
+   </div>
+   </div>
+   @if (Model.OdemePlanlari.Vade.HasValue)
   {
-           <span class="badge bg-info ms-1">@Model.OdemePlanlari.Vade gün vade</span>
+      <div class="mt-2">
+       <small class="text-muted">Vade:</small>
+           <span class="badge bg-warning text-dark ms-1">@Model.OdemePlanlari.Vade gün</span>
+      </div>
       }
-     </small>
        </div>
    </div>
       }

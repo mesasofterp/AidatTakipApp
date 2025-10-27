@@ -7,50 +7,69 @@
 <div class="row justify-content-center">
     <div class="col-md-8">
    <div class="card">
-          <div class="card-header">
+          <div class="card-header bg-info text-white">
          <h4><i class="fas fa-calendar-alt me-2"></i>Ödeme Planı Detayları</h4>
-            </div>
+      </div>
   <div class="card-body">
        <dl class="row">
-                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.KursProgrami)</dt>
-         <dd class="col-sm-8">
+       <dt class="col-sm-4">@Html.DisplayNameFor(model => model.KursProgrami)</dt>
+  <dd class="col-sm-8">
       <i class="fas fa-book me-1"></i>@Html.DisplayFor(model => model.KursProgrami)
      </dd>
+
+        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Tutar)</dt>
+       <dd class="col-sm-8">
+    <div class="card bg-success text-white d-inline-block px-3 py-2">
+     <h5 class="mb-0">
+    <i class="fas fa-lira-sign me-1"></i>@Model.Tutar.ToString("N2") TL
+     </h5>
+           <small>Toplam Tutar</small>
+      </div>
+       </dd>
    
-                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Taksit)</dt>
+   <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Taksit)</dt>
         <dd class="col-sm-8">
-   <span class="badge bg-primary">@Model.Taksit Taksit</span>
+   <span class="badge bg-primary fs-5">@Model.Taksit Taksit</span>
       </dd>
+
+        <dt class="col-sm-4">Taksit Tutarı</dt>
+     <dd class="col-sm-8">
+      <div class="card bg-info text-white d-inline-block px-3 py-2">
+       <h6 class="mb-0">
+   <i class="fas fa-calculator me-1"></i>@Model.TaksitTutari.ToString("N2") TL
+  </h6>
+     <small>Her taksit için</small>
+</div>
+  </dd>
        
       <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Vade)</dt>
-       <dd class="col-sm-8">
+    <dd class="col-sm-8">
   @if (Model.Vade.HasValue)
-         {
-     <span class="badge bg-info">@Model.Vade gün</span>
-           }
-      else
+       {
+     <span class="badge bg-warning text-dark fs-5">
+       <i class="fas fa-calendar-check me-1"></i>@Model.Vade gün
+    </span>
+ <br/>
+      <small class="text-muted">Tüm taksitlerin bitmesi beklenen süre</small>
+  }
+    else
      {
       <span class="text-muted">Vade belirtilmemiş</span>
        }
   </dd>
-       
-              <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Tutar)</dt>
-        <dd class="col-sm-8">
-     <h5 class="text-success mb-0">@Model.Tutar.ToString("C2")</h5>
-       </dd>
 
     <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Aktif)</dt>
-       <dd class="col-sm-8">
-             @if (Model.Aktif)
-        {
+  <dd class="col-sm-8">
+      @if (Model.Aktif)
+{
    <span class="badge bg-success">
          <i class="fas fa-check me-1"></i>Aktif
-     </span>
+ </span>
       }
        else
    {
-            <span class="badge bg-secondary">
-   <i class="fas fa-times me-1"></i>Pasif
+     <span class="badge bg-secondary">
+<i class="fas fa-times me-1"></i>Pasif
      </span>
             }
       </dd>
@@ -62,11 +81,24 @@
   }
 
       <dt class="col-sm-4">Versiyon</dt>
-       <dd class="col-sm-8">
-      <span class="badge bg-secondary">v@Model.Version</span>
+<dd class="col-sm-8">
+    <span class="badge bg-secondary">v@Model.Version</span>
        </dd>
-                </dl>
-           
+        </dl>
+
+    <div class="alert alert-light border">
+       <h6 class="mb-2"><i class="fas fa-info-circle me-1"></i>Ödeme Planı Özeti</h6>
+        <ul class="mb-0">
+       <li><strong>Toplam Ödenecek:</strong> @Model.Tutar.ToString("C2")</li>
+   <li><strong>Taksit Sayısı:</strong> @Model.Taksit adet</li>
+      <li><strong>Taksit Başına:</strong> @Model.TaksitTutari.ToString("C2")</li>
+       @if (Model.Vade.HasValue)
+       {
+  <li><strong>Tamamlanma Süresi:</strong> @Model.Vade gün içinde</li>
+           }
+     </ul>
+    </div>
+  
         <div class="d-flex justify-content-between">
         <a asp-action="Index" class="btn btn-secondary">
            <i class="fas fa-arrow-left me-1"></i>Listeye Dön
@@ -77,10 +109,10 @@
      </a>
           <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
      <i class="fas fa-trash me-1"></i>Sil
-             </a>
+          </a>
          </div>
-        </div>
-            </div>
+     </div>
+    </div>
         </div>
     </div>
 </div>

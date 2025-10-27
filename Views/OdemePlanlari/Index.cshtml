@@ -48,10 +48,11 @@
             <thead>
                 <tr>
                     <th>@Html.DisplayNameFor(model => model.KursProgrami)</th>
-                    <th>@Html.DisplayNameFor(model => model.Taksit)</th>
-                    <th>@Html.DisplayNameFor(model => model.Vade)</th>
-                    <th>@Html.DisplayNameFor(model => model.Tutar)</th>
-                    <th>@Html.DisplayNameFor(model => model.Aktif)</th>
+                    <th class="text-center">@Html.DisplayNameFor(model => model.Tutar)</th>
+                    <th class="text-center">@Html.DisplayNameFor(model => model.Taksit)</th>
+                    <th class="text-center">Taksit Tutarı</th>
+                    <th class="text-center">@Html.DisplayNameFor(model => model.Vade)</th>
+                    <th class="text-center">@Html.DisplayNameFor(model => model.Aktif)</th>
                     <th class="text-center">İşlemler</th>
                 </tr>
             </thead>
@@ -62,23 +63,30 @@
                         <td>
                             <i class="fas fa-book me-1"></i>@Html.DisplayFor(modelItem => item.KursProgrami)
                         </td>
-                        <td>
-                            <span class="badge bg-primary">@item.Taksit Taksit</span>
+                        <td class="text-center">
+                            <strong class="text-success">@item.Tutar.ToString("C2")</strong>
+                            <br/>
+                            <small class="text-muted">Toplam</small>
                         </td>
-                        <td>
+                        <td class="text-center">
+                            <span class="badge bg-primary fs-6">@item.Taksit Taksit</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-info fs-6">@item.TaksitTutari.ToString("C2")</span>
+                            <br/>
+                            <small class="text-muted">Her taksit</small>
+                        </td>
+                        <td class="text-center">
                             @if (item.Vade.HasValue)
                             {
-                                <span class="badge bg-info">@item.Vade gün</span>
+                                <span class="badge bg-warning text-dark">@item.Vade gün</span>
                             }
                             else
                             {
                                 <span class="text-muted">-</span>
                             }
                         </td>
-                        <td>
-                            <strong class="text-success">@item.Tutar.ToString("C2")</strong>
-                        </td>
-                        <td>
+                        <td class="text-center">
                             @if (item.Aktif)
                             {
                                 <span class="badge bg-success">

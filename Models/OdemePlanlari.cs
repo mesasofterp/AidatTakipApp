@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StudentApp.Models
 {
@@ -17,13 +18,20 @@ namespace StudentApp.Models
         public int Taksit { get; set; }
 
         [Display(Name = "Vade (Gün)")]
-        [Range(0, 365, ErrorMessage = "Vade 0 ile 365 gün arasýnda olmalýdýr")]
+        [Range(1, 3650, ErrorMessage = "Vade 1 ile 3650 gün arasýnda olmalýdýr")]
         public int? Vade { get; set; }
 
-        [Required(ErrorMessage = "Tutar alaný zorunludur")]
-        [Range(0.01, double.MaxValue, ErrorMessage = "Tutar 0'dan büyük olmalýdýr")]
-        [Display(Name = "Tutar")]
+        [Required(ErrorMessage = "Toplam tutar alaný zorunludur")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Toplam tutar 0'dan büyük olmalýdýr")]
+        [Display(Name = "Toplam Tutar")]
         [DisplayFormat(DataFormatString = "{0:C2}", ApplyFormatInEditMode = false)]
         public decimal Tutar { get; set; } = 0;
+
+        /// <summary>
+        /// Taksit baþýna düþen tutar (Hesaplanmýþ alan)
+        /// </summary>
+        [NotMapped]
+        [Display(Name = "Taksit Tutarý")]
+        public decimal TaksitTutari => Taksit > 0 ? Math.Round(Tutar / Taksit, 2) : 0;
     }
 }
