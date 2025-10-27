@@ -14,6 +14,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Add custom services
 builder.Services.AddScoped<IOgrencilerService, OgrenciService>();
 builder.Services.AddScoped<IOdemePlanlariService, OdemePlanlariService>();
+builder.Services.AddScoped<ICinsiyetlerService, CinsiyetlerService>();
 
 var app = builder.Build();
 

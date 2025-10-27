@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace StudentApp.Models
 {
@@ -26,13 +27,23 @@ namespace StudentApp.Models
         [DataType(DataType.Date)]
         public DateTime KayitTarihi { get; set; }
 
+        [Required(ErrorMessage = "Doğum tarihi zorunludur")]
+        [Display(Name = "Doğum Tarihi")]
+        [DataType(DataType.Date)]
         public DateTime DogumTarihi { get; set; }
 
+        [Required(ErrorMessage = "Ödeme planı seçimi zorunludur")]
+        [Display(Name = "Ödeme Planı")]
         public long OdemePlanlariId { get; set; }
 
+        [Required(ErrorMessage = "Cinsiyet seçimi zorunludur")]
+        [Display(Name = "Cinsiyet")]
         public long CinsiyetId { get; set; }
 
+        [ValidateNever]
         public OdemePlanlari OdemePlanlari { get; set; }
+        
+        [ValidateNever]
         public Cinsiyetler Cinsiyet { get; set; }
     }
 }

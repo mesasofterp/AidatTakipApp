@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using StudentApp.Models;
 using StudentApp.Services;
 
@@ -7,10 +8,17 @@ namespace StudentApp.Controllers
     public class OgrencilerController : Controller
     {
         private readonly IOgrencilerService _ogrenciService;
+        private readonly IOdemePlanlariService _odemePlanlariService;
+        private readonly ICinsiyetlerService _cinsiyetlerService;
 
-        public OgrencilerController(IOgrencilerService ogrencilerService)
+        public OgrencilerController(
+            IOgrencilerService ogrencilerService,
+            IOdemePlanlariService odemePlanlariService,
+            ICinsiyetlerService cinsiyetlerService)
         {
             _ogrenciService = ogrencilerService;
+            _odemePlanlariService = odemePlanlariService;
+            _cinsiyetlerService = cinsiyetlerService;
         }
 
         // GET: Student
@@ -21,8 +29,9 @@ namespace StudentApp.Controllers
         }
 
         // GET: Student/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            await LoadDropdownsAsync();
             return View();
         }
 
@@ -41,10 +50,20 @@ namespace StudentApp.Controllers
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", "Öğrenci eklenirken bir hata oluştu. Lütfen tekrar deneyin.");
+                    ModelState.AddModelError("", $"Öğrenci eklenirken bir hata oluştu: {ex.Message}");
+                }
+            }
+            else
+            {
+                // ModelState hatalarını logla
+                var errors = ModelState.Values.SelectMany(v => v.Errors);
+                foreach (var error in errors)
+                {
+                    Console.WriteLine($"Model Error: {error.ErrorMessage}");
                 }
             }
 
+            await LoadDropdownsAsync();
             return View(ogrenci);
         }
 
@@ -69,6 +88,7 @@ namespace StudentApp.Controllers
                 return NotFound();
             }
 
+            await LoadDropdownsAsync();
             return View(ogrenci);
         }
 
@@ -97,10 +117,20 @@ namespace StudentApp.Controllers
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", "Öğrenci güncellenirken bir hata oluştu. Lütfen tekrar deneyin.");
+                    ModelState.AddModelError("", $"Öğrenci güncellenirken bir hata oluştu: {ex.Message}");
+                }
+            }
+            else
+            {
+                // ModelState hatalarını logla
+                var errors = ModelState.Values.SelectMany(v => v.Errors);
+                foreach (var error in errors)
+                {
+                    Console.WriteLine($"Model Error: {error.ErrorMessage}");
                 }
             }
 
+            await LoadDropdownsAsync();
             return View(ogrenci);
         }
 
@@ -139,6 +169,15 @@ namespace StudentApp.Controllers
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        private async Task LoadDropdownsAsync()
+        {
+            var odemePlanlari = await _odemePlanlariService.GetAllOdemePlanlariAsync();
+            ViewBag.OdemePlanlari = new SelectList(odemePlanlari, "Id", "KursProgrami");
+
+            var cinsiyetler = await _cinsiyetlerService.GetAllCinsiyetlerAsync();
+            ViewBag.Cinsiyetler = new SelectList(cinsiyetler, "Id", "Cinsiyet");
         }
     }
 }
