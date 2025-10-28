@@ -72,11 +72,17 @@
         <i class="fas fa-lira-sign me-1"></i>Ödeme Gir
       </a>
      </li>
-                             <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Zamanlayici" asp-action="Index">
-                                <i class="fas fa-clock me-1"></i>SMS Zamanlayıcı
-                            </a>
-                        </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Zamanlayici" asp-action="Index">
+                                        <i class="fas fa-clock me-1"></i>SMS Zamanlayıcı
+                                    </a>
+                                </li>
+                             @*    <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Zamanlayici" asp-action="Index">
+                                        <i class="fas fa-clock me-1"></i>SMS Zamanlayıcı
+                                    </a>
+                                </li> *@
+                           
 </ul>
             </li>
      </ul>
