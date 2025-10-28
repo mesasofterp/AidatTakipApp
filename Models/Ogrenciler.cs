@@ -20,7 +20,13 @@ namespace StudentApp.Models
         [Required(ErrorMessage = "E-posta alanı zorunludur")]
         [EmailAddress(ErrorMessage = "Geçersiz e-posta adresi")]
         [StringLength(100, ErrorMessage = "E-posta 100 karakterden fazla olamaz")]
+        [Display(Name = "E-posta")]
         public string Email { get; set; } = string.Empty;
+
+        [Phone(ErrorMessage = "Geçersiz telefon numarası")]
+        [StringLength(20, ErrorMessage = "Telefon numarası 20 karakterden fazla olamaz")]
+        [Display(Name = "Telefon")]
+        public string? Telefon { get; set; }
 
         [Required(ErrorMessage = "Kayıt tarihi zorunludur")]
         [Display(Name = "Kayıt Tarihi")]

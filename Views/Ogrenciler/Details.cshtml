@@ -30,7 +30,17 @@
       <a href="mailto:@Model.Email" class="text-decoration-none">
    <i class="fas fa-envelope me-1"></i>@Html.DisplayFor(model => model.Email)
      </a>
-       </dd>
+     </dd>
+
+       @if (!string.IsNullOrWhiteSpace(Model.Telefon))
+    {
+        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Telefon)</dt>
+        <dd class="col-sm-8">
+         <a href="tel:@Model.Telefon" class="text-decoration-none">
+        <i class="fas fa-phone me-1"></i>@Html.DisplayFor(model => model.Telefon)
+            </a>
+        </dd>
+}
 
  <dt class="col-sm-4">@Html.DisplayNameFor(model => model.DogumTarihi)</dt>
       <dd class="col-sm-8">
