@@ -64,7 +64,7 @@
                             <i class="fas fa-book me-1"></i>@Html.DisplayFor(modelItem => item.KursProgrami)
                         </td>
                         <td class="text-center">
-                            <strong class="text-success">@item.Tutar.ToString("C2")</strong>
+                            <strong class="text-success">₺ @item.Tutar.ToString("N2")</strong>
                             <br/>
                             <small class="text-muted">Toplam</small>
                         </td>
@@ -72,7 +72,7 @@
                             <span class="badge bg-primary fs-6">@item.Taksit Taksit</span>
                         </td>
                         <td class="text-center">
-                            <span class="badge bg-info fs-6">@item.TaksitTutari.ToString("C2")</span>
+                            <span class="badge bg-info fs-6">₺ @item.TaksitTutari.ToString("N2")</span>
                             <br/>
                             <small class="text-muted">Her taksit</small>
                         </td>

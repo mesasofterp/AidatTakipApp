@@ -63,7 +63,7 @@
 <div class="row">
        <div class="col-md-4">
    <small class="text-muted d-block">Toplam Tutar</small>
-       <strong class="text-success">@Model.OdemePlanlari.Tutar.ToString("C2")</strong>
+  <strong class="text-success">₺ @Model.OdemePlanlari.Tutar.ToString("N2")</strong>
     </div>
        <div class="col-md-4">
 <small class="text-muted d-block">Taksit Sayısı</small>
@@ -71,7 +71,7 @@
    </div>
      <div class="col-md-4">
      <small class="text-muted d-block">Taksit Tutarı</small>
-  <strong class="text-info">@Model.OdemePlanlari.TaksitTutari.ToString("C2")</strong>
+  <strong class="text-info">₺ @Model.OdemePlanlari.TaksitTutari.ToString("N2")</strong>
    </div>
    </div>
    @if (Model.OdemePlanlari.Vade.HasValue)

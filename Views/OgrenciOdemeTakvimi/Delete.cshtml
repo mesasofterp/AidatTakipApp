@@ -1,20 +1,20 @@
 @model StudentApp.Models.OgrenciOdemeTakvimi
 
 @{
-    ViewData["Title"] = "Ödeme Sil";
+  ViewData["Title"] = "Ödeme Sil";
 }
 
 <div class="row justify-content-center">
     <div class="col-md-8">
-        <div class="card">
-   <div class="card-header bg-danger text-white">
+  <div class="card">
+<div class="card-header bg-danger text-white">
     <h4><i class="fas fa-exclamation-triangle me-2"></i>Ödeme Sil</h4>
      </div>
  <div class="card-body">
      <div class="alert alert-warning" role="alert">
     <i class="fas fa-exclamation-triangle me-2"></i>
    <strong>Uyarý!</strong> Bu ödeme kaydýný silmek istediðinizden emin misiniz?
-    <br/>
+ <br/>
  <small class="text-muted">
       <strong>Not:</strong> Bu iþlem ödeme kaydýný kalýcý olarak silecektir.
    </small>
@@ -45,14 +45,14 @@
     <dt class="col-sm-4">@Html.DisplayNameFor(model => model.OdenenTutar)</dt>
  <dd class="col-sm-8">
      <span class="badge bg-success fs-5">
-   <i class="fas fa-lira-sign me-1"></i>@Model.OdenenTutar.ToString("N2") TL
+   ? @Model.OdenenTutar.ToString("N2")
      </span>
    </dd>
 
   <dt class="col-sm-4">@Html.DisplayNameFor(model => model.BorcTutari)</dt>
  <dd class="col-sm-8">
     <span class="badge bg-warning text-dark fs-5">
-    <i class="fas fa-money-bill-wave me-1"></i>@Model.BorcTutari.ToString("N2") TL
+    ? @Model.BorcTutari.ToString("N2")
      </span>
  </dd>
 

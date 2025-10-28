@@ -269,11 +269,11 @@ function togglePasif(showPasif) {
        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info" title="Detayları Görüntüle">
    <i class="fas fa-eye"></i>
       </a>
-    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning" title="Düzenle">
+ <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning" title="Düzenle">
       <i class="fas fa-edit"></i>
   </a>
     <a asp-controller="OgrenciOdemeTakvimi" asp-action="Create" asp-route-ogrenciId="@item.Id" class="btn btn-sm btn-outline-success" title="Ödeme Gir">
-  <i class="fas fa-lira-sign"></i>
+  <span style="font-family: Arial, sans-serif; font-weight: bold;">&#8378;</span>
   </a>
     @if (item.Aktif)
 {

@@ -21,7 +21,7 @@
        <dd class="col-sm-8">
     <div class="card bg-success text-white d-inline-block px-3 py-2">
      <h5 class="mb-0">
-    <i class="fas fa-lira-sign me-1"></i>@Model.Tutar.ToString("N2") TL
+    ₺ @Model.Tutar.ToString("N2")
      </h5>
            <small>Toplam Tutar</small>
       </div>
@@ -36,7 +36,7 @@
      <dd class="col-sm-8">
       <div class="card bg-info text-white d-inline-block px-3 py-2">
        <h6 class="mb-0">
-   <i class="fas fa-calculator me-1"></i>@Model.TaksitTutari.ToString("N2") TL
+   ₺ @Model.TaksitTutari.ToString("N2")
   </h6>
      <small>Her taksit için</small>
 </div>
@@ -88,14 +88,14 @@
 
     <div class="alert alert-light border">
        <h6 class="mb-2"><i class="fas fa-info-circle me-1"></i>Ödeme Planı Özeti</h6>
-        <ul class="mb-0">
-       <li><strong>Toplam Ödenecek:</strong> @Model.Tutar.ToString("C2")</li>
+      <ul class="mb-0">
+       <li><strong>Toplam Ödenecek:</strong> ₺ @Model.Tutar.ToString("N2")</li>
    <li><strong>Taksit Sayısı:</strong> @Model.Taksit adet</li>
-      <li><strong>Taksit Başına:</strong> @Model.TaksitTutari.ToString("C2")</li>
+   <li><strong>Taksit Başına:</strong> ₺ @Model.TaksitTutari.ToString("N2")</li>
        @if (Model.Vade.HasValue)
        {
   <li><strong>Tamamlanma Süresi:</strong> @Model.Vade gün içinde</li>
-           }
+    }
      </ul>
     </div>
   
