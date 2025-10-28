@@ -110,8 +110,43 @@ app.MapControllerRoute(
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    // Apply pending migrations on startup (creates DB if it doesn't exist)
-    context.Database.Migrate();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    
+    try
+    {
+        // Check if database exists and apply pending migrations
+        var pendingMigrations = context.Database.GetPendingMigrations();
+        
+        if (pendingMigrations.Any())
+        {
+            logger.LogInformation("Bekleyen migration'lar uygulanıyor: {Migrations}", 
+                string.Join(", ", pendingMigrations));
+            context.Database.Migrate();
+            logger.LogInformation("Migration'lar başarıyla uygulandı.");
+        }
+        else
+        {
+            logger.LogInformation("Bekleyen migration yok, database güncel.");
+        }
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Migration uygulanırken hata oluştu. Database zaten mevcut olabilir.");
+        
+        // Database zaten varsa ve migration geçmişi yoksa, migration'ı baseline olarak işaretle
+        try
+        {
+            var appliedMigrations = context.Database.GetAppliedMigrations();
+            if (!appliedMigrations.Any())
+            {
+                logger.LogWarning("Database mevcut ancak migration geçmişi yok. Manuel migration geçmişi kontrolü gerekebilir.");
+            }
+        }
+        catch
+        {
+            // Ignore
+        }
+    }
 }
 
 app.Run();

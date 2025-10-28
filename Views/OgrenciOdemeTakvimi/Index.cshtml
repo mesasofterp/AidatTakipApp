@@ -162,7 +162,9 @@ else
 else
 {
     <div class="text-center py-5">
- <i class="fas fa-lira-sign fa-3x text-muted mb-3"></i>
+        <div style="font-family: Arial, sans-serif; font-size: 4rem; color: #6c757d; margin-bottom: 1rem;">
+     &#8378;
+        </div>
  <h4 class="text-muted">Ödeme kaydý bulunamadý</h4>
      <p class="text-muted">
     @if (!string.IsNullOrEmpty(ogrenciAdi))
@@ -172,16 +174,16 @@ else
   else
             {
  <span>Henüz hiçbir ödeme kaydý bulunmuyor.</span>
-            }
+     }
         </p>
-        @if (ogrenciId.HasValue)
+   @if (ogrenciId.HasValue)
     {
-            <a asp-action="Create" asp-route-ogrenciId="@ogrenciId" class="btn btn-success">
-            <i class="fas fa-plus me-1"></i>Ýlk Ödemeyi Gir
+    <a asp-action="Create" asp-route-ogrenciId="@ogrenciId" class="btn btn-success">
+     <i class="fas fa-plus me-1"></i>Ýlk Ödemeyi Gir
     </a>
     }
     else
-        {
+     {
 <a asp-action="Create" class="btn btn-success">
           <i class="fas fa-plus me-1"></i>Ýlk Ödemeyi Gir
      </a>
