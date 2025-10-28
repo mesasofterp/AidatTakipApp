@@ -7,11 +7,11 @@ namespace StudentApp.Models
     {
       public long Id { get; set; }
         
-        [Required(ErrorMessage = "��renci se�imi zorunludur")]
-        [Display(Name = "��renci")]
+        [Required(ErrorMessage = "Öğrenci seçimi zorunludur")]
+        [Display(Name = "Öğrenci")]
          public long OgrenciId { get; set; }
  
-      [Display(Name = "�deme Tarihi")]
+      [Display(Name = "Ödeme Tarihi")]
         [DataType(DataType.Date)]
         public DateTime? OdemeTarihi { get; set; }
 
@@ -22,15 +22,15 @@ namespace StudentApp.Models
         [DataType(DataType.Date)]
         public DateTime? SonOdemeTarihi { get; set; }
 
-        [Required(ErrorMessage = "�denen tutar zorunludur")]
-        [Range(0.01, double.MaxValue, ErrorMessage = "�denen tutar 0'dan b�y�k olmal�d�r")]
-        [Display(Name = "�denen Tutar")]
+        [Required(ErrorMessage = "Ödenen tutar zorunludur")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Ödenen tutar 0'dan büyük olmalıdır")]
+        [Display(Name = "Ödenen Tutar")]
         [DisplayFormat(DataFormatString = "{0:C2}", ApplyFormatInEditMode = false)]
         public decimal OdenenTutar { get; set; } = 0;
 
-        [Required(ErrorMessage = "Bor� tutar� zorunludur")]
-        [Range(0, double.MaxValue, ErrorMessage = "Bor� tutar� negatif olamaz")]
-    [Display(Name = "Kalan Bor�")]
+        [Required(ErrorMessage = "Borç tutarı zorunludur")]
+        [Range(0, double.MaxValue, ErrorMessage = "Borç tutarı negatif olamaz")]
+    [Display(Name = "Kalan Borç")]
         [DisplayFormat(DataFormatString = "{0:C2}", ApplyFormatInEditMode = false)]
         public decimal BorcTutari { get; set; }
 

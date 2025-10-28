@@ -5,94 +5,94 @@
 }
 
 <div class="row justify-content-center">
-  <div class="col-md-8">
- <div class="card">
- <div class="card-header bg-info text-white">
- <h4><i class="fas fa-receipt me-2"></i>Ödeme Detaylarý</h4>
+    <div class="col-md-8">
+      <div class="card">
+<div class="card-header bg-info text-white">
+    <h4><i class="fas fa-receipt me-2"></i>Ödeme Detaylarý</h4>
   </div>
    <div class="card-body">
-  <dl class="row">
-  @if (Model.Ogrenci != null)
-{
-     <dt class="col-sm-4">Öðrenci</dt>
-    <dd class="col-sm-8">
-     <i class="fas fa-user-circle me-1"></i>
-         @Model.Ogrenci.OgrenciAdi @Model.Ogrenci.OgrenciSoyadi
-    </dd>
-   }
+     <dl class="row">
+      @if (Model.Ogrenci != null)
+      {
+        <dt class="col-sm-4">Öðrenci</dt>
+     <dd class="col-sm-8">
+            <i class="fas fa-user-circle me-1"></i>
+    @Model.Ogrenci.OgrenciAdi @Model.Ogrenci.OgrenciSoyadi
+      </dd>
+ }
 
-     <dt class="col-sm-4">@Html.DisplayNameFor(model => model.OdemeTarihi)</dt>
-  <dd class="col-sm-8">
- @if (Model.OdemeTarihi.HasValue)
+        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.OdemeTarihi)</dt>
+       <dd class="col-sm-8">
+    @if (Model.OdemeTarihi.HasValue)
+           {
+      <i class="fas fa-calendar me-1"></i>@Model.OdemeTarihi.Value.ToString("dd MMMM yyyy")
+     }
+  else
     {
-    <i class="fas fa-calendar me-1"></i>@Model.OdemeTarihi.Value.ToString("dd MMMM yyyy")
-    }
-     else
-{
-   <span class="text-muted">Belirtilmemiþ</span>
-  }
+     <span class="text-muted">Belirtilmemiþ</span>
+         }
+    </dd>
+
+     <dt class="col-sm-4">@Html.DisplayNameFor(model => model.OdenenTutar)</dt>
+         <dd class="col-sm-8">
+ <div class="card bg-success text-white d-inline-block px-3 py-2">
+     <h5 class="mb-0" style="font-family: Arial, sans-serif;">
+   &#8378; @Model.OdenenTutar.ToString("N2")
+    </h5>
+      </div>
+       </dd>
+
+    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.BorcTutari)</dt>
+   <dd class="col-sm-8">
+   <div class="card bg-warning text-dark d-inline-block px-3 py-2">
+       <h5 class="mb-0" style="font-family: Arial, sans-serif;">
+          &#8378; @Model.BorcTutari.ToString("N2")
+            </h5>
+     </div>
   </dd>
 
-   <dt class="col-sm-4">@Html.DisplayNameFor(model => model.OdenenTutar)</dt>
-  <dd class="col-sm-8">
-     <div class="card bg-success text-white d-inline-block px-3 py-2">
-   <h5 class="mb-0" style="font-family: Arial, sans-serif;">
-        &#8378; @Model.OdenenTutar.ToString("N2")
- </h5>
-    </div>
- </dd>
-
-   <dt class="col-sm-4">@Html.DisplayNameFor(model => model.BorcTutari)</dt>
-    <dd class="col-sm-8">
-    <div class="card bg-warning text-dark d-inline-block px-3 py-2">
-    <h5 class="mb-0" style="font-family: Arial, sans-serif;">
-    &#8378; @Model.BorcTutari.ToString("N2")
-    </h5>
- </div>
-</dd>
-
-   @if (!string.IsNullOrWhiteSpace(Model.Aciklama))
-  {
-   <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Aciklama)</dt>
-  <dd class="col-sm-8">@Html.DisplayFor(model => model.Aciklama)</dd>
-        }
-
-        <dt class="col-sm-4">Durum</dt>
-   <dd class="col-sm-8">
-  @if (Model.Aktif)
-  {
-  <span class="badge bg-success">
-   <i class="fas fa-check me-1"></i>Aktif
-      </span>
+     @if (!string.IsNullOrWhiteSpace(Model.Aciklama))
+        {
+      <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Aciklama)</dt>
+        <dd class="col-sm-8">@Html.DisplayFor(model => model.Aciklama)</dd>
   }
-   else
- {
-  <span class="badge bg-secondary">
-<i class="fas fa-times me-1"></i>Pasif
-      </span>
-   }
-   </dd>
 
-   <dt class="col-sm-4">Versiyon</dt>
-    <dd class="col-sm-8">
-    <span class="badge bg-secondary">v@Model.Version</span>
-    </dd>
+     <dt class="col-sm-4">Durum</dt>
+        <dd class="col-sm-8">
+         @if (Model.Aktif)
+         {
+     <span class="badge bg-success">
+       <i class="fas fa-check me-1"></i>Aktif
+    </span>
+           }
+  else
+    {
+ <span class="badge bg-secondary">
+  <i class="fas fa-times me-1"></i>Pasif
+  </span>
+  }
+         </dd>
+
+        <dt class="col-sm-4">Versiyon</dt>
+     <dd class="col-sm-8">
+      <span class="badge bg-secondary">v@Model.Version</span>
+         </dd>
       </dl>
 
-   <div class="d-flex justify-content-between">
-     <a asp-action="Index" asp-route-ogrenciId="@Model.OgrenciId" class="btn btn-secondary">
-    <i class="fas fa-arrow-left me-1"></i>Listeye Dön
+     <div class="d-flex justify-content-between">
+      <a asp-action="Index" asp-route-ogrenciId="@Model.OgrenciId" class="btn btn-secondary">
+ <i class="fas fa-arrow-left me-1"></i>Listeye Dön
    </a>
- <div>
-  <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">
-    <i class="fas fa-edit me-1"></i>Düzenle
+     <div>
+   <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">
+      <i class="fas fa-edit me-1"></i>Düzenle
+     </a>
+    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+        <i class="fas fa-trash me-1"></i>Sil
    </a>
-  <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
-  <i class="fas fa-trash me-1"></i>Sil
-      </a>
- </div>
-   </div>
-    </div>
   </div>
+  </div>
+           </div>
+        </div>
     </div>
 </div>

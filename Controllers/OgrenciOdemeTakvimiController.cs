@@ -6,115 +6,128 @@ namespace StudentApp.Controllers
 {
     public class OgrenciOdemeTakvimiController : Controller
     {
-  private readonly IOgrenciOdemeTakvimiService _odemeService;
- private readonly IOgrencilerService _ogrenciService;
+        private readonly IOgrenciOdemeTakvimiService _odemeService;
+   private readonly IOgrencilerService _ogrenciService;
 
         public OgrenciOdemeTakvimiController(
-    IOgrenciOdemeTakvimiService odemeService,
-     IOgrencilerService ogrencilerService)
- {
-_odemeService = odemeService;
-       _ogrenciService = ogrencilerService;
-}
-
-// GET: OgrenciOdemeTakvimi
-        public async Task<IActionResult> Index(long? ogrenciId)
- {
-      IEnumerable<OgrenciOdemeTakvimi> odemeler;
-            
- if (ogrenciId.HasValue)
+            IOgrenciOdemeTakvimiService odemeService,
+    IOgrencilerService ogrencilerService)
 {
-     odemeler = await _odemeService.GetOdemelerByOgrenciIdAsync(ogrenciId.Value);
-   var ogrenci = await _ogrenciService.GetOgrenciByIdAsync(ogrenciId.Value);
-    ViewBag.OgrenciAdi = ogrenci != null ? $"{ogrenci.OgrenciAdi} {ogrenci.OgrenciSoyadi}" : "";
-    ViewBag.OgrenciId = ogrenciId.Value;
-      }
-   else
-    {
-  odemeler = await _odemeService.GetAllOdemelerAsync();
-          // Tüm öðrenciler için toplam kalan borç
-      ViewBag.ToplamKalanBorc = await _odemeService.GetToplamKalanBorcAsync();
-  }
-
-   return View(odemeler);
- }
-
-        // GET: OgrenciOdemeTakvimi/Create
-        public async Task<IActionResult> Create(long? ogrenciId)
- {
-   if (ogrenciId.HasValue)
-    {
-     var ogrenci = await _ogrenciService.GetOgrenciByIdAsync(ogrenciId.Value);
-  if (ogrenci == null)
-         {
-   return NotFound();
-  }
-   
-  ViewBag.OgrenciAdi = $"{ogrenci.OgrenciAdi} {ogrenci.OgrenciSoyadi}";
-     ViewBag.OgrenciId = ogrenciId.Value;
-       
-   // Toplam borç hesapla
-   var toplamOdenen = await _odemeService.GetToplamOdenenTutarAsync(ogrenciId.Value);
- var kalanBorc = await _odemeService.GetKalanBorcAsync(ogrenciId.Value);
-  
-    // Ýlk ödeme ise, ödeme planýndan toplam tutarý al
-  if (toplamOdenen == 0 && ogrenci.OdemePlanlari != null)
- {
-       // Toplam tutar = Taksit Sayýsý × Tutar
-       kalanBorc = ogrenci.OdemePlanlari.Tutar;
-    }
-
-    ViewBag.KalanBorc = kalanBorc;
-  ViewBag.ToplamOdenen = toplamOdenen;
-ViewBag.OdemePlani = ogrenci.OdemePlanlari;
-    }
-
-       return View(new OgrenciOdemeTakvimi 
-   { 
-     OgrenciId = ogrenciId ?? 0,
-    OdemeTarihi = DateTime.Now
-        });
-}
-
-        // POST: OgrenciOdemeTakvimi/Create
-     [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(OgrenciOdemeTakvimi odeme)
-        {
-   if (ModelState.IsValid)
-      {
-       try
-    {
-         await _odemeService.AddOdemeAsync(odeme);
-        TempData["SuccessMessage"] = "Ödeme baþarýyla kaydedildi!";
-       return RedirectToAction(nameof(Index), new { ogrenciId = odeme.OgrenciId });
-      }
-        catch (Exception ex)
-     {
-  ModelState.AddModelError("", $"Ödeme kaydedilirken bir hata oluþtu: {ex.Message}");
-          }
-   }
-
-  // Hata durumunda öðrenci bilgilerini tekrar yükle
-       var ogrenci = await _ogrenciService.GetOgrenciByIdAsync(odeme.OgrenciId);
-  if (ogrenci != null)
-  {
-       ViewBag.OgrenciAdi = $"{ogrenci.OgrenciAdi} {ogrenci.OgrenciSoyadi}";
- ViewBag.OgrenciId = odeme.OgrenciId;
-    
-    var toplamOdenen = await _odemeService.GetToplamOdenenTutarAsync(odeme.OgrenciId);
-  var kalanBorc = await _odemeService.GetKalanBorcAsync(odeme.OgrenciId);
-     
-       if (toplamOdenen == 0 && ogrenci.OdemePlanlari != null)
-       {
- kalanBorc = ogrenci.OdemePlanlari.Tutar * ogrenci.OdemePlanlari.Taksit;
-  }
-
-ViewBag.KalanBorc = kalanBorc;
-   ViewBag.ToplamOdenen = toplamOdenen;
+            _odemeService = odemeService;
+       _ogrenciService = ogrencilerService;
         }
 
-  return View(odeme);
+        // GET: OgrenciOdemeTakvimi
+        public async Task<IActionResult> Index(long? ogrenciId)
+        {
+            IEnumerable<OgrenciOdemeTakvimi> odemeler;
+            
+         if (ogrenciId.HasValue)
+    {
+        odemeler = await _odemeService.GetOdemelerByOgrenciIdAsync(ogrenciId.Value);
+      var ogrenci = await _ogrenciService.GetOgrenciByIdAsync(ogrenciId.Value);
+           ViewBag.OgrenciAdi = ogrenci != null ? $"{ogrenci.OgrenciAdi} {ogrenci.OgrenciSoyadi}" : "";
+        ViewBag.OgrenciId = ogrenciId.Value;
+            }
+     else
+            {
+        odemeler = await _odemeService.GetAllOdemelerAsync();
+            // Tüm öðrenciler için toplam kalan borç
+       ViewBag.ToplamKalanBorc = await _odemeService.GetToplamKalanBorcAsync();
+            }
+
+return View(odemeler);
+   }
+
+        // GET: OgrenciOdemeTakvimi/Create
+      public async Task<IActionResult> Create(long? ogrenciId)
+ {
+            // Öðrenci ID'si zorunlu - yoksa öðrenci listesine yönlendir
+            if (!ogrenciId.HasValue)
+    {
+         TempData["ErrorMessage"] = "Ödeme giriþi için önce bir öðrenci seçmelisiniz.";
+           return RedirectToAction("Index", "Ogrenciler");
+            }
+
+            var ogrenci = await _ogrenciService.GetOgrenciByIdAsync(ogrenciId.Value);
+            if (ogrenci == null)
+        {
+     TempData["ErrorMessage"] = "Öðrenci bulunamadý.";
+          return RedirectToAction("Index", "Ogrenciler");
+        }
+    
+            ViewBag.OgrenciAdi = $"{ogrenci.OgrenciAdi} {ogrenci.OgrenciSoyadi}";
+       ViewBag.OgrenciId = ogrenciId.Value;
+       
+      // Toplam borç hesapla
+          var toplamOdenen = await _odemeService.GetToplamOdenenTutarAsync(ogrenciId.Value);
+         var kalanBorc = await _odemeService.GetKalanBorcAsync(ogrenciId.Value);
+        
+            // Ýlk ödeme ise, ödeme planýndan toplam tutarý al
+            if (toplamOdenen == 0 && ogrenci.OdemePlanlari != null)
+            {
+    // Toplam tutar = Taksit Sayýsý × Tutar
+                kalanBorc = ogrenci.OdemePlanlari.Tutar;
+            }
+
+ViewBag.KalanBorc = kalanBorc;
+          ViewBag.ToplamOdenen = toplamOdenen;
+     ViewBag.OdemePlani = ogrenci.OdemePlanlari;
+
+  return View(new OgrenciOdemeTakvimi 
+            { 
+          OgrenciId = ogrenciId.Value,
+      OdemeTarihi = DateTime.Now
+            });
+ }
+
+    // POST: OgrenciOdemeTakvimi/Create
+      [HttpPost]
+  [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(OgrenciOdemeTakvimi odeme)
+        {
+      // Öðrenci ID kontrolü
+       if (odeme.OgrenciId <= 0)
+          {
+   TempData["ErrorMessage"] = "Geçersiz öðrenci bilgisi.";
+     return RedirectToAction("Index", "Ogrenciler");
+ }
+
+            if (ModelState.IsValid)
+            {
+        try
+    {
+           await _odemeService.AddOdemeAsync(odeme);
+  TempData["SuccessMessage"] = "Ödeme baþarýyla kaydedildi!";
+       return RedirectToAction(nameof(Index), new { ogrenciId = odeme.OgrenciId });
+}
+        catch (Exception ex)
+            {
+      ModelState.AddModelError("", $"Ödeme kaydedilirken bir hata oluþtu: {ex.Message}");
+  }
+    }
+
+            // Hata durumunda öðrenci bilgilerini tekrar yükle
+    var ogrenci = await _ogrenciService.GetOgrenciByIdAsync(odeme.OgrenciId);
+ if (ogrenci != null)
+   {
+                ViewBag.OgrenciAdi = $"{ogrenci.OgrenciAdi} {ogrenci.OgrenciSoyadi}";
+                ViewBag.OgrenciId = odeme.OgrenciId;
+              
+   var toplamOdenen = await _odemeService.GetToplamOdenenTutarAsync(odeme.OgrenciId);
+     var kalanBorc = await _odemeService.GetKalanBorcAsync(odeme.OgrenciId);
+      
+       if (toplamOdenen == 0 && ogrenci.OdemePlanlari != null)
+      {
+               kalanBorc = ogrenci.OdemePlanlari.Tutar * ogrenci.OdemePlanlari.Taksit;
+   }
+
+      ViewBag.KalanBorc = kalanBorc;
+                ViewBag.ToplamOdenen = toplamOdenen;
+                ViewBag.OdemePlani = ogrenci.OdemePlanlari;
+            }
+
+            return View(odeme);
         }
 
         // GET: OgrenciOdemeTakvimi/Details/5
