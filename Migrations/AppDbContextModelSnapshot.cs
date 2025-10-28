@@ -108,6 +108,12 @@ namespace StudentApp.Migrations
                     b.Property<long>("OgrenciId")
                         .HasColumnType("bigint");
 
+                    b.Property<DateTime>("OlusturmaTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("SonOdemeTarihi")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("Version")
                         .HasColumnType("int");
 
@@ -162,6 +168,10 @@ namespace StudentApp.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("Telefon")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<int>("Version")
                         .HasColumnType("int");
 
@@ -175,6 +185,59 @@ namespace StudentApp.Migrations
                     b.HasIndex("OdemePlanlariId");
 
                     b.ToTable("Ogrenciler", (string)null);
+                });
+
+            modelBuilder.Entity("StudentApp.Models.ZamanlayiciAyarlar", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Aciklama")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("Aktif")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("CronIfadesi")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Dakika")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("GuncellenmeTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Isim")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("MesajSablonu")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("OlusturmaTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Saat")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ZamanlayiciAyarlar", (string)null);
                 });
 
             modelBuilder.Entity("StudentApp.Models.OgrenciOdemeTakvimi", b =>

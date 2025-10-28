@@ -22,6 +22,11 @@ namespace StudentApp.Models
         [StringLength(100, ErrorMessage = "E-posta 100 karakterden fazla olamaz")]
         public string Email { get; set; } = string.Empty;
 
+        [Phone(ErrorMessage = "Geçersiz telefon numarası")]
+        [StringLength(20, ErrorMessage = "Telefon 20 karakterden fazla olamaz")]
+        [Display(Name = "Telefon")]
+        public string? Telefon { get; set; }
+
         [Required(ErrorMessage = "Kayıt tarihi zorunludur")]
         [Display(Name = "Kayıt Tarihi")]
         [DataType(DataType.Date)]

@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using StudentApp.Data;
 using StudentApp.Services;
+using StudentApp.Jobs;
+using Quartz;
+using AppSchedulerFactory = StudentApp.Services.IZamanlayiciFactory;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +18,72 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IOgrencilerService, OgrenciService>();
 builder.Services.AddScoped<IOdemePlanlariService, OdemePlanlariService>();
 builder.Services.AddScoped<ICinsiyetlerService, CinsiyetlerService>();
+
+// Add Daily Task Service and SMS Service
+builder.Services.AddScoped<IGunlukZamanlayiciService, GunlukZamanlayiciService>();
+builder.Services.AddSingleton<ISmsService, SmsService>();
+
+// Add Quartz.NET
+builder.Services.AddQuartz(q =>
+{
+    // Job key oluştur
+    var jobKey = new JobKey("DailyJob");
+
+    // Job'ı kaydet
+    q.AddJob<DailyJob>(opts => opts.WithIdentity(jobKey));
+
+    // Trigger oluştur - Her gün saat 09:00'da çalışacak
+    q.AddTrigger(opts => opts
+        .ForJob(jobKey)
+        .WithIdentity("DailyJob-trigger")
+        .WithCronSchedule("0 0 9 * * ?") // Her gün saat 09:00'da (cron: saniye dakika saat gün ay hafta)
+    );
+
+    // Durability ayarla - Uygulama kapanıp açılsa bile job'lar devam eder
+    q.UseDefaultThreadPool(tp => { tp.MaxConcurrency = 10; });
+
+    // Persistence kullan (opsiyonel - RAM'de tutulacaksa kullanmayabilirsiniz)
+    q.UseSimpleTypeLoader();
+    q.UseInMemoryStore();
+});
+
+// Quartz hosted service ekle
+builder.Services.AddQuartzHostedService(q =>
+{
+    q.WaitForJobsToComplete = true; // Uygulama kapanırken job'ların tamamlanmasını bekler
+});
+
+// Add Scheduler Factory - IScheduler'ı kullanmak için  
+builder.Services.AddSingleton<AppSchedulerFactory>(sp =>
+{
+    var quartzSchedulerFactory = sp.GetRequiredService<Quartz.ISchedulerFactory>();
+    var logger = sp.GetRequiredService<ILogger<StudentApp.Services.ZamanlayiciFactory>>();
+    
+    // IScheduler'ı Quartz'dan al - bu lazy loading için
+    Task<IScheduler> schedulerTask = null;
+    IScheduler scheduler = null;
+    try
+    {
+        schedulerTask = quartzSchedulerFactory.GetScheduler();
+        scheduler = schedulerTask.GetAwaiter().GetResult();
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Zamanlayıcı alınırken hata oluştu");
+        throw;
+    }
+    
+    return new StudentApp.Services.ZamanlayiciFactory(scheduler, logger);
+});
+
+// Add Scheduler Service
+builder.Services.AddScoped<IZamanlayiciService>(sp =>
+{
+    var context = sp.GetRequiredService<AppDbContext>();
+    var logger = sp.GetRequiredService<ILogger<StudentApp.Services.ZamanlayiciService>>();
+    var schedulerFactory = sp.GetRequiredService<AppSchedulerFactory>();
+    return new StudentApp.Services.ZamanlayiciService(context, logger, schedulerFactory);
+});
 
 var app = builder.Build();
 

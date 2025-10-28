@@ -1,0 +1,142 @@
+@model StudentApp.Models.ZamanlayiciAyarlar
+@{
+    ViewData["Title"] = "Yeni Zamanlayıcı Oluştur";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-plus-circle"></i> Yeni Zamanlayıcı Oluştur
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> <strong>Bilgi:</strong> Yeni bir zamanlayıcı oluşturduğunuzda, 
+                        mevcut aktif zamanlayıcı otomatik olarak durdurulacak ve yerine yenisini geçecektir.
+                    </div>
+
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+                        
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Isim" class="form-label">
+                                <i class="bi bi-tag"></i> Zamanlayıcı İsmi <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Isim" class="form-control" placeholder="örn: Günlük Ödeme Hatırlatıcı" />
+                            <span asp-validation-for="Isim" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Saat" class="form-label">
+                                    <i class="bi bi-clock"></i> Çalışma Saati <span class="text-danger">*</span>
+                                </label>
+                                <select asp-for="Saat" class="form-select">
+                                    @for (int i = 0; i <= 23; i++)
+                                    {
+                                        <option value="@i">@i.ToString("00")</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="Saat" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Dakika" class="form-label">
+                                    <i class="bi bi-clock"></i> Çalışma Dakikası <span class="text-danger">*</span>
+                                </label>
+                                <select asp-for="Dakika" class="form-select">
+                                    @for (int i = 0; i <= 59; i++)
+                                    {
+                                        <option value="@i">@i.ToString("00")</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="Dakika" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-light border border-primary">
+                            <i class="bi bi-clock"></i> <strong>Seçili Zaman:</strong> 
+                            Her gün <span id="selectedTime" class="fw-bold"></span> da çalışacak
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="MesajSablonu" class="form-label">
+                                <i class="fas fa-sms"></i> SMS Mesaj Şablonu <span class="text-danger">*</span>
+                            </label>
+                            <textarea asp-for="MesajSablonu" class="form-control" rows="4"
+                                      placeholder="Sayın [ÖĞRENCİ_ADI] [ÖĞRENCİ_SOYADI], ödemeniz [GEÇEN_GÜN] gündür beklemektedir..."></textarea>
+                            <small class="form-text text-muted">
+                                <strong>Kullanılabilir Placeholder'lar:</strong><br>
+                                <code>[ÖĞRENCİ_ADI]</code> - Öğrencinin adı<br>
+                                <code>[ÖĞRENCİ_SOYADI]</code> - Öğrencinin soyadı<br>
+                                <code>[GEÇEN_GÜN]</code> - Geçen gün sayısı<br>
+                                <code>[BORÇ_TUTARI]</code> - Borç tutarı<br>
+                                <code>[SON_ÖDEME_TARİHİ]</code> - Son ödeme tarihi
+                            </small>
+                            <span asp-validation-for="MesajSablonu" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Aciklama" class="form-label">
+                                <i class="bi bi-card-text"></i> Açıklama
+                            </label>
+                            <textarea asp-for="Aciklama" class="form-control" rows="2"
+                                      placeholder="Zamanlayıcı hakkında ek bilgiler..."></textarea>
+                            <span asp-validation-for="Aciklama" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input asp-for="Aktif" class="form-check-input" type="checkbox" checked />
+                                <label asp-for="Aktif" class="form-check-label">
+                                    Zamanlayıcıyı oluşturur oluşturmaz aktif et
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <input type="hidden" asp-for="CronIfadesi" />
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> İptal
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Zamanlayıcı Oluştur
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function() {
+            // Saat ve dakika değiştiğinde cron expression ve görünen zamanı güncelle
+            function updateSelectedTime() {
+                var hour = parseInt($('#Hour').val());
+                var minute = parseInt($('#Minute').val());
+                var hourStr = hour.toString().padStart(2, '0');
+                var minuteStr = minute.toString().padStart(2, '0');
+                
+                $('#selectedTime').text(hourStr + ':' + minuteStr);
+                $('#CronExpression').val('0 ' + minute + ' ' + hour + ' * * ?');
+            }
+
+            updateSelectedTime(); // İlk yüklemede güncelle
+
+            $('#Hour, #Minute').on('change', updateSelectedTime);
+        });
+    </script>
+}
+

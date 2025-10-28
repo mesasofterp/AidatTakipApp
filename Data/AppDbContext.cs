@@ -13,6 +13,7 @@ namespace StudentApp.Data
         public DbSet<Cinsiyetler> Cinsiyetler { get; set; }
         public DbSet<OdemePlanlari> OdemePlanlari { get; set; }
         public DbSet<OgrenciOdemeTakvimi> OgrenciOdemeTakvimi { get; set; }
+        public DbSet<ZamanlayiciAyarlar> ZamanlayiciAyarlar { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -26,6 +27,7 @@ namespace StudentApp.Data
                 entity.Property(e => e.OgrenciAdi).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.OgrenciSoyadi).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Email).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Telefon).HasMaxLength(20);
                 entity.HasIndex(e => e.Email).IsUnique();
 
                 // Foreign key relationships
@@ -63,6 +65,8 @@ namespace StudentApp.Data
             {
                 entity.ToTable("OgrenciOdemeTakvimi");
                 entity.HasKey(e => e.Id);
+                entity.Property(e => e.OlusturmaTarihi).IsRequired();
+                entity.Property(e => e.SonOdemeTarihi);
                 entity.Property(e => e.OdenenTutar).HasColumnType("decimal(18,2)").IsRequired();
                 entity.Property(e => e.BorcTutari).HasColumnType("decimal(18,2)").IsRequired();
 
@@ -71,6 +75,18 @@ namespace StudentApp.Data
                     .WithMany()
                     .HasForeignKey(e => e.OgrenciId)
                     .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // Configure SchedulerSettings entity
+            modelBuilder.Entity<ZamanlayiciAyarlar>(entity =>
+            {
+                entity.ToTable("ZamanlayiciAyarlar");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Isim).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.CronIfadesi).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Aciklama).HasMaxLength(500);
+                entity.Property(e => e.MesajSablonu).HasMaxLength(500);
+                entity.Property(e => e.OlusturmaTarihi).IsRequired();
             });
         }
     }
