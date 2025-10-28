@@ -30,8 +30,21 @@
                     
                     <div class="mb-3">
                         <label asp-for="Email" class="form-label"></label>
-                        <input asp-for="Email" type="email" class="form-control" placeholder="E-posta adresinizi girin" />
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                            <input asp-for="Email" type="email" class="form-control" placeholder="ornek@email.com" />
+                        </div>
                         <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+    
+                    <div class="mb-3">
+                        <label asp-for="Telefon" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                            <input asp-for="Telefon" type="tel" class="form-control" placeholder="0555 123 45 67" />
+                        </div>
+                        <span asp-validation-for="Telefon" class="text-danger"></span>
+                        <small class="form-text text-muted">Opsiyonel - Telefon numarasını girebilirsiniz</small>
                     </div>
     
                     <div class="row">

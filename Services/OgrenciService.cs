@@ -68,10 +68,12 @@ namespace StudentApp.Services
             existingOgrenci.OgrenciAdi = ogrenci.OgrenciAdi;
             existingOgrenci.OgrenciSoyadi = ogrenci.OgrenciSoyadi;
             existingOgrenci.Email = ogrenci.Email;
+            existingOgrenci.Telefon = ogrenci.Telefon;
             existingOgrenci.KayitTarihi = ogrenci.KayitTarihi;
             existingOgrenci.DogumTarihi = ogrenci.DogumTarihi;
             existingOgrenci.CinsiyetId = ogrenci.CinsiyetId;
             existingOgrenci.OdemePlanlariId = ogrenci.OdemePlanlariId;
+            existingOgrenci.Aciklama = ogrenci.Aciklama;
             existingOgrenci.Version++;
 
             await _context.SaveChangesAsync();

@@ -18,6 +18,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IOgrencilerService, OgrenciService>();
 builder.Services.AddScoped<IOdemePlanlariService, OdemePlanlariService>();
 builder.Services.AddScoped<ICinsiyetlerService, CinsiyetlerService>();
+builder.Services.AddScoped<IOgrenciOdemeTakvimiService, OgrenciOdemeTakvimiService>();
 
 // Add Daily Task Service and SMS Service
 builder.Services.AddScoped<IGunlukZamanlayiciService, GunlukZamanlayiciService>();
