@@ -18,19 +18,26 @@
     </div>
     <div>
       @if (ogrenciId.HasValue)
-      {
+  {
  <a asp-controller="Ogrenciler" asp-action="Index" class="btn btn-secondary me-2">
 <i class="fas fa-arrow-left me-1"></i>Öðrencilere Dön
     </a>
   <a asp-action="Create" asp-route-ogrenciId="@ogrenciId" class="btn btn-success">
    <i class="fas fa-plus me-1"></i>Yeni Ödeme Gir
       </a>
-        }
+     }
       else
         {
+   <form asp-action="RecalculateAllBorcs" method="post" class="d-inline me-2">
+        @Html.AntiForgeryToken()
+   <button type="submit" class="btn btn-info" 
+        onclick="return confirm('Tüm öðrencilerin kalan borç tutarlarýný yeniden hesaplamak istediðinizden emin misiniz? Bu iþlem birkaç saniye sürebilir.');">
+    <i class="fas fa-calculator me-1"></i>Tüm Borçlarý Yeniden Hesapla
+         </button>
+  </form>
    <a asp-controller="Ogrenciler" asp-action="Index" class="btn btn-primary">
                 <i class="fas fa-users me-1"></i>Öðrenci Seç
-            </a>
+     </a>
         }
     </div>
 </div>

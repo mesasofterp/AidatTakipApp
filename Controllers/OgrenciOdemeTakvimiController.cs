@@ -157,45 +157,45 @@ ViewBag.KalanBorc = kalanBorc;
      }
 
   return View(odeme);
-        }
+  }
 
-  // POST: OgrenciOdemeTakvimi/Edit/5
+        // POST: OgrenciOdemeTakvimi/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, OgrenciOdemeTakvimi odeme)
+   public async Task<IActionResult> Edit(long id, OgrenciOdemeTakvimi odeme)
         {
-      if (id != odeme.Id)
+   if (id != odeme.Id)
+  {
+          return NotFound();
+   }
+
+        if (ModelState.IsValid)
     {
+    try
+        {
+      var updatedOdeme = await _odemeService.UpdateOdemeAsync(odeme);
+if (updatedOdeme == null)
+     {
      return NotFound();
-    }
-
-  if (ModelState.IsValid)
- {
-        try
-        {
-       var updatedOdeme = await _odemeService.UpdateOdemeAsync(odeme);
-      if (updatedOdeme == null)
-    {
-       return NotFound();
-     }
-
-    TempData["SuccessMessage"] = "Ödeme baþarýyla güncellendi!";
-      return RedirectToAction(nameof(Index), new { ogrenciId = odeme.OgrenciId });
-  }
-       catch (Exception ex)
-   {
-      ModelState.AddModelError("", $"Ödeme güncellenirken bir hata oluþtu: {ex.Message}");
       }
-    }
+
+       TempData["SuccessMessage"] = "Ödeme baþarýyla güncellendi! Kalan borç tutarlarý yeniden hesaplandý.";
+           return RedirectToAction(nameof(Index), new { ogrenciId = odeme.OgrenciId });
+          }
+    catch (Exception ex)
+      {
+ ModelState.AddModelError("", $"Ödeme güncellenirken bir hata oluþtu: {ex.Message}");
+        }
+  }
 
    var ogrenci = await _ogrenciService.GetOgrenciByIdAsync(odeme.OgrenciId);
-    if (ogrenci != null)
-    {
-  ViewBag.OgrenciAdi = $"{ogrenci.OgrenciAdi} {ogrenci.OgrenciSoyadi}";
-    }
+  if (ogrenci != null)
+       {
+          ViewBag.OgrenciAdi = $"{ogrenci.OgrenciAdi} {ogrenci.OgrenciSoyadi}";
+   }
 
-  return View(odeme);
- }
+            return View(odeme);
+        }
 
         // GET: OgrenciOdemeTakvimi/Delete/5
         public async Task<IActionResult> Delete(long id)
@@ -220,23 +220,49 @@ ViewBag.KalanBorc = kalanBorc;
        var result = await _odemeService.DeleteOdemeAsync(id);
     if (result)
       {
-         TempData["SuccessMessage"] = "Ödeme baþarýyla silindi!";
+  TempData["SuccessMessage"] = "Ödeme baþarýyla silindi! Kalan borç tutarlarý yeniden hesaplandý.";
     if (odeme != null)
        {
       return RedirectToAction(nameof(Index), new { ogrenciId = odeme.OgrenciId });
-        }
-     }
+   }
+   }
   else
    {
   TempData["ErrorMessage"] = "Ödeme bulunamadý.";
   }
        }
-            catch (Exception ex)
+   catch (Exception ex)
   {
  TempData["ErrorMessage"] = "Ödeme silinirken bir hata oluþtu.";
        }
 
        return RedirectToAction(nameof(Index));
  }
+
+        // Utility: Tüm öðrenciler için kalan borcu yeniden hesapla
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+ public async Task<IActionResult> RecalculateAllBorcs()
+        {
+  try
+            {
+     var ogrenciler = await _ogrenciService.GetAllOgrenciAsync(true); // true = pasif öðrenciler dahil
+       int hesaplananOgrenciSayisi = 0;
+
+      foreach (var ogrenci in ogrenciler)
+       {
+         await _odemeService.RecalculateKalanBorcForOgrenciAsync(ogrenci.Id);
+          hesaplananOgrenciSayisi++;
+          }
+
+         TempData["SuccessMessage"] = $"Tüm öðrencilerin ({hesaplananOgrenciSayisi}) kalan borç tutarlarý baþarýyla yeniden hesaplandý!";
+            }
+     catch (Exception ex)
+  {
+TempData["ErrorMessage"] = $"Kalan borç hesaplanýrken bir hata oluþtu: {ex.Message}";
+            }
+
+  return RedirectToAction(nameof(Index));
+   }
     }
 }
