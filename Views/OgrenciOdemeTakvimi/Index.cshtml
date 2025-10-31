@@ -1,14 +1,14 @@
 @model IEnumerable<StudentApp.Models.OgrenciOdemeTakvimi>
 
 @{
-    ViewData["Title"] = "Ödeme Takvimleri";
+    ViewData["Title"] = "Ã–deme Takvimleri";
     var ogrenciAdi = ViewBag.OgrenciAdi as string;
     var ogrenciId = ViewBag.OgrenciId as long?;
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h2><i class="fas fa-money-check-alt me-2"></i>Ödeme Takvimleri</h2>
+        <h2><i class="fas fa-money-check-alt me-2"></i>Ã–deme Takvimleri</h2>
      @if (!string.IsNullOrEmpty(ogrenciAdi))
   {
      <p class="text-muted mb-0">
@@ -20,27 +20,80 @@
       @if (ogrenciId.HasValue)
   {
  <a asp-controller="Ogrenciler" asp-action="Index" class="btn btn-secondary me-2">
-<i class="fas fa-arrow-left me-1"></i>Öðrencilere Dön
+<i class="fas fa-arrow-left me-1"></i>Ã–ÄŸrencilere DÃ¶n
     </a>
   <a asp-action="Create" asp-route-ogrenciId="@ogrenciId" class="btn btn-success">
-   <i class="fas fa-plus me-1"></i>Yeni Ödeme Gir
+   <i class="fas fa-plus me-1"></i>Yeni Ã–deme Gir
       </a>
      }
       else
         {
-   <form asp-action="RecalculateAllBorcs" method="post" class="d-inline me-2">
+  <form asp-action="RecalculateAllBorcs" method="post" class="d-inline me-2">
         @Html.AntiForgeryToken()
    <button type="submit" class="btn btn-info" 
-        onclick="return confirm('Tüm öðrencilerin kalan borç tutarlarýný yeniden hesaplamak istediðinizden emin misiniz? Bu iþlem birkaç saniye sürebilir.');">
-    <i class="fas fa-calculator me-1"></i>Tüm Borçlarý Yeniden Hesapla
+        onclick="return confirm('TÃ¼m Ã¶ÄŸrencilerin kalan borÃ§ tutarlarÄ±nÄ± yeniden hesaplamak istediÄŸinizden emin misiniz? Bu iÅŸlem birkaÃ§ saniye sÃ¼rebilir.');">
+    <i class="fas fa-calculator me-1"></i>TÃ¼m BorÃ§larÄ± Yeniden Hesapla
          </button>
   </form>
    <a asp-controller="Ogrenciler" asp-action="Index" class="btn btn-primary">
-                <i class="fas fa-users me-1"></i>Öðrenci Seç
+                <i class="fas fa-users me-1"></i>Ã–ÄŸrenci SeÃ§
      </a>
         }
     </div>
 </div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-6">
+                <form asp-action="Index" method="get" class="d-flex align-items-end gap-2">
+                    <div class="flex-grow-1">
+                        <label class="form-label">Ã–ÄŸrenciye gÃ¶re filtrele</label>
+                        <select name="ogrenciId" class="form-select" id="ogrenciFilter">
+                            <option value="">TÃ¼mÃ¼</option>
+                            @if (ViewBag.OgrenciList != null)
+                            {
+                                foreach (var opt in (IEnumerable<SelectListItem>)ViewBag.OgrenciList)
+                                {
+                                    <option value="@opt.Value" selected="@(opt.Selected ? "selected" : null)">@opt.Text</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-outline-primary"><i class="fas fa-filter me-1"></i>Filtrele</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <form asp-action="ExportToExcel" method="post" class="d-inline me-2">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="ogrenciId" id="exportExcelOgrenciId" value="@(ogrenciId.HasValue ? ogrenciId.ToString() : "")" />
+                    <button type="submit" class="btn btn-success"><i class="fas fa-file-excel me-1"></i>Excel'e Aktar</button>
+                </form>
+                <form asp-action="ExportToPdf" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="ogrenciId" id="exportPdfOgrenciId" value="@(ogrenciId.HasValue ? ogrenciId.ToString() : "")" />
+                    <button type="submit" class="btn btn-danger"><i class="fas fa-file-pdf me-1"></i>PDF'e Aktar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+ </div>
+
+<script>
+    (function () {
+        var ddl = document.getElementById('ogrenciFilter');
+        var excelHidden = document.getElementById('exportExcelOgrenciId');
+        var pdfHidden = document.getElementById('exportPdfOgrenciId');
+        if (ddl && excelHidden && pdfHidden) {
+            ddl.addEventListener('change', function () {
+                excelHidden.value = ddl.value || '';
+                pdfHidden.value = ddl.value || '';
+            });
+        }
+    })();
+</script>
 
 @if (Model.Any())
 {
@@ -54,12 +107,12 @@
      <div class="card bg-success text-white">
    <div class="card-body">
      <h5 class="card-title">
- <i class="fas fa-check-circle me-2"></i>Toplam Ödenen
+ <i class="fas fa-check-circle me-2"></i>Toplam Ã–denen
      </h5>
   <h3 class="mb-0"><span style="font-family: Arial, sans-serif;">&#8378;</span> @toplamOdenen.ToString("N2")</h3>
  @if (!ogrenciId.HasValue)
       {
-      <small>Tüm öðrenciler</small>
+      <small>TÃ¼m Ã¶ÄŸrenciler</small>
          }
      </div>
      </div>
@@ -71,17 +124,17 @@
        <i class="fas fa-exclamation-circle me-2"></i>
     @if (ogrenciId.HasValue)
     {
-       <span>Kalan Borç</span>
+       <span>Kalan BorÃ§</span>
     }
    else
   {
-      <span>Toplam Kalan Borç</span>
+      <span>Toplam Kalan BorÃ§</span>
   }
            </h5>
   <h3 class="mb-0"><span style="font-family: Arial, sans-serif;">&#8378;</span> @sonBorc.ToString("N2")</h3>
     @if (!ogrenciId.HasValue)
      {
-      <small>Tüm aktif öðrenciler</small>
+      <small>TÃ¼m aktif Ã¶ÄŸrenciler</small>
    }
     </div>
     </div>
@@ -94,13 +147,13 @@
                 <tr>
       @if (!ogrenciId.HasValue)
     {
- <th>Öðrenci</th>
+ <th>Ã–ÄŸrenci</th>
    }
-       <th>Ödeme Tarihi</th>
-  <th>Ödenen Tutar</th>
-  <th>Kalan Borç</th>
- <th>Açýklama</th>
- <th class="text-center">Ýþlemler</th>
+       <th>Ã–deme Tarihi</th>
+  <th>Ã–denen Tutar</th>
+  <th>Kalan BorÃ§</th>
+ <th>AÃ§Ä±klama</th>
+ <th class="text-center">Ä°ÅŸlemler</th>
      </tr>
     </thead>
 <tbody>
@@ -149,11 +202,11 @@ else
          <td class="text-center">
        <div class="btn-group" role="group">
       <a asp-action="Details" asp-route-id="@item.Id" 
- class="btn btn-sm btn-outline-info" title="Detaylarý Görüntüle">
+ class="btn btn-sm btn-outline-info" title="DetaylarÄ± GÃ¶rÃ¼ntÃ¼le">
  <i class="fas fa-eye"></i>
        </a>
         <a asp-action="Edit" asp-route-id="@item.Id" 
-    class="btn btn-sm btn-outline-warning" title="Düzenle">
+    class="btn btn-sm btn-outline-warning" title="DÃ¼zenle">
     <i class="fas fa-edit"></i>
  </a>
         <a asp-action="Delete" asp-route-id="@item.Id" 
@@ -174,27 +227,27 @@ else
         <div style="font-family: Arial, sans-serif; font-size: 4rem; color: #6c757d; margin-bottom: 1rem;">
      &#8378;
       </div>
- <h4 class="text-muted">Ödeme kaydý bulunamadý</h4>
+   <h4 class="text-muted">Ã–deme kaydÄ± bulunamadÄ±</h4>
      <p class="text-muted">
     @if (!string.IsNullOrEmpty(ogrenciAdi))
  {
-       <span>Bu öðrenci için henüz ödeme kaydý bulunmuyor.</span>
+      <span>Bu Ã¶ÄŸrenci iÃ§in henÃ¼z Ã¶deme kaydÄ± bulunmuyor.</span>
       }
   else
  {
- <span>Ödeme giriþi için önce bir öðrenci seçmelisiniz.</span>
+      <span>Ã–deme giriÅŸi iÃ§in Ã¶nce bir Ã¶ÄŸrenci seÃ§melisiniz.</span>
      }
       </p>
    @if (ogrenciId.HasValue)
     {
     <a asp-action="Create" asp-route-ogrenciId="@ogrenciId" class="btn btn-success">
-     <i class="fas fa-plus me-1"></i>Ýlk Ödemeyi Gir
+     <i class="fas fa-plus me-1"></i>Ä°lk Ã–demeyi Gir
     </a>
     }
     else
      {
      <a asp-controller="Ogrenciler" asp-action="Index" class="btn btn-primary">
-            <i class="fas fa-users me-1"></i>Öðrenci Listesine Git
+            <i class="fas fa-users me-1"></i>Ã–ÄŸrenci Listesine Git
       </a>
         }
  </div>
