@@ -53,6 +53,10 @@ namespace StudentApp.Services
 
             _context.Ogrenciler.Add(ogrenci);
             await _context.SaveChangesAsync();
+
+            // Öðrenci oluþturulduktan sonra taksitleri oluþtur
+            await CreateTaksitlerForOgrenciAsync(ogrenci.Id);
+
             return ogrenci;
         }
 
@@ -115,6 +119,71 @@ namespace StudentApp.Services
             await _context.SaveChangesAsync();
 
             return true;
+        }
+
+        /// <summary>
+        /// Öðrenci için ödeme planýna göre taksit kayýtlarý oluþturur
+        /// </summary>
+        public async Task CreateTaksitlerForOgrenciAsync(long ogrenciId)
+        {
+            var ogrenci = await _context.Ogrenciler
+                .Include(o => o.OdemePlanlari)
+                .FirstOrDefaultAsync(o => o.Id == ogrenciId && !o.IsDeleted);
+
+            if (ogrenci == null || ogrenci.OdemePlanlari == null || ogrenci.OdemePlanlari.IsDeleted)
+                return;
+
+            var odemePlani = ogrenci.OdemePlanlari;
+
+            // Taksit sayýsý ve toplam tutar
+            int taksitSayisi = odemePlani.Taksit;
+            decimal toplamTutar = odemePlani.Tutar;
+
+            // Taksit baþýna düþen tutar
+            decimal taksitTutari = Math.Round(toplamTutar / taksitSayisi, 2);
+
+            // Vade hesaplama: Vade varsa taksite böl, yoksa varsayýlan 30 gün
+            int vadeSuresi = odemePlani.Vade.HasValue ? odemePlani.Vade.Value : (taksitSayisi * 30);
+            int taksitBasinaGun = vadeSuresi / taksitSayisi;
+
+            // Baþlangýç tarihi olarak kayýt tarihi
+            DateTime baslangicTarihi = ogrenci.KayitTarihi;
+
+            // Kalan borç takibi
+            decimal kalanBorc = toplamTutar;
+
+            // Taksitleri oluþtur
+            for (int i = 1; i <= taksitSayisi; i++)
+            {
+                // Son taksitte kalan tutarý tam olarak hesapla (yuvarlama farký için)
+                decimal buTaksitTutari = (i == taksitSayisi) ? kalanBorc : taksitTutari;
+
+                // Taksit son ödeme tarihi
+                DateTime sonOdemeTarihi = baslangicTarihi.AddDays(i * taksitBasinaGun);
+
+                var taksit = new OgrenciOdemeTakvimi
+                {
+                    OgrenciId = ogrenciId,
+                    TaksitNo = i,
+                    TaksitTutari = buTaksitTutari,  // Taksit tutarýný sakla
+                    SonOdemeTarihi = sonOdemeTarihi,
+                    OdenenTutar = 0, // Henüz ödenmedi
+                    BorcTutari = kalanBorc,
+                    Odendi = false,
+                    OdemeTarihi = null, // Ödeme yapýlmadý
+                    OlusturmaTarihi = DateTime.Now,
+                    Aktif = true,
+                    IsDeleted = false,
+                    Version = 0
+                };
+
+                _context.OgrenciOdemeTakvimi.Add(taksit);
+
+                // Kalan borcu güncelle
+                kalanBorc -= buTaksitTutari;
+            }
+
+            await _context.SaveChangesAsync();
         }
     }
 }

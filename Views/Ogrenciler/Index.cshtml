@@ -341,9 +341,9 @@ function togglePasif(showPasif) {
  <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning" title="Düzenle">
       <i class="fas fa-edit"></i>
   </a>
-    <a asp-controller="OgrenciOdemeTakvimi" asp-action="Create" asp-route-ogrenciId="@item.Id" class="btn btn-sm btn-outline-success" title="Ödeme Gir">
-  <span style="font-family: Arial, sans-serif; font-weight: bold;">&#8378;</span>
-  </a>
+           <a asp-controller="OgrenciOdemeTakvimi" asp-action="Index" asp-route-ogrenciId="@item.Id" class="btn btn-sm btn-outline-primary" title="Ödemeler">
+                <i class="fas fa-money-bill-wave me-1"></i>Ödemeler
+     </a>
     @if (item.Aktif)
 {
 <form asp-action="ToggleAktif" method="post" class="d-inline">
