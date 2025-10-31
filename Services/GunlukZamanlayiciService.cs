@@ -73,6 +73,8 @@ public class GunlukZamanlayiciService : IGunlukZamanlayiciService
             .ToListAsync();
 
         var smsList = new List<(string phone, string message, long ogrenciId)>();
+        var activeSettings = await _schedulerService.GetActiveSchedulerAsync();
+        var template = activeSettings?.MesajSablonu ?? "Sayın [ÖĞRENCİ_ADI] [ÖĞRENCİ_SOYADI], ödemeniz [REFERANS_TARIH] tarihinden beri yapılmamıştır. Lütfen ödemenizi yapınız.";
         var logDetay = new List<string>();
 
         foreach (var ogrenci in ogrenciler)
@@ -100,7 +102,21 @@ public class GunlukZamanlayiciService : IGunlukZamanlayiciService
                 continue;
             }
 
-            string mesaj = $"Sayın {ogrenci.OgrenciAdi} {ogrenci.OgrenciSoyadi}, ödemeniz {referansTarih:dd.MM.yyyy} tarihinden beri yapılmamıştır. Lütfen ödemenizi yapınız.";
+            // Borç tutarı: son ödeme kaydındaki kalan borç, yoksa plan tutarı
+            var ogrenciOdemeleriOrdered = ogrenciOdemeleri
+                .OrderByDescending(x => x.OdemeTarihi)
+                .ThenByDescending(x => x.Id)
+                .ToList();
+            var lastPayment = ogrenciOdemeleriOrdered.FirstOrDefault();
+            var borc = lastPayment?.BorcTutari ?? (ogrenci.OdemePlanlari?.Tutar ?? 0m);
+            var days = (today - referansTarih.Date).Days;
+
+            string mesaj = template
+                .Replace("[ÖĞRENCİ_ADI]", ogrenci.OgrenciAdi ?? "")
+                .Replace("[ÖĞRENCİ_SOYADI]", ogrenci.OgrenciSoyadi ?? "")
+                .Replace("[GEÇEN_GÜN]", days.ToString())
+                .Replace("[BORÇ_TUTARI]", borc.ToString("N2"))
+                .Replace("[REFERANS_TARIH]", referansTarih.ToString("dd.MM.yyyy"));
             smsList.Add((ogrenci.Telefon, mesaj, ogrenci.Id));
         }
 

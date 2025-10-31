@@ -18,19 +18,22 @@ namespace StudentApp.Controllers
         private readonly ICinsiyetlerService _cinsiyetlerService;
         private readonly ISmsService _smsService;
         private readonly StudentApp.Data.AppDbContext _context;
+        private readonly IZamanlayiciService _schedulerService;
 
         public OgrencilerController(
             IOgrencilerService ogrencilerService,
             IOdemePlanlariService odemePlanlariService,
             ICinsiyetlerService cinsiyetlerService,
             ISmsService smsService,
-            StudentApp.Data.AppDbContext context)
+            StudentApp.Data.AppDbContext context,
+            IZamanlayiciService schedulerService)
         {
             _ogrenciService = ogrencilerService;
             _odemePlanlariService = odemePlanlariService;
             _cinsiyetlerService = cinsiyetlerService;
             _smsService = smsService;
             _context = context;
+            _schedulerService = schedulerService;
         }
 
         // GET: Student
@@ -304,19 +307,24 @@ private async Task LoadDropdownsAsync()
                 }
 
                 var today = DateTime.Today;
+                var activeSettings = await _schedulerService.GetActiveSchedulerAsync();
+                var template = activeSettings?.MesajSablonu ?? "Sayın [ÖĞRENCİ_ADI] [ÖĞRENCİ_SOYADI], ödemeniz [REFERANS_TARIH] tarihinden beri yapılmamıştır. Lütfen ödemenizi yapınız.";
 
                 var students = await _context.Ogrenciler
+                    .Include(s => s.OdemePlanlari)
                     .Where(s => selectedIds.Contains(s.Id))
-                    .Select(s => new { s.Id, s.OgrenciAdi, s.OgrenciSoyadi, s.Telefon, s.KayitTarihi, s.SonSmsTarihi })
+                    .Select(s => new { s.Id, s.OgrenciAdi, s.OgrenciSoyadi, s.Telefon, s.KayitTarihi, s.SonSmsTarihi, PlanTutar = (decimal?)s.OdemePlanlari.Tutar })
                     .ToListAsync();
 
                 var latestPayments = await _context.OgrenciOdemeTakvimi
-                    .Where(p => selectedIds.Contains(p.OgrenciId) && p.OdemeTarihi != null)
-                    .GroupBy(p => p.OgrenciId)
-                    .Select(g => new { OgrenciId = g.Key, LastPayment = g.Max(x => x.OdemeTarihi) })
+                    .Where(p => selectedIds.Contains(p.OgrenciId) && !p.IsDeleted && p.OdemeTarihi != null)
+                    .OrderByDescending(p => p.OdemeTarihi).ThenByDescending(p => p.Id)
                     .ToListAsync();
 
-                var paymentLookup = latestPayments.ToDictionary(x => x.OgrenciId, x => x.LastPayment);
+                var paymentLookup = latestPayments
+                    .GroupBy(x => x.OgrenciId)
+                    .Select(g => g.First())
+                    .ToDictionary(x => x.OgrenciId, x => x);
 
                 var smsList = new List<(string phone, string message)>();
                 var updatableIds = new List<long>();
@@ -326,11 +334,17 @@ private async Task LoadDropdownsAsync()
                     if (string.IsNullOrWhiteSpace(s.Telefon))
                         continue;
 
-                    var referenceDate = paymentLookup.TryGetValue(s.Id, out var last)
-                        ? last!.Value
-                        : s.KayitTarihi;
+                    var lastPay = paymentLookup.TryGetValue(s.Id, out var last) ? last : null;
+                    var referenceDate = lastPay?.OdemeTarihi?.Date ?? s.KayitTarihi.Date;
+                    var days = (today - referenceDate).Days;
+                    var borc = lastPay?.BorcTutari ?? (s.PlanTutar ?? 0m);
 
-                    var message = $"Sayın {s.OgrenciAdi} {s.OgrenciSoyadi}, ödemeniz {referenceDate:dd.MM.yyyy} tarihinden beri yapılmamıştır. Lütfen ödemenizi yapınız.";
+                    var message = template
+                        .Replace("[ÖĞRENCİ_ADI]", s.OgrenciAdi ?? "")
+                        .Replace("[ÖĞRENCİ_SOYADI]", s.OgrenciSoyadi ?? "")
+                        .Replace("[GEÇEN_GÜN]", days.ToString())
+                        .Replace("[BORÇ_TUTARI]", borc.ToString("N2"))
+                        .Replace("[REFERANS_TARIH]", referenceDate.ToString("dd.MM.yyyy"));
                     smsList.Add((s.Telefon!, message));
                     updatableIds.Add(s.Id);
                 }
