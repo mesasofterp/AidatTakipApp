@@ -22,6 +22,9 @@ namespace StudentApp.Models
         [DataType(DataType.Date)]
         public DateTime? SonOdemeTarihi { get; set; }
 
+        [Display(Name = "Ödendi")]
+     public bool Odendi { get; set; } = false;
+
         [Required(ErrorMessage = "Ödenen tutar zorunludur")]
         [Range(0.01, double.MaxValue, ErrorMessage = "Ödenen tutar 0'dan büyük olmalıdır")]
         [Display(Name = "Ödenen Tutar")]
@@ -33,6 +36,13 @@ namespace StudentApp.Models
     [Display(Name = "Kalan Borç")]
         [DisplayFormat(DataFormatString = "{0:C2}", ApplyFormatInEditMode = false)]
         public decimal BorcTutari { get; set; }
+
+        [Display(Name = "Taksit Numarası")]
+  public int? TaksitNo { get; set; }
+
+        [Display(Name = "Taksit Tutarı")]
+     [DisplayFormat(DataFormatString = "{0:C2}", ApplyFormatInEditMode = false)]
+        public decimal? TaksitTutari { get; set; }
 
         // Navigation property
         [ValidateNever]

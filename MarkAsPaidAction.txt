@@ -1,0 +1,38 @@
+
+        // POST: OgrenciOdemeTakvimi/MarkAsPaid
+        [HttpPost]
+  [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MarkAsPaid(long id, long? ogrenciId)
+        {
+         try
+            {
+   var odeme = await _odemeService.GetOdemeByIdAsync(id);
+          if (odeme == null)
+       {
+ TempData["ErrorMessage"] = "Ödeme kaydý bulunamadý.";
+       return RedirectToAction(nameof(Index), new { ogrenciId });
+             }
+
+                // Taksit tutarýný ödenen tutar olarak ata
+    odeme.OdenenTutar = odeme.TaksitTutari ?? 0;
+                odeme.OdemeTarihi = DateTime.Now;
+     odeme.Odendi = true;
+
+     var updatedOdeme = await _odemeService.UpdateOdemeAsync(odeme);
+         if (updatedOdeme != null)
+      {
+   TempData["SuccessMessage"] = $"Taksit {odeme.TaksitNo} baþarýyla ödendi olarak iþaretlendi!";
+    }
+     else
+      {
+        TempData["ErrorMessage"] = "Ödeme güncellenirken bir hata oluþtu.";
+      }
+
+      return RedirectToAction(nameof(Index), new { ogrenciId = odeme.OgrenciId });
+            }
+            catch (Exception ex)
+     {
+          TempData["ErrorMessage"] = $"Ýþlem sýrasýnda bir hata oluþtu: {ex.Message}";
+         return RedirectToAction(nameof(Index), new { ogrenciId });
+         }
+ }

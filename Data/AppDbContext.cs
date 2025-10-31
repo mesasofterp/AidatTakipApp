@@ -72,6 +72,7 @@ namespace StudentApp.Data
                 entity.Property(e => e.SonOdemeTarihi);
                 entity.Property(e => e.OdenenTutar).HasColumnType("decimal(18,2)").IsRequired();
                 entity.Property(e => e.BorcTutari).HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.TaksitTutari).HasColumnType("decimal(18,2)");
 
                 // Foreign key relationship
                 entity.HasOne(e => e.Ogrenci)

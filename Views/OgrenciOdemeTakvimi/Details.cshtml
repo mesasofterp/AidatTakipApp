@@ -16,21 +16,69 @@
       {
         <dt class="col-sm-4">Öðrenci</dt>
      <dd class="col-sm-8">
-            <i class="fas fa-user-circle me-1"></i>
+         <i class="fas fa-user-circle me-1"></i>
     @Model.Ogrenci.OgrenciAdi @Model.Ogrenci.OgrenciSoyadi
       </dd>
  }
 
-        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.OdemeTarihi)</dt>
-       <dd class="col-sm-8">
-    @if (Model.OdemeTarihi.HasValue)
-           {
-      <i class="fas fa-calendar me-1"></i>@Model.OdemeTarihi.Value.ToString("dd MMMM yyyy")
+    @if (Model.TaksitNo.HasValue)
+       {
+ <dt class="col-sm-4">Taksit Numarasý</dt>
+ <dd class="col-sm-8">
+     <span class="badge bg-primary fs-5">Taksit @Model.TaksitNo</span>
+   </dd>
+ }
+
+       @if (Model.TaksitTutari.HasValue)
+ {
+  <dt class="col-sm-4">@Html.DisplayNameFor(model => model.TaksitTutari)</dt>
+    <dd class="col-sm-8">
+      <div class="card bg-info text-white d-inline-block px-3 py-2">
+     <h5 class="mb-0" style="font-family: Arial, sans-serif;">
+     &#8378; @Model.TaksitTutari.Value.ToString("N2")
+    </h5>
+   <small>Olmasý gereken tutar</small>
+    </div>
+       </dd>
+ }
+
+       @if (Model.SonOdemeTarihi.HasValue)
+ {
+ <dt class="col-sm-4">Son Ödeme Tarihi</dt>
+     <dd class="col-sm-8">
+   <i class="fas fa-calendar-check me-1"></i>@Model.SonOdemeTarihi.Value.ToString("dd MMMM yyyy")
+  @if (!Model.Odendi)
+  {
+      var bugun = DateTime.Today;
+    var sonTarih = Model.SonOdemeTarihi.Value.Date;
+   var gecikmeGunu = (bugun - sonTarih).Days;
+       
+if (gecikmeGunu > 0)
+      {
+   <br/><span class="badge bg-danger mt-1">
+<i class="fas fa-exclamation-triangle me-1"></i>@gecikmeGunu gün gecikme
+  </span>
+    }
+     else if (gecikmeGunu == 0)
+       {
+      <br/><span class="badge bg-warning text-dark mt-1">
+    <i class="fas fa-clock me-1"></i>Bugün son gün
+   </span>
+         }
+  }
+   </dd>
      }
+
+        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.OdemeTarihi)</dt>
+   <dd class="col-sm-8">
+    @if (Model.OdemeTarihi.HasValue)
+       {
+  <i class="fas fa-calendar me-1"></i>@Model.OdemeTarihi.Value.ToString("dd MMMM yyyy")
+ }
   else
     {
-     <span class="text-muted">Belirtilmemiþ</span>
-         }
+   <span class="text-muted">Belirtilmemiþ</span>
+      }
     </dd>
 
      <dt class="col-sm-4">@Html.DisplayNameFor(model => model.OdenenTutar)</dt>
@@ -39,7 +87,7 @@
      <h5 class="mb-0" style="font-family: Arial, sans-serif;">
    &#8378; @Model.OdenenTutar.ToString("N2")
     </h5>
-      </div>
+    </div>
        </dd>
 
     <dt class="col-sm-4">@Html.DisplayNameFor(model => model.BorcTutari)</dt>
@@ -47,12 +95,28 @@
    <div class="card bg-warning text-dark d-inline-block px-3 py-2">
        <h5 class="mb-0" style="font-family: Arial, sans-serif;">
           &#8378; @Model.BorcTutari.ToString("N2")
-            </h5>
+   </h5>
      </div>
   </dd>
 
+      <dt class="col-sm-4">Ödeme Durumu</dt>
+     <dd class="col-sm-8">
+        @if (Model.Odendi)
+ {
+         <span class="badge bg-success fs-5">
+     <i class="fas fa-check-circle me-1"></i>Ödendi
+      </span>
+     }
+       else
+    {
+      <span class="badge bg-warning text-dark fs-5">
+    <i class="fas fa-hourglass-half me-1"></i>Ödeme Bekliyor
+      </span>
+       }
+  </dd>
+
      @if (!string.IsNullOrWhiteSpace(Model.Aciklama))
-        {
+   {
       <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Aciklama)</dt>
         <dd class="col-sm-8">@Html.DisplayFor(model => model.Aciklama)</dd>
   }

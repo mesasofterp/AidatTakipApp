@@ -102,6 +102,9 @@ namespace StudentApp.Migrations
                     b.Property<DateTime?>("OdemeTarihi")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("Odendi")
+                        .HasColumnType("bit");
+
                     b.Property<decimal>("OdenenTutar")
                         .HasColumnType("decimal(18,2)");
 
@@ -113,6 +116,12 @@ namespace StudentApp.Migrations
 
                     b.Property<DateTime?>("SonOdemeTarihi")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("TaksitNo")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("TaksitTutari")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Version")
                         .HasColumnType("int");

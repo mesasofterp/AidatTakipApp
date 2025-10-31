@@ -77,6 +77,17 @@ var yas = today.Year - o.DogumTarihi.Year;
   });
      }
 
+    // Kayıt Tarihi filtreleme
+ if (filter.BaslangicKayitTarihi.HasValue || filter.BitisKayitTarihi.HasValue)
+            {
+      ogrenciler = ogrenciler.Where(o =>
+      {
+ var baslangicOk = !filter.BaslangicKayitTarihi.HasValue || o.KayitTarihi.Date >= filter.BaslangicKayitTarihi.Value.Date;
+  var bitisOk = !filter.BitisKayitTarihi.HasValue || o.KayitTarihi.Date <= filter.BitisKayitTarihi.Value.Date;
+return baslangicOk && bitisOk;
+                });
+    }
+
    // Sıralama
   ogrenciler = filter.SortBy?.ToLower() switch
    {
@@ -105,6 +116,8 @@ var yas = today.Year - o.DogumTarihi.Year;
   OdemePlanlariId = filter.OdemePlanlariId,
   MinYas = filter.MinYas,
  MaxYas = filter.MaxYas,
+            BaslangicKayitTarihi = filter.BaslangicKayitTarihi,
+       BitisKayitTarihi = filter.BitisKayitTarihi,
         ShowPasif = filter.ShowPasif,
    SortBy = filter.SortBy ?? "OgrenciSoyadi",
  SortOrder = filter.SortOrder ?? "asc",

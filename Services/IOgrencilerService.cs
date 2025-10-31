@@ -11,5 +11,6 @@ namespace StudentApp.Services
         Task<Ogrenciler?> UpdateOgrenciAsync(Ogrenciler ogrenci);
         Task<bool> DeleteOgrenciAsync(long id);
         Task<bool> ToggleAktifAsync(long id, bool aktif);
+        Task CreateTaksitlerForOgrenciAsync(long ogrenciId);
     }
 }
