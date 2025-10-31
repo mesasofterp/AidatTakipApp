@@ -23,6 +23,7 @@ builder.Services.AddScoped<IOgrenciOdemeTakvimiService, OgrenciOdemeTakvimiServi
 // Add Daily Task Service and SMS Service
 builder.Services.AddScoped<IGunlukZamanlayiciService, GunlukZamanlayiciService>();
 builder.Services.AddSingleton<ISmsService, SmsService>();
+builder.Services.AddHttpClient();
 
 // Add Quartz.NET
 builder.Services.AddQuartz(q =>

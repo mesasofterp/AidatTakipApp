@@ -168,6 +168,9 @@ namespace StudentApp.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<DateTime?>("SonSmsTarihi")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Telefon")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");

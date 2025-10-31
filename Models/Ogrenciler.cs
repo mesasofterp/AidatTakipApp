@@ -38,6 +38,8 @@ namespace StudentApp.Models
         [DataType(DataType.Date)]
         public DateTime DogumTarihi { get; set; }
 
+        public DateTime? SonSmsTarihi { get; set; }
+
         [Required(ErrorMessage = "Ödeme planı seçimi zorunludur")]
         [Display(Name = "Ödeme Planı")]
         public long OdemePlanlariId { get; set; }
