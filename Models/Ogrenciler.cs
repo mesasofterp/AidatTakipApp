@@ -28,6 +28,23 @@ namespace StudentApp.Models
         [Display(Name = "Telefon")]
         public string? Telefon { get; set; }
 
+        [StringLength(11, MinimumLength = 11, ErrorMessage = "TC Kimlik No 11 haneli olmalıdır")]
+        [RegularExpression("^[0-9]{11}$", ErrorMessage = "TC Kimlik No sadece rakamlardan oluşmalıdır")]
+        [Display(Name = "TC Kimlik No")]
+        public string? TCNO { get; set; }
+
+        [Range(0, 300, ErrorMessage = "Boy 0-300 cm arasında olmalıdır")]
+        [Display(Name = "Boy (cm)")]
+        public int? Boy { get; set; }
+
+        [Range(0, 500, ErrorMessage = "Kilo 0-500 kg arasında olmalıdır")]
+        [Display(Name = "Kilo (kg)")]
+        public decimal? Kilo { get; set; }
+
+        [StringLength(500, ErrorMessage = "Adres 500 karakterden fazla olamaz")]
+        [Display(Name = "Adres")]
+        public string? Adres { get; set; }
+
         [Required(ErrorMessage = "Kayıt tarihi zorunludur")]
         [Display(Name = "Kayıt Tarihi")]
         [DataType(DataType.Date)]
@@ -49,6 +66,7 @@ namespace StudentApp.Models
         public long CinsiyetId { get; set; }
 
         [ValidateNever]
+        [Display(Name = "Ödeme Planı")]
         public OdemePlanlari OdemePlanlari { get; set; }
         
         [ValidateNever]

@@ -135,8 +135,15 @@ namespace StudentApp.Migrations
                     b.Property<string>("Aciklama")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Adres")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<bool>("Aktif")
                         .HasColumnType("bit");
+
+                    b.Property<int?>("Boy")
+                        .HasColumnType("int");
 
                     b.Property<long>("CinsiyetId")
                         .HasColumnType("bigint");
@@ -155,6 +162,9 @@ namespace StudentApp.Migrations
                     b.Property<DateTime>("KayitTarihi")
                         .HasColumnType("datetime2");
 
+                    b.Property<decimal?>("Kilo")
+                        .HasColumnType("decimal(5,2)");
+
                     b.Property<long>("OdemePlanlariId")
                         .HasColumnType("bigint");
 
@@ -170,6 +180,10 @@ namespace StudentApp.Migrations
 
                     b.Property<DateTime?>("SonSmsTarihi")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("TCNO")
+                        .HasMaxLength(11)
+                        .HasColumnType("nvarchar(11)");
 
                     b.Property<string>("Telefon")
                         .HasMaxLength(20)

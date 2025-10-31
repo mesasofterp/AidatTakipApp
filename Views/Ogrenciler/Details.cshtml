@@ -5,143 +5,227 @@
     var yas = DateTime.Now.Year - Model.DogumTarihi.Year;
     if (DateTime.Now.DayOfYear < Model.DogumTarihi.DayOfYear)
     {
-    yas--;
+        yas--;
+  }
+    
+    // VKİ (Vücut Kitle İndeksi) hesaplama
+    decimal? vki = null;
+    if (Model.Boy.HasValue && Model.Kilo.HasValue && Model.Boy.Value > 0)
+    {
+        var boyMetre = Model.Boy.Value / 100.0m;
+        vki = Model.Kilo.Value / (boyMetre * boyMetre);
     }
 }
 
 <div class="row justify-content-center">
-    <div class="col-md-8">
-      <div class="card">
-   <div class="card-header">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
        <h4><i class="fas fa-user me-2"></i>Öğrenci Detayları</h4>
-      </div>
-       <div class="card-body">
-     <dl class="row">
-     <dt class="col-sm-4">@Html.DisplayNameFor(model => model.OgrenciAdi)</dt>
+    </div>
+            <div class="card-body">
+   <h5 class="mb-3"><i class="fas fa-user me-2"></i>Kişisel Bilgiler</h5>
+           <dl class="row">
+             <dt class="col-sm-4">@Html.DisplayNameFor(model => model.OgrenciAdi)</dt>
 <dd class="col-sm-8">
-      <i class="fas fa-user-circle me-1"></i>@Html.DisplayFor(model => model.OgrenciAdi)
-  </dd>
-      
-    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.OgrenciSoyadi)</dt>
-  <dd class="col-sm-8">@Html.DisplayFor(model => model.OgrenciSoyadi)</dd>
-           
-    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Email)</dt>
-    <dd class="col-sm-8">
-      <a href="mailto:@Model.Email" class="text-decoration-none">
-   <i class="fas fa-envelope me-1"></i>@Html.DisplayFor(model => model.Email)
-     </a>
+ <i class="fas fa-user-circle me-1"></i>@Html.DisplayFor(model => model.OgrenciAdi)
+      </dd>
+  
+            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.OgrenciSoyadi)</dt>
+         <dd class="col-sm-8">@Html.DisplayFor(model => model.OgrenciSoyadi)</dd>
+    
+       @if (!string.IsNullOrWhiteSpace(Model.TCNO))
+      {
+   <dt class="col-sm-4">@Html.DisplayNameFor(model => model.TCNO)</dt>
+         <dd class="col-sm-8">
+          <i class="fas fa-id-card me-1"></i>@Html.DisplayFor(model => model.TCNO)
+    </dd>
+ }
+             
+         <dt class="col-sm-4">@Html.DisplayNameFor(model => model.DogumTarihi)</dt>
+  <dd class="col-sm-8">
+     @Model.DogumTarihi.ToString("dd.MM.yyyy")
+          <span class="badge bg-info ms-2">@yas yaşında</span>
      </dd>
+
+         <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Cinsiyet)</dt>
+                <dd class="col-sm-8">
+ @if (Model.Cinsiyet != null)
+         {
+          <i class="fas @(Model.Cinsiyet.Cinsiyet == "Erkek" ? "fa-mars text-primary" : Model.Cinsiyet.Cinsiyet == "Kadın" ? "fa-venus text-danger" : "fa-genderless text-secondary") me-1"></i>
+              <strong>@Model.Cinsiyet.Cinsiyet</strong>
+   }
+        else
+          {
+   <span class="text-muted">Belirtilmemiş</span>
+       }
+   </dd>
+     
+     <dt class="col-sm-4">@Html.DisplayNameFor(model => model.KayitTarihi)</dt>
+            <dd class="col-sm-8">
+        <i class="fas fa-calendar me-1"></i>@Model.KayitTarihi.ToString("dd.MM.yyyy")
+            </dd>
+   </dl>
+
+              <hr class="my-4" />
+     <h5 class="mb-3"><i class="fas fa-address-card me-2"></i>İletişim Bilgileri</h5>
+    <dl class="row">
+         <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Email)</dt>
+     <dd class="col-sm-8">
+        <a href="mailto:@Model.Email" class="text-decoration-none">
+         <i class="fas fa-envelope me-1"></i>@Html.DisplayFor(model => model.Email)
+ </a>
+           </dd>
 
        @if (!string.IsNullOrWhiteSpace(Model.Telefon))
-    {
-        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Telefon)</dt>
-        <dd class="col-sm-8">
-         <a href="tel:@Model.Telefon" class="text-decoration-none">
-        <i class="fas fa-phone me-1"></i>@Html.DisplayFor(model => model.Telefon)
-            </a>
-        </dd>
-}
-
- <dt class="col-sm-4">@Html.DisplayNameFor(model => model.DogumTarihi)</dt>
-      <dd class="col-sm-8">
-     @Model.DogumTarihi.ToString("dd.MM.yyyy")
-     <span class="badge bg-info ms-2">@yas yaşında</span>
-     </dd>
-
-    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Cinsiyet)</dt>
-  <dd class="col-sm-8">
-    @if (Model.Cinsiyet != null)
-    {
-      <i class="fas @(Model.Cinsiyet.Cinsiyet == "Erkek" ? "fa-mars text-primary" : Model.Cinsiyet.Cinsiyet == "Kadın" ? "fa-venus text-danger" : "fa-genderless text-secondary") me-1"></i>
-       <strong>@Model.Cinsiyet.Cinsiyet</strong>
-             }
-    else
-      {
-        <span class="text-muted">Belirtilmemiş</span>
-   }
-   </dd>
-
-            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.OdemePlanlari)</dt>
-         <dd class="col-sm-8">
-       @if (Model.OdemePlanlari != null)
-   {
-      <div class="card bg-light">
-        <div class="card-body p-3">
-    <h6 class="mb-2">
-         <i class="fas fa-book me-1"></i>@Model.OdemePlanlari.KursProgrami
-     </h6>
-<div class="row">
-       <div class="col-md-4">
-   <small class="text-muted d-block">Toplam Tutar</small>
-  <strong class="text-success">₺ @Model.OdemePlanlari.Tutar.ToString("N2")</strong>
-    </div>
-       <div class="col-md-4">
-<small class="text-muted d-block">Taksit Sayısı</small>
-   <span class="badge bg-primary">@Model.OdemePlanlari.Taksit Taksit</span>
-   </div>
-     <div class="col-md-4">
-     <small class="text-muted d-block">Taksit Tutarı</small>
-  <strong class="text-info">₺ @Model.OdemePlanlari.TaksitTutari.ToString("N2")</strong>
-   </div>
-   </div>
-   @if (Model.OdemePlanlari.Vade.HasValue)
-  {
-      <div class="mt-2">
-       <small class="text-muted">Vade:</small>
-           <span class="badge bg-warning text-dark ms-1">@Model.OdemePlanlari.Vade gün</span>
-      </div>
-      }
-       </div>
-   </div>
-      }
-      else
-    {
-         <span class="text-muted">Belirtilmemiş</span>
-       }
-         </dd>
-  
-       <dt class="col-sm-4">@Html.DisplayNameFor(model => model.KayitTarihi)</dt>
-   <dd class="col-sm-8">
-<i class="fas fa-calendar me-1"></i>@Model.KayitTarihi.ToString("dd.MM.yyyy")
-  </dd>
-
-    @if (!string.IsNullOrWhiteSpace(Model.Aciklama))
-  {
-     <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Aciklama)</dt>
-    <dd class="col-sm-8">@Html.DisplayFor(model => model.Aciklama)</dd>
-       }
-
-   <dt class="col-sm-4">Durum</dt>
-      <dd class="col-sm-8">
-  @if (Model.Aktif)
-     {
-    <span class="badge bg-success">
-    <i class="fas fa-check me-1"></i>Aktif
-  </span>
-  }
-      else
-      {
-    <span class="badge bg-secondary">
-       <i class="fas fa-times me-1"></i>Pasif
-        </span>
+               {
+ <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Telefon)</dt>
+           <dd class="col-sm-8">
+        <a href="tel:@Model.Telefon" class="text-decoration-none">
+         <i class="fas fa-phone me-1"></i>@Html.DisplayFor(model => model.Telefon)
+   </a>
+              </dd>
      }
-</dd>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Adres))
+          {
+    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Adres)</dt>
+    <dd class="col-sm-8">
+        <i class="fas fa-map-marker-alt me-1"></i>@Html.DisplayFor(model => model.Adres)
+  </dd>
+    }
+       </dl>
+
+      @if (Model.Boy.HasValue || Model.Kilo.HasValue)
+          {
+   <hr class="my-4" />
+        <h5 class="mb-3"><i class="fas fa-heartbeat me-2"></i>Fiziksel Bilgiler</h5>
+     <dl class="row">
+      @if (Model.Boy.HasValue)
+        {
+        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Boy)</dt>
+       <dd class="col-sm-8">
+             <span class="badge bg-info">@Model.Boy cm</span>
+   </dd>
+            }
+       
+            @if (Model.Kilo.HasValue)
+              {
+         <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Kilo)</dt>
+          <dd class="col-sm-8">
+      <span class="badge bg-info">@Model.Kilo.Value.ToString("F1") kg</span>
+   </dd>
+    }
+  
+        @if (vki.HasValue)
+            {
+       <dt class="col-sm-4">Vücut Kitle İndeksi (VKİ)</dt>
+         <dd class="col-sm-8">
+  <span class="badge @(vki.Value < 18.5m ? "bg-warning" : vki.Value < 25m ? "bg-success" : vki.Value < 30m ? "bg-warning" : "bg-danger")">
+    @vki.Value.ToString("F2")
+           </span>
+   <small class="text-muted ms-2">
+          @if (vki.Value < 18.5m)
+{
+     <span>(Zayıf)</span>
+         }
+              else if (vki.Value < 25m)
+         {
+       <span>(Normal)</span>
+       }
+   else if (vki.Value < 30m)
+  {
+    <span>(Fazla Kilolu)</span>
+       }
+  else
+       {
+             <span>(Obez)</span>
+        }
+       </small>
+         </dd>
+   }
+            </dl>
+          }
+
+           <hr class="my-4" />
+          <h5 class="mb-3"><i class="fas fa-credit-card me-2"></i>Ödeme Bilgileri</h5>
+           <dl class="row">
+          <dt class="col-sm-4">@Html.DisplayNameFor(model => model.OdemePlanlari)</dt>
+        <dd class="col-sm-8">
+              @if (Model.OdemePlanlari != null)
+         {
+    <div class="card bg-light">
+<div class="card-body p-3">
+          <h6 class="mb-2">
+         <i class="fas fa-book me-1"></i>@Model.OdemePlanlari.KursProgrami
+               </h6>
+             <div class="row">
+            <div class="col-md-4">
+        <small class="text-muted d-block">Toplam Tutar</small>
+       <strong class="text-success">₺ @Model.OdemePlanlari.Tutar.ToString("N2")</strong>
+               </div>
+          <div class="col-md-4">
+       <small class="text-muted d-block">Taksit Sayısı</small>
+ <span class="badge bg-primary">@Model.OdemePlanlari.Taksit Taksit</span>
+     </div>
+     <div class="col-md-4">
+      <small class="text-muted d-block">Taksit Tutarı</small>
+   <strong class="text-info">₺ @Model.OdemePlanlari.TaksitTutari.ToString("N2")</strong>
+        </div>
+ </div>
+            @if (Model.OdemePlanlari.Vade.HasValue)
+       {
+        <div class="mt-2">
+              <small class="text-muted">Vade:</small>
+          <span class="badge bg-warning text-dark ms-1">@Model.OdemePlanlari.Vade gün</span>
+             </div>
+        }
+      </div>
+        </div>
+  }
+        else
+                 {
+ <span class="text-muted">Belirtilmemiş</span>
+      }
+   </dd>
+      
+     @if (!string.IsNullOrWhiteSpace(Model.Aciklama))
+        {
+   <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Aciklama)</dt>
+      <dd class="col-sm-8">@Html.DisplayFor(model => model.Aciklama)</dd>
+        }
+
+               <dt class="col-sm-4">Durum</dt>
+          <dd class="col-sm-8">
+   @if (Model.Aktif)
+      {
+         <span class="badge bg-success">
+    <i class="fas fa-check me-1"></i>Aktif
+       </span>
+                }
+        else
+         {
+      <span class="badge bg-secondary">
+              <i class="fas fa-times me-1"></i>Pasif
+           </span>
+      }
+   </dd>
      </dl>
-                
-     <div class="d-flex justify-content-between">
-   <a asp-action="Index" class="btn btn-secondary">
-         <i class="fas fa-arrow-left me-1"></i>Listeye Dön
-          </a>
-     <div>
-       <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">
-    <i class="fas fa-edit me-1"></i>Düzenle
+          
+      <div class="d-flex justify-content-between mt-4">
+              <a asp-action="Index" class="btn btn-secondary">
+           <i class="fas fa-arrow-left me-1"></i>Listeye Dön
+       </a>
+      <div>
+             <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">
+         <i class="fas fa-edit me-1"></i>Düzenle
+         </a>
+     <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+    <i class="fas fa-trash me-1"></i>Sil
     </a>
-       <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
-      <i class="fas fa-trash me-1"></i>Sil
-           </a>
+           </div>
+        </div>
         </div>
     </div>
-    </div>
-        </div>
     </div>
 </div>

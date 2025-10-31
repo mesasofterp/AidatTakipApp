@@ -28,6 +28,9 @@ namespace StudentApp.Data
                 entity.Property(e => e.OgrenciSoyadi).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Email).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.Telefon).HasMaxLength(20);
+                entity.Property(e => e.TCNO).HasMaxLength(11);
+                entity.Property(e => e.Adres).HasMaxLength(500);
+                entity.Property(e => e.Kilo).HasColumnType("decimal(5,2)");
                 entity.HasIndex(e => e.Email).IsUnique();
 
                 // Foreign key relationships

@@ -69,6 +69,10 @@ namespace StudentApp.Services
             existingOgrenci.OgrenciSoyadi = ogrenci.OgrenciSoyadi;
             existingOgrenci.Email = ogrenci.Email;
             existingOgrenci.Telefon = ogrenci.Telefon;
+            existingOgrenci.TCNO = ogrenci.TCNO;
+            existingOgrenci.Boy = ogrenci.Boy;
+            existingOgrenci.Kilo = ogrenci.Kilo;
+            existingOgrenci.Adres = ogrenci.Adres;
             existingOgrenci.KayitTarihi = ogrenci.KayitTarihi;
             existingOgrenci.DogumTarihi = ogrenci.DogumTarihi;
             existingOgrenci.CinsiyetId = ogrenci.CinsiyetId;
