@@ -396,49 +396,103 @@ private async Task LoadDropdownsAsync()
                 return BadRequest("Seçim yok");
 
             var rows = await _context.Ogrenciler
-                .Where(s => selectedIds.Contains(s.Id))
-                .Select(s => new
-                {
-                    s.Id,
-                    s.OgrenciAdi,
-                    s.OgrenciSoyadi,
-                    s.Telefon,
-                    s.Email,
-                    s.KayitTarihi,
-                    s.SonSmsTarihi
-                })
-                .ToListAsync();
+           .Include(s => s.Cinsiyet)
+    .Include(s => s.OdemePlanlari)
+     .Where(s => selectedIds.Contains(s.Id))
+     .Select(s => new
+     {
+      s.Id,
+    s.OgrenciAdi,
+           s.OgrenciSoyadi,
+       s.TCNO,
+ s.Telefon,
+   s.Email,
+        s.DogumTarihi,
+     CinsiyetAdi = s.Cinsiyet != null ? s.Cinsiyet.Cinsiyet : "",
+            s.Adres,
+ s.KayitTarihi,
+    OdemePlani = s.OdemePlanlari != null ? s.OdemePlanlari.KursProgrami : "",
+            ToplamTutar = s.OdemePlanlari != null ? s.OdemePlanlari.Tutar : 0,
+         TaksitSayisi = s.OdemePlanlari != null ? s.OdemePlanlari.Taksit : 0,
+       s.SonSmsTarihi,
+            s.Aktif
+     })
+         .ToListAsync();
 
-            using var wb = new XLWorkbook();
-            var ws = wb.AddWorksheet("Ogrenciler");
-            ws.Cell(1, 1).Value = "Id";
-            ws.Cell(1, 2).Value = "Ad";
-            ws.Cell(1, 3).Value = "Soyad";
-            ws.Cell(1, 4).Value = "Telefon";
-            ws.Cell(1, 5).Value = "Email";
-            ws.Cell(1, 6).Value = "Kayıt Tarihi";
-            ws.Cell(1, 7).Value = "Son SMS Tarihi";
+       using var wb = new XLWorkbook();
+    var ws = wb.AddWorksheet("Ogrenciler");
 
-            int r = 2;
-            foreach (var x in rows)
+            // Başlık satırı
+            int c = 1;
+        ws.Cell(1, c++).Value = "Id";
+            ws.Cell(1, c++).Value = "Ad";
+       ws.Cell(1, c++).Value = "Soyad";
+          ws.Cell(1, c++).Value = "TC Kimlik No";
+  ws.Cell(1, c++).Value = "Telefon";
+      ws.Cell(1, c++).Value = "Email";
+ ws.Cell(1, c++).Value = "Doğum Tarihi";
+   ws.Cell(1, c++).Value = "Yaş";
+          ws.Cell(1, c++).Value = "Cinsiyet";
+ ws.Cell(1, c++).Value = "Adres";
+          ws.Cell(1, c++).Value = "Kayıt Tarihi";
+ws.Cell(1, c++).Value = "Ödeme Planı";
+ws.Cell(1, c++).Value = "Toplam Tutar";
+  ws.Cell(1, c++).Value = "Taksit Sayısı";
+       ws.Cell(1, c++).Value = "Son SMS Tarihi";
+          ws.Cell(1, c++).Value = "Durum";
+
+            // Başlık satırını stillendir
+ var headerRow = ws.Row(1);
+            headerRow.Style.Font.Bold = true;
+            headerRow.Style.Fill.BackgroundColor = XLColor.LightBlue;
+    headerRow.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+       // Veri satırları
+   int r = 2;
+            var today = DateTime.Today;
+     foreach (var x in rows.OrderBy(o => o.OgrenciSoyadi).ThenBy(o => o.OgrenciAdi))
             {
-                ws.Cell(r, 1).Value = x.Id;
-                ws.Cell(r, 2).Value = x.OgrenciAdi;
-                ws.Cell(r, 3).Value = x.OgrenciSoyadi;
-                ws.Cell(r, 4).Value = x.Telefon;
-                ws.Cell(r, 5).Value = x.Email;
-                ws.Cell(r, 6).Value = x.KayitTarihi;
-                ws.Cell(r, 7).Value = x.SonSmsTarihi;
-                r++;
-            }
-            ws.Columns().AdjustToContents();
+     int col = 1;
+     var yas = today.Year - x.DogumTarihi.Year;
+   if (today.DayOfYear < x.DogumTarihi.DayOfYear) yas--;
+
+      ws.Cell(r, col++).Value = x.Id;
+         ws.Cell(r, col++).Value = x.OgrenciAdi;
+      ws.Cell(r, col++).Value = x.OgrenciSoyadi;
+                ws.Cell(r, col++).Value = x.TCNO ?? "-";
+ ws.Cell(r, col++).Value = x.Telefon ?? "-";
+      ws.Cell(r, col++).Value = x.Email;
+      ws.Cell(r, col++).Value = x.DogumTarihi.ToString("dd.MM.yyyy");
+     ws.Cell(r, col++).Value = yas;
+    ws.Cell(r, col++).Value = x.CinsiyetAdi;
+       ws.Cell(r, col++).Value = x.Adres ?? "-";
+         ws.Cell(r, col++).Value = x.KayitTarihi.ToString("dd.MM.yyyy");
+          ws.Cell(r, col++).Value = x.OdemePlani;
+            ws.Cell(r, col++).Value = x.ToplamTutar;
+      ws.Cell(r, col++).Value = x.TaksitSayisi;
+                ws.Cell(r, col++).Value = x.SonSmsTarihi?.ToString("dd.MM.yyyy") ?? "-";
+        ws.Cell(r, col++).Value = x.Aktif ? "Aktif" : "Pasif";
+
+// Pasif öğrencileri vurgula
+        if (!x.Aktif)
+     {
+ws.Row(r).Style.Fill.BackgroundColor = XLColor.LightGray;
+       }
+
+     r++;
+     }
+
+      // Para formatı uygula (Toplam Tutar kolonu)
+            ws.Column(13).Style.NumberFormat.Format = "#,##0.00 ₺";
+
+     ws.Columns().AdjustToContents();
 
             using var ms = new MemoryStream();
-            wb.SaveAs(ms);
+         wb.SaveAs(ms);
             ms.Position = 0;
-            var bytes = ms.ToArray();
-            return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"ogrenciler_{DateTime.Now:yyyyMMdd_HHmm}.xlsx");
-        }
+     var bytes = ms.ToArray();
+       return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"ogrenciler_{DateTime.Now:yyyyMMdd_HHmm}.xlsx");
+     }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -448,69 +502,100 @@ private async Task LoadDropdownsAsync()
                 return BadRequest("Seçim yok");
 
             var rows = await _context.Ogrenciler
-                .Where(s => selectedIds.Contains(s.Id))
-                .Select(s => new
-                {
-                    s.Id,
-                    s.OgrenciAdi,
-                    s.OgrenciSoyadi,
-                    s.Telefon,
-                    s.Email,
-                    s.KayitTarihi,
-                    s.SonSmsTarihi
-                })
-                .ToListAsync();
+            .Include(s => s.Cinsiyet)
+       .Include(s => s.OdemePlanlari)
+     .Where(s => selectedIds.Contains(s.Id))
+   .Select(s => new
+   {
+   s.Id,
+           s.OgrenciAdi,
+     s.OgrenciSoyadi,
+       s.Telefon,
+   s.Email,
+      s.DogumTarihi,
+     CinsiyetAdi = s.Cinsiyet != null ? s.Cinsiyet.Cinsiyet : "",
+     s.KayitTarihi,
+      OdemePlani = s.OdemePlanlari != null ? s.OdemePlanlari.KursProgrami : "",
+        ToplamTutar = s.OdemePlanlari != null ? s.OdemePlanlari.Tutar : 0,
+  TaksitSayisi = s.OdemePlanlari != null ? s.OdemePlanlari.Taksit : 0,
+       s.SonSmsTarihi,
+    s.Aktif
+       })
+ .ToListAsync();
 
             QuestPDF.Settings.License = LicenseType.Community;
 
-            var doc = Document.Create(container =>
+          var doc = Document.Create(container =>
             {
-                container.Page(page =>
+     container.Page(page =>
                 {
-                    page.Margin(20);
-                    page.Header().Text("Öğrenci Listesi").SemiBold().FontSize(16);
-                    page.Content().Table(table =>
-                    {
-                        table.ColumnsDefinition(columns =>
-                        {
-                            columns.RelativeColumn(1);
-                            columns.RelativeColumn(2);
-                            columns.RelativeColumn(2);
-                            columns.RelativeColumn(2);
-                            columns.RelativeColumn(3);
-                            columns.RelativeColumn(2);
-                            columns.RelativeColumn(2);
-                        });
+      page.Margin(20);
+     page.Header().Text("Öğrenci Listesi").SemiBold().FontSize(16);
+     page.Content().Table(table =>
+  {
+     table.ColumnsDefinition(columns =>
+       {
+  columns.RelativeColumn(1); // Id
+  columns.RelativeColumn(2); // Ad Soyad
+   columns.RelativeColumn(1.5f); // Telefon
+     columns.RelativeColumn(2.5f); // Email
+      columns.RelativeColumn(1.5f); // Doğum Tarihi
+        columns.RelativeColumn(1); // Yaş
+     columns.RelativeColumn(1); // Cinsiyet
+   columns.RelativeColumn(2); // Ödeme Planı
+  columns.RelativeColumn(1.5f); // Tutar
+       columns.RelativeColumn(1); // Taksit
+    columns.RelativeColumn(1); // Durum
+     });
 
-                        table.Header(header =>
-                        {
-                            header.Cell().Text("Id");
-                            header.Cell().Text("Ad");
-                            header.Cell().Text("Soyad");
-                            header.Cell().Text("Telefon");
-                            header.Cell().Text("Email");
-                            header.Cell().Text("Kayıt Tarihi");
-                            header.Cell().Text("Son SMS");
-                        });
+     table.Header(header =>
+  {
+         header.Cell().Element(CellStyle).Text("Id").FontSize(9);
+       header.Cell().Element(CellStyle).Text("Ad Soyad").FontSize(9);
+       header.Cell().Element(CellStyle).Text("Telefon").FontSize(9);
+     header.Cell().Element(CellStyle).Text("Email").FontSize(9);
+     header.Cell().Element(CellStyle).Text("Doğum").FontSize(9);
+header.Cell().Element(CellStyle).Text("Yaş").FontSize(9);
+    header.Cell().Element(CellStyle).Text("Cinsiyet").FontSize(9);
+     header.Cell().Element(CellStyle).Text("Ödeme Planı").FontSize(9);
+         header.Cell().Element(CellStyle).Text("Tutar").FontSize(9);
+           header.Cell().Element(CellStyle).Text("Taksit").FontSize(9);
+    header.Cell().Element(CellStyle).Text("Durum").FontSize(9);
 
-                        foreach (var x in rows)
-                        {
-                            table.Cell().Text(x.Id.ToString());
-                            table.Cell().Text(x.OgrenciAdi ?? "");
-                            table.Cell().Text(x.OgrenciSoyadi ?? "");
-                            table.Cell().Text(x.Telefon ?? "");
-                            table.Cell().Text(x.Email ?? "");
-                            table.Cell().Text(x.KayitTarihi.ToString("dd.MM.yyyy"));
-                            table.Cell().Text(x.SonSmsTarihi?.ToString("dd.MM.yyyy") ?? "");
-                        }
-                    });
-                    page.Footer().AlignRight().Text($"Oluşturma: {DateTime.Now:dd.MM.yyyy HH:mm}");
-                });
+         static IContainer CellStyle(IContainer container)
+       {
+       return container.BorderBottom(1).BorderColor(QuestPDF.Helpers.Colors.Grey.Lighten2).Padding(5);
+    }
             });
 
-            using var ms = new MemoryStream();
+  var today = DateTime.Today;
+     foreach (var x in rows.OrderBy(o => o.OgrenciSoyadi).ThenBy(o => o.OgrenciAdi))
+        {
+  var yas = today.Year - x.DogumTarihi.Year;
+  if (today.DayOfYear < x.DogumTarihi.DayOfYear) yas--;
+
+        table.Cell().Text(x.Id.ToString()).FontSize(8);
+    table.Cell().Text($"{x.OgrenciAdi} {x.OgrenciSoyadi}").FontSize(8);
+    table.Cell().Text(x.Telefon ?? "-").FontSize(8);
+         table.Cell().Text(x.Email ?? "-").FontSize(7);
+     table.Cell().Text(x.DogumTarihi.ToString("dd.MM.yyyy")).FontSize(8);
+       table.Cell().Text(yas.ToString()).FontSize(8);
+    table.Cell().Text(x.CinsiyetAdi).FontSize(8);
+ table.Cell().Text(x.OdemePlani).FontSize(7);
+         table.Cell().Text(x.ToplamTutar.ToString("N0") + " ₺").FontSize(8);
+  table.Cell().Text(x.TaksitSayisi.ToString()).FontSize(8);
+    table.Cell().Text(x.Aktif ? "✓ Aktif" : "○ Pasif")
+   .FontSize(8)
+.FontColor(x.Aktif ? QuestPDF.Helpers.Colors.Green.Darken2 : QuestPDF.Helpers.Colors.Grey.Darken1);
+ }
+      });
+    page.Footer().AlignRight().Text($"Oluşturma: {DateTime.Now:dd.MM.yyyy HH:mm}").FontSize(8);
+   });
+            });
+
+          using var ms = new MemoryStream();
             doc.GeneratePdf(ms);
-            ms.Position = 0;
+        ms.Position = 0;
             return File(ms.ToArray(), "application/pdf", $"ogrenciler_{DateTime.Now:yyyyMMdd_HHmm}.pdf");
         }
     }
