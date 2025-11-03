@@ -14,5 +14,6 @@ namespace StudentApp.Services
         Task<decimal> GetKalanBorcAsync(long ogrenciId);
         Task<decimal> GetToplamKalanBorcAsync();
         Task RecalculateKalanBorcForOgrenciAsync(long ogrenciId);
+        Task<bool> MarkAsOdendiAsync(long id);
     }
 }

@@ -215,5 +215,45 @@ kalanBorc = Math.Max(0, kalanBorc - odeme.OdenenTutar);
         // Deðiþiklikleri kaydet
         await _context.SaveChangesAsync();
   }
+
+        /// <summary>
+     /// Taksiti hýzlýca ödendi olarak iþaretler
+    /// </summary>
+        public async Task<bool> MarkAsOdendiAsync(long id)
+        {
+            var odeme = await _context.OgrenciOdemeTakvimi
+   .Where(o => !o.IsDeleted)
+       .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (odeme == null)
+  return false;
+
+      // Eðer zaten ödenmiþse, iþlem yapma
+   if (odeme.Odendi)
+            return true;
+
+            // Taksit tutarý varsa, ödenen tutarý taksit tutarýna eþitle
+     if (odeme.TaksitTutari.HasValue && odeme.TaksitTutari.Value > 0)
+  {
+       odeme.OdenenTutar = odeme.TaksitTutari.Value;
+       }
+
+            // Ödendi olarak iþaretle
+            odeme.Odendi = true;
+
+            // Ödeme tarihi yoksa bugünün tarihini ata
+ if (!odeme.OdemeTarihi.HasValue)
+     {
+       odeme.OdemeTarihi = DateTime.Now;
+   }
+
+            odeme.Version++;
+            await _context.SaveChangesAsync();
+
+          // Kalan borçlarý yeniden hesapla
+            await RecalculateKalanBorcForOgrenciAsync(odeme.OgrenciId);
+
+      return true;
+}
     }
 }
