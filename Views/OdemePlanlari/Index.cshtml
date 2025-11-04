@@ -31,16 +31,36 @@
 
 @if (Model.Any())
 {
-    <div class="alert alert-info">
-        <i class="fas fa-info-circle me-1"></i>
-        @if (ViewBag.ShowPasif == true)
-     {
-            <span>Toplam <strong>@Model.Count()</strong> ödeme planı bulundu (aktif ve pasif kayıtlar dahil).</span>
-        }
-     else
-        {
-            <span>Toplam <strong>@Model.Count()</strong> aktif ödeme planı bulundu.</span>
-   }
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="alert alert-info mb-0">
+                <i class="fas fa-info-circle me-1"></i>
+                @if (ViewBag.ShowPasif == true)
+                {
+                    <span>Toplam <strong>@Model.Count()</strong> ödeme planı bulundu (aktif ve pasif kayıtlar dahil).</span>
+                }
+                else
+                {
+                    <span>Toplam <strong>@Model.Count()</strong> aktif ödeme planı bulundu.</span>
+                }
+            </div>
+        </div>
+        <div class="col-md-6 text-md-end">
+            <form asp-action="ExportToExcel" method="post" class="d-inline me-2">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="showPasif" value="@(ViewBag.ShowPasif ?? false)" />
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-file-excel me-1"></i>Excel'e Aktar
+                </button>
+            </form>
+            <form asp-action="ExportToPdf" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="showPasif" value="@(ViewBag.ShowPasif ?? false)" />
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-file-pdf me-1"></i>PDF'e Aktar
+                </button>
+            </form>
+        </div>
     </div>
 
     <div class="table-responsive">

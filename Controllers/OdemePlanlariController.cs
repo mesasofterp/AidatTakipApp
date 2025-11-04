@@ -1,4 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using ClosedXML.Excel;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 using StudentApp.Models;
 using StudentApp.Services;
 
@@ -169,6 +173,137 @@ namespace StudentApp.Controllers
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        // POST: OdemePlanlari/ExportToExcel
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ExportToExcel(bool showPasif = false)
+        {
+            var list = await _odemePlaniService.GetAllOdemePlanlariAsync(showPasif);
+
+            using var wb = new XLWorkbook();
+            var ws = wb.AddWorksheet("OdemePlanlari");
+
+            // Baþlýk satýrý
+            int c = 1;
+            ws.Cell(1, c++).Value = "Kurs Programý";
+            ws.Cell(1, c++).Value = "Toplam Tutar";
+            ws.Cell(1, c++).Value = "Taksit Sayýsý";
+            ws.Cell(1, c++).Value = "Taksit Tutarý";
+            ws.Cell(1, c++).Value = "Vade (Gün)";
+            ws.Cell(1, c++).Value = "Açýklama";
+            ws.Cell(1, c++).Value = "Durum";
+
+            // Baþlýk satýrýný stillendir
+            var headerRow = ws.Row(1);
+            headerRow.Style.Font.Bold = true;
+            headerRow.Style.Fill.BackgroundColor = XLColor.LightGreen;
+            headerRow.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            // Veri satýrlarý
+            int r = 2;
+            foreach (var x in list.OrderBy(o => o.KursProgrami))
+            {
+                int col = 1;
+                ws.Cell(r, col++).Value = x.KursProgrami;
+                ws.Cell(r, col++).Value = x.Tutar;
+                ws.Cell(r, col++).Value = x.Taksit;
+                ws.Cell(r, col++).Value = x.TaksitTutari;
+                ws.Cell(r, col++).Value = x.Vade ?? 0;
+                ws.Cell(r, col++).Value = x.Aciklama ?? "-";
+                ws.Cell(r, col++).Value = x.Aktif ? "Aktif" : "Pasif";
+
+                // Pasif planlarý vurgula
+                if (!x.Aktif)
+                {
+                    ws.Row(r).Style.Fill.BackgroundColor = XLColor.LightGray;
+                }
+
+                r++;
+            }
+
+            // Para formatý uygula
+            ws.Column(2).Style.NumberFormat.Format = "#,##0.00 ?"; // Toplam Tutar
+            ws.Column(4).Style.NumberFormat.Format = "#,##0.00 ?"; // Taksit Tutarý
+
+            ws.Columns().AdjustToContents();
+
+            using var ms = new MemoryStream();
+            wb.SaveAs(ms);
+            ms.Position = 0;
+
+            var fileName = $"odeme_planlari_{DateTime.Now:yyyyMMdd_HHmm}.xlsx";
+            return File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        }
+
+        // POST: OdemePlanlari/ExportToPdf
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ExportToPdf(bool showPasif = false)
+        {
+            var list = await _odemePlaniService.GetAllOdemePlanlariAsync(showPasif);
+
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            var doc = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Margin(20);
+                    page.Header().Text("Ödeme Planlarý Listesi").SemiBold().FontSize(16);
+                    page.Content().Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.RelativeColumn(3); // Kurs Programý
+                            columns.RelativeColumn(1.8f); // Toplam Tutar
+                            columns.RelativeColumn(1.2f); // Taksit Sayýsý
+                            columns.RelativeColumn(1.8f); // Taksit Tutarý
+                            columns.RelativeColumn(1.2f); // Vade
+                            columns.RelativeColumn(2); // Açýklama
+                            columns.RelativeColumn(1.2f); // Durum
+                        });
+
+                        table.Header(header =>
+                        {
+                            header.Cell().Element(CellStyle).Text("Kurs Programý").FontSize(9);
+                            header.Cell().Element(CellStyle).Text("Toplam Tutar").FontSize(9);
+                            header.Cell().Element(CellStyle).Text("Taksit").FontSize(9);
+                            header.Cell().Element(CellStyle).Text("Taksit Tutarý").FontSize(9);
+                            header.Cell().Element(CellStyle).Text("Vade").FontSize(9);
+                            header.Cell().Element(CellStyle).Text("Açýklama").FontSize(9);
+                            header.Cell().Element(CellStyle).Text("Durum").FontSize(9);
+
+                            static IContainer CellStyle(IContainer container)
+                            {
+                                return container.BorderBottom(1).BorderColor(QuestPDF.Helpers.Colors.Grey.Lighten2).Padding(5);
+                            }
+                        });
+
+                        foreach (var x in list.OrderBy(o => o.KursProgrami))
+                        {
+                            table.Cell().Text(x.KursProgrami).FontSize(8);
+                            table.Cell().Text(x.Tutar.ToString("N2") + " ?").FontSize(8);
+                            table.Cell().Text(x.Taksit.ToString()).FontSize(8);
+                            table.Cell().Text(x.TaksitTutari.ToString("N2") + " ?").FontSize(8);
+                            table.Cell().Text(x.Vade.HasValue ? x.Vade.Value.ToString() + " gün" : "-").FontSize(8);
+                            table.Cell().Text(x.Aciklama ?? "-").FontSize(7);
+                            table.Cell().Text(x.Aktif ? "? Aktif" : "? Pasif")
+                                .FontSize(8)
+                                .FontColor(x.Aktif ? QuestPDF.Helpers.Colors.Green.Darken2 : QuestPDF.Helpers.Colors.Grey.Darken1);
+                        }
+                    });
+                    page.Footer().AlignRight().Text($"Oluþturma: {DateTime.Now:dd.MM.yyyy HH:mm}").FontSize(8);
+                });
+            });
+
+            using var ms = new MemoryStream();
+            doc.GeneratePdf(ms);
+            ms.Position = 0;
+
+            var fileName = $"odeme_planlari_{DateTime.Now:yyyyMMdd_HHmm}.pdf";
+            return File(ms.ToArray(), "application/pdf", fileName);
         }
     }
 }
