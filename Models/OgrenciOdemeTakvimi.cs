@@ -25,6 +25,9 @@ namespace StudentApp.Models
         [Display(Name = "Ödendi")]
      public bool Odendi { get; set; } = false;
 
+        [Display(Name = "SMS Gönderildi mi")]
+        public bool SmsGittiMi { get; set; } = false;
+
         [Required(ErrorMessage = "Ödenen tutar zorunludur")]
         [Range(0.01, double.MaxValue, ErrorMessage = "Ödenen tutar 0'dan büyük olmalıdır")]
         [Display(Name = "Ödenen Tutar")]

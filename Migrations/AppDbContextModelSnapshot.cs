@@ -114,6 +114,9 @@ namespace StudentApp.Migrations
                     b.Property<DateTime>("OlusturmaTarihi")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("SmsGittiMi")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("SonOdemeTarihi")
                         .HasColumnType("datetime2");
 
