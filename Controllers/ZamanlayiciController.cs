@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using StudentApp.Models;
 using StudentApp.Services;
 
 namespace StudentApp.Controllers;
 
+[Authorize]
 public class ZamanlayiciController : Controller
 {
     private readonly IZamanlayiciService _schedulerService;

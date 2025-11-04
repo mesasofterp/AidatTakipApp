@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ using StudentApp.Services;
 
 namespace StudentApp.Controllers
 {
+    [Authorize]
     public class OgrencilerController : Controller
     {
         private readonly IOgrencilerService _ogrenciService;

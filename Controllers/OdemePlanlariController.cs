@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using ClosedXML.Excel;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -8,6 +9,7 @@ using StudentApp.Services;
 
 namespace StudentApp.Controllers
 {
+    [Authorize]
     public class OdemePlanlariController : Controller
     {
         private readonly IOdemePlanlariService _odemePlaniService;
@@ -41,12 +43,12 @@ namespace StudentApp.Controllers
                 try
                 {
                     await _odemePlaniService.AddOdemePlaniAsync(odemePlani);
-                    TempData["SuccessMessage"] = "Ödeme planý baþarýyla eklendi!";
+                    TempData["SuccessMessage"] = "ï¿½deme planï¿½ baï¿½arï¿½yla eklendi!";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", "Ödeme planý eklenirken bir hata oluþtu. Lütfen tekrar deneyin.");
+                    ModelState.AddModelError("", "ï¿½deme planï¿½ eklenirken bir hata oluï¿½tu. Lï¿½tfen tekrar deneyin.");
                 }
             }
 
@@ -99,12 +101,12 @@ namespace StudentApp.Controllers
                         return NotFound();
                     }
 
-                    TempData["SuccessMessage"] = "Ödeme planý baþarýyla güncellendi!";
+                    TempData["SuccessMessage"] = "ï¿½deme planï¿½ baï¿½arï¿½yla gï¿½ncellendi!";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", "Ödeme planý güncellenirken bir hata oluþtu. Lütfen tekrar deneyin.");
+                    ModelState.AddModelError("", "ï¿½deme planï¿½ gï¿½ncellenirken bir hata oluï¿½tu. Lï¿½tfen tekrar deneyin.");
                 }
             }
 
@@ -133,16 +135,16 @@ namespace StudentApp.Controllers
                 var result = await _odemePlaniService.DeleteOdemePlaniAsync(id);
                 if (result)
                 {
-                    TempData["SuccessMessage"] = "Ödeme planý baþarýyla silindi!";
+                    TempData["SuccessMessage"] = "ï¿½deme planï¿½ baï¿½arï¿½yla silindi!";
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Ödeme planý bulunamadý.";
+                    TempData["ErrorMessage"] = "ï¿½deme planï¿½ bulunamadï¿½.";
                 }
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Ödeme planý silinirken bir hata oluþtu.";
+                TempData["ErrorMessage"] = "ï¿½deme planï¿½ silinirken bir hata oluï¿½tu.";
             }
 
             return RedirectToAction(nameof(Index));
@@ -159,17 +161,17 @@ namespace StudentApp.Controllers
                 if (result)
                 {
                     TempData["SuccessMessage"] = aktif
-                        ? "Ödeme planý baþarýyla aktif hale getirildi!"
-                        : "Ödeme planý baþarýyla pasif hale getirildi!";
+                        ? "ï¿½deme planï¿½ baï¿½arï¿½yla aktif hale getirildi!"
+                        : "ï¿½deme planï¿½ baï¿½arï¿½yla pasif hale getirildi!";
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Ödeme planý bulunamadý.";
+                    TempData["ErrorMessage"] = "ï¿½deme planï¿½ bulunamadï¿½.";
                 }
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Durum güncellenirken bir hata oluþtu.";
+                TempData["ErrorMessage"] = "Durum gï¿½ncellenirken bir hata oluï¿½tu.";
             }
 
             return RedirectToAction(nameof(Index));
@@ -185,23 +187,23 @@ namespace StudentApp.Controllers
             using var wb = new XLWorkbook();
             var ws = wb.AddWorksheet("OdemePlanlari");
 
-            // Baþlýk satýrý
+            // Baï¿½lï¿½k satï¿½rï¿½
             int c = 1;
-            ws.Cell(1, c++).Value = "Kurs Programý";
+            ws.Cell(1, c++).Value = "Kurs Programï¿½";
             ws.Cell(1, c++).Value = "Toplam Tutar";
-            ws.Cell(1, c++).Value = "Taksit Sayýsý";
-            ws.Cell(1, c++).Value = "Taksit Tutarý";
-            ws.Cell(1, c++).Value = "Vade (Gün)";
-            ws.Cell(1, c++).Value = "Açýklama";
+            ws.Cell(1, c++).Value = "Taksit Sayï¿½sï¿½";
+            ws.Cell(1, c++).Value = "Taksit Tutarï¿½";
+            ws.Cell(1, c++).Value = "Vade (Gï¿½n)";
+            ws.Cell(1, c++).Value = "Aï¿½ï¿½klama";
             ws.Cell(1, c++).Value = "Durum";
 
-            // Baþlýk satýrýný stillendir
+            // Baï¿½lï¿½k satï¿½rï¿½nï¿½ stillendir
             var headerRow = ws.Row(1);
             headerRow.Style.Font.Bold = true;
             headerRow.Style.Fill.BackgroundColor = XLColor.LightGreen;
             headerRow.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
-            // Veri satýrlarý
+            // Veri satï¿½rlarï¿½
             int r = 2;
             foreach (var x in list.OrderBy(o => o.KursProgrami))
             {
@@ -214,7 +216,7 @@ namespace StudentApp.Controllers
                 ws.Cell(r, col++).Value = x.Aciklama ?? "-";
                 ws.Cell(r, col++).Value = x.Aktif ? "Aktif" : "Pasif";
 
-                // Pasif planlarý vurgula
+                // Pasif planlarï¿½ vurgula
                 if (!x.Aktif)
                 {
                     ws.Row(r).Style.Fill.BackgroundColor = XLColor.LightGray;
@@ -223,9 +225,9 @@ namespace StudentApp.Controllers
                 r++;
             }
 
-            // Para formatý uygula
+            // Para formatï¿½ uygula
             ws.Column(2).Style.NumberFormat.Format = "#,##0.00 ?"; // Toplam Tutar
-            ws.Column(4).Style.NumberFormat.Format = "#,##0.00 ?"; // Taksit Tutarý
+            ws.Column(4).Style.NumberFormat.Format = "#,##0.00 ?"; // Taksit Tutarï¿½
 
             ws.Columns().AdjustToContents();
 
@@ -251,28 +253,28 @@ namespace StudentApp.Controllers
                 container.Page(page =>
                 {
                     page.Margin(20);
-                    page.Header().Text("Ödeme Planlarý Listesi").SemiBold().FontSize(16);
+                    page.Header().Text("ï¿½deme Planlarï¿½ Listesi").SemiBold().FontSize(16);
                     page.Content().Table(table =>
                     {
                         table.ColumnsDefinition(columns =>
                         {
-                            columns.RelativeColumn(3); // Kurs Programý
+                            columns.RelativeColumn(3); // Kurs Programï¿½
                             columns.RelativeColumn(1.8f); // Toplam Tutar
-                            columns.RelativeColumn(1.2f); // Taksit Sayýsý
-                            columns.RelativeColumn(1.8f); // Taksit Tutarý
+                            columns.RelativeColumn(1.2f); // Taksit Sayï¿½sï¿½
+                            columns.RelativeColumn(1.8f); // Taksit Tutarï¿½
                             columns.RelativeColumn(1.2f); // Vade
-                            columns.RelativeColumn(2); // Açýklama
+                            columns.RelativeColumn(2); // Aï¿½ï¿½klama
                             columns.RelativeColumn(1.2f); // Durum
                         });
 
                         table.Header(header =>
                         {
-                            header.Cell().Element(CellStyle).Text("Kurs Programý").FontSize(9);
+                            header.Cell().Element(CellStyle).Text("Kurs Programï¿½").FontSize(9);
                             header.Cell().Element(CellStyle).Text("Toplam Tutar").FontSize(9);
                             header.Cell().Element(CellStyle).Text("Taksit").FontSize(9);
-                            header.Cell().Element(CellStyle).Text("Taksit Tutarý").FontSize(9);
+                            header.Cell().Element(CellStyle).Text("Taksit Tutarï¿½").FontSize(9);
                             header.Cell().Element(CellStyle).Text("Vade").FontSize(9);
-                            header.Cell().Element(CellStyle).Text("Açýklama").FontSize(9);
+                            header.Cell().Element(CellStyle).Text("Aï¿½ï¿½klama").FontSize(9);
                             header.Cell().Element(CellStyle).Text("Durum").FontSize(9);
 
                             static IContainer CellStyle(IContainer container)
@@ -287,14 +289,14 @@ namespace StudentApp.Controllers
                             table.Cell().Text(x.Tutar.ToString("N2") + " ?").FontSize(8);
                             table.Cell().Text(x.Taksit.ToString()).FontSize(8);
                             table.Cell().Text(x.TaksitTutari.ToString("N2") + " ?").FontSize(8);
-                            table.Cell().Text(x.Vade.HasValue ? x.Vade.Value.ToString() + " gün" : "-").FontSize(8);
+                            table.Cell().Text(x.Vade.HasValue ? x.Vade.Value.ToString() + " gï¿½n" : "-").FontSize(8);
                             table.Cell().Text(x.Aciklama ?? "-").FontSize(7);
                             table.Cell().Text(x.Aktif ? "? Aktif" : "? Pasif")
                                 .FontSize(8)
                                 .FontColor(x.Aktif ? QuestPDF.Helpers.Colors.Green.Darken2 : QuestPDF.Helpers.Colors.Grey.Darken1);
                         }
                     });
-                    page.Footer().AlignRight().Text($"Oluþturma: {DateTime.Now:dd.MM.yyyy HH:mm}").FontSize(8);
+                    page.Footer().AlignRight().Text($"Oluï¿½turma: {DateTime.Now:dd.MM.yyyy HH:mm}").FontSize(8);
                 });
             });
 

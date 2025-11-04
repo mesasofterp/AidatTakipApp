@@ -4,11 +4,33 @@ using StudentApp.Services;
 using StudentApp.Jobs;
 using Quartz;
 using AppSchedulerFactory = StudentApp.Services.IZamanlayiciFactory;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Identity
+builder.Services
+    .AddIdentity<Microsoft.AspNetCore.Identity.IdentityUser, Microsoft.AspNetCore.Identity.IdentityRole>(options =>
+    {
+        options.Password.RequireDigit = false;
+        options.Password.RequireLowercase = false;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequiredLength = 6;
+        options.User.RequireUniqueEmail = true;
+        options.SignIn.RequireConfirmedAccount = false;
+    })
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/Account/AccessDenied";
+});
 
 // Add Entity Framework
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -101,11 +123,12 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Ogrenciler}/{action=Index}/{id?}");
+    pattern: "{controller=Account}/{action=Login}/{id?}");
 
 // Ensure database is created and migrated
 using (var scope = app.Services.CreateScope())
@@ -149,5 +172,43 @@ using (var scope = app.Services.CreateScope())
         }
     }
 }
+//using (var scope = app.Services.CreateScope())
+//{
+//    var services = scope.ServiceProvider;
+//    var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+//    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
+//    // Rol varsa geç, yoksa oluştur
+//    string adminRole = "Admin";
+//    if (!await roleManager.RoleExistsAsync(adminRole))
+//        await roleManager.CreateAsync(new IdentityRole(adminRole));
+
+//    // Varsayılan kullanıcı bilgileri
+//    string adminEmail = "email@email.com";
+//    string adminPassword = "12345678";
+
+//    // Kullanıcı var mı kontrol et
+//    var user = await userManager.FindByEmailAsync(adminEmail);
+//    if (user == null)
+//    {
+//        var newUser = new IdentityUser
+//        {
+//            UserName = "admin",
+//            Email = adminEmail,
+//            EmailConfirmed = true
+//        };
+
+//        var result = await userManager.CreateAsync(newUser, adminPassword);
+//        if (result.Succeeded)
+//        {
+//            await userManager.AddToRoleAsync(newUser, adminRole);
+//        }
+//        else
+//        {
+//            Console.WriteLine("Kullanıcı oluşturulamadı:");
+//            foreach (var error in result.Errors)
+//                Console.WriteLine($"- {error.Description}");
+//        }
+//    }
+//}
 app.Run();
