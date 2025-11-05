@@ -69,40 +69,93 @@ await _context.SaveChangesAsync();
         }
 
     public async Task<OgrenciOdemeTakvimi?> UpdateOdemeAsync(OgrenciOdemeTakvimi odeme)
-        {
-   var existingOdeme = await _context.OgrenciOdemeTakvimi
-         .Where(o => !o.IsDeleted)
-    .FirstOrDefaultAsync(o => o.Id == odeme.Id);
+    {
+        var existingOdeme = await _context.OgrenciOdemeTakvimi
+            .Where(o => !o.IsDeleted)
+ .FirstOrDefaultAsync(o => o.Id == odeme.Id);
 
-    if (existingOdeme == null)
+      if (existingOdeme == null)
             return null;
 
-   existingOdeme.OdemeTarihi = odeme.OdemeTarihi;
-    existingOdeme.OdenenTutar = odeme.OdenenTutar;
-   existingOdeme.BorcTutari = odeme.BorcTutari;
-         existingOdeme.Aciklama = odeme.Aciklama;
-    existingOdeme.Version++;
+        // Son ödeme tarihinde deðiþiklik var mý kontrol et
+ var sonOdemeTarihiDegisti = existingOdeme.SonOdemeTarihi != odeme.SonOdemeTarihi;
+  var ilkTaksitMi = existingOdeme.TaksitNo == 1;
 
-     // Eðer TaksitTutari kaydedilmiþse ve ödenen tutar bu tutara eþit veya büyükse "Ödendi" true
-  if (existingOdeme.TaksitTutari.HasValue && existingOdeme.TaksitTutari.Value > 0)
-       {
-       if (existingOdeme.OdenenTutar >= existingOdeme.TaksitTutari.Value && existingOdeme.OdenenTutar > 0)
- {
-      existingOdeme.Odendi = true;
-       }
+        existingOdeme.OdemeTarihi = odeme.OdemeTarihi;
+        existingOdeme.SonOdemeTarihi = odeme.SonOdemeTarihi;
+      existingOdeme.OdenenTutar = odeme.OdenenTutar;
+        existingOdeme.BorcTutari = odeme.BorcTutari;
+        existingOdeme.Aciklama = odeme.Aciklama;
+        existingOdeme.Version++;
+
+        // Eðer TaksitTutari kaydedilmiþse ve ödenen tutar bu tutara eþit veya büyükse "ödendi" true
+     if (existingOdeme.TaksitTutari.HasValue && existingOdeme.TaksitTutari.Value > 0)
+        {
+            if (existingOdeme.OdenenTutar >= existingOdeme.TaksitTutari.Value && existingOdeme.OdenenTutar > 0)
+   {
+     existingOdeme.Odendi = true;
+ }
   else
-       {
-    existingOdeme.Odendi = false;
-     }
-   }
+            {
+        existingOdeme.Odendi = false;
+            }
+ }
 
-       await _context.SaveChangesAsync();
- 
-     // Tüm ödemelerin kalan borcunu yeniden hesapla
-    await RecalculateKalanBorcForOgrenciAsync(existingOdeme.OgrenciId);
-            
-      return existingOdeme;
+        await _context.SaveChangesAsync();
+
+      // Eðer ilk taksitin son ödeme tarihi deðiþtiyse, diðer taksitleri de güncelle
+        if (sonOdemeTarihiDegisti && ilkTaksitMi && existingOdeme.SonOdemeTarihi.HasValue)
+        {
+       await UpdateDigerTaksitTarihleriniAsync(existingOdeme.OgrenciId, existingOdeme.SonOdemeTarihi.Value);
+    }
+
+   // Tüm ödemelerin kalan borcunu yeniden hesapla
+        await RecalculateKalanBorcForOgrenciAsync(existingOdeme.OgrenciId);
+
+        return existingOdeme;
+    }
+
+    /// <summary>
+    /// Ýlk taksitin son ödeme tarihine göre diðer taksitlerin tarihlerini günceller
+    /// </summary>
+    private async Task UpdateDigerTaksitTarihleriniAsync(long ogrenciId, DateTime ilkTaksitTarihi)
+    {
+        // Öðrencinin ödeme planýný getir
+        var ogrenci = await _context.Ogrenciler
+    .Include(o => o.OdemePlanlari)
+    .FirstOrDefaultAsync(o => o.Id == ogrenciId && !o.IsDeleted);
+
+        if (ogrenci == null || ogrenci.OdemePlanlari == null)
+            return;
+
+    var odemePlani = ogrenci.OdemePlanlari;
+
+    // Vade hesaplama
+        int vadeSuresi = odemePlani.Vade.HasValue ? odemePlani.Vade.Value : (odemePlani.Taksit * 30);
+        int taksitBasinaGun = vadeSuresi / odemePlani.Taksit;
+
+        // Ýlk taksit hariç diðer tüm taksitleri getir
+        var digerTaksitler = await _context.OgrenciOdemeTakvimi
+   .Where(o => o.OgrenciId == ogrenciId && 
+     !o.IsDeleted && 
+            o.TaksitNo.HasValue && 
+             o.TaksitNo.Value > 1)
+    .OrderBy(o => o.TaksitNo)
+            .ToListAsync();
+
+        // Her taksit için yeni tarihi hesapla
+        foreach (var taksit in digerTaksitler)
+    {
+          if (taksit.TaksitNo.HasValue)
+  {
+    // Yeni son ödeme tarihi = Ýlk taksit tarihi + (Taksit No * Taksit baþýna gün)
+      taksit.SonOdemeTarihi = ilkTaksitTarihi.AddDays(taksit.TaksitNo.Value * taksitBasinaGun);
+      taksit.Version++;
+   }
         }
+
+   await _context.SaveChangesAsync();
+    }
 
         public async Task<bool> DeleteOdemeAsync(long id)
       {

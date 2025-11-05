@@ -47,6 +47,29 @@ namespace StudentApp.Services
 
         public async Task<Ogrenciler> AddOgrenciAsync(Ogrenciler ogrenci)
         {
+            // Email kontrolü - Silinmemiþ kayýtlar arasýnda kontrol et
+            var existingEmail = await _context.Ogrenciler
+                .Where(o => !o.IsDeleted && o.Email == ogrenci.Email)
+                .FirstOrDefaultAsync();
+
+            if (existingEmail != null)
+            {
+                throw new InvalidOperationException($"Bu e-posta adresi ({ogrenci.Email}) zaten kullanýlýyor.");
+            }
+
+            // TC No kontrolü (eðer girilmiþse) - Silinmemiþ kayýtlar arasýnda kontrol et
+            if (!string.IsNullOrWhiteSpace(ogrenci.TCNO))
+            {
+                var existingTCNO = await _context.Ogrenciler
+                    .Where(o => !o.IsDeleted && o.TCNO == ogrenci.TCNO)
+                    .FirstOrDefaultAsync();
+
+                if (existingTCNO != null)
+                {
+                    throw new InvalidOperationException($"Bu TC Kimlik No ({ogrenci.TCNO}) zaten kullanýlýyor.");
+                }
+            }
+
             ogrenci.IsDeleted = false;
             ogrenci.Aktif = true;
             ogrenci.Version = 0;
@@ -68,6 +91,29 @@ namespace StudentApp.Services
 
             if (existingOgrenci == null)
                 return null;
+
+            // Email kontrolü - Kendi kaydý hariç, silinmemiþ diðer kayýtlarda ayný email var mý?
+            var duplicateEmail = await _context.Ogrenciler
+                .Where(o => !o.IsDeleted && o.Id != ogrenci.Id && o.Email == ogrenci.Email)
+                .FirstOrDefaultAsync();
+
+            if (duplicateEmail != null)
+            {
+                throw new InvalidOperationException($"Bu e-posta adresi ({ogrenci.Email}) baþka bir öðrenci tarafýndan kullanýlýyor.");
+            }
+
+            // TC No kontrolü - Kendi kaydý hariç, silinmemiþ diðer kayýtlarda ayný TC var mý?
+            if (!string.IsNullOrWhiteSpace(ogrenci.TCNO))
+            {
+                var duplicateTCNO = await _context.Ogrenciler
+                    .Where(o => !o.IsDeleted && o.Id != ogrenci.Id && o.TCNO == ogrenci.TCNO)
+                    .FirstOrDefaultAsync();
+
+                if (duplicateTCNO != null)
+                {
+                    throw new InvalidOperationException($"Bu TC Kimlik No ({ogrenci.TCNO}) baþka bir öðrenci tarafýndan kullanýlýyor.");
+                }
+            }
 
             existingOgrenci.OgrenciAdi = ogrenci.OgrenciAdi;
             existingOgrenci.OgrenciSoyadi = ogrenci.OgrenciSoyadi;
@@ -170,6 +216,7 @@ namespace StudentApp.Services
                     OdenenTutar = 0, // Henüz ödenmedi
                     BorcTutari = kalanBorc,
                     Odendi = false,
+                    SmsGittiMi = false,  // SMS henüz gönderilmedi
                     OdemeTarihi = null, // Ödeme yapýlmadý
                     OlusturmaTarihi = DateTime.Now,
                     Aktif = true,

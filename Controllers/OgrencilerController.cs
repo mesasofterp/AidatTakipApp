@@ -152,7 +152,16 @@ return baslangicOk && bitisOk;
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", $"Öğrenci eklenirken bir hata oluştu: {ex.Message}");
+                         // Inner exception'ı da kontrol et
+        var innerMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                 var fullMessage = $"Öğrenci eklenirken bir hata oluştu: {innerMessage}";
+         
+          // Daha detaylı log
+      Console.WriteLine($"Hata: {ex.Message}");
+      Console.WriteLine($"Inner Exception: {ex.InnerException?.Message}");
+     Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+        
+             ModelState.AddModelError("", fullMessage);
                 }
             }
             else
