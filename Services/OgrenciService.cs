@@ -146,6 +146,18 @@ namespace StudentApp.Services
             // Soft delete - IsDeleted'ý true yap
             ogrenci.IsDeleted = true;
             ogrenci.Aktif = false;
+
+            // Öðrenciye ait tüm ödeme takvimlerini de soft delete yap
+            var odemeTakvimleri = await _context.OgrenciOdemeTakvimi
+                .Where(o => o.OgrenciId == id && !o.IsDeleted)
+                .ToListAsync();
+
+            foreach (var odeme in odemeTakvimleri)
+            {
+                odeme.IsDeleted = true;
+                odeme.Aktif = false;
+            }
+
             await _context.SaveChangesAsync();
 
             return true;
