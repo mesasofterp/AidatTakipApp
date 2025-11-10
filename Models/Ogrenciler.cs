@@ -23,8 +23,8 @@ namespace StudentApp.Models
         [Display(Name = "E-posta")]
         public string Email { get; set; } = string.Empty;
 
-        [Phone(ErrorMessage = "Geçersiz telefon numarası")]
-        [StringLength(20, ErrorMessage = "Telefon numarası 20 karakterden fazla olamaz")]
+        [RegularExpression(@"^(0)(\d{3})(\d{3})(\d{2})(\d{2})$", ErrorMessage = "Telefon numarası 0xxx xxx xx xx formatında olmalıdır (örn: 05301234567)")]
+        [StringLength(11, MinimumLength = 11, ErrorMessage = "Telefon numarası 11 haneli olmalıdır")]
         [Display(Name = "Telefon")]
         public string? Telefon { get; set; }
 

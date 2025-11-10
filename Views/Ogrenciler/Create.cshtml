@@ -76,11 +76,11 @@
      <label asp-for="Telefon" class="form-label"></label>
       <div class="input-group">
    <span class="input-group-text"><i class="fas fa-phone"></i></span>
-      <input asp-for="Telefon" type="tel" class="form-control" placeholder="0555 123 45 67" />
+  <input asp-for="Telefon" id="telefonInput" type="text" class="form-control" placeholder="05301234567" maxlength="11" />
        </div>
         <span asp-validation-for="Telefon" class="text-danger"></span>
-            <small class="form-text text-muted">Opsiyonel - Telefon numarasını girebilirsiniz</small>
-          </div>
+   <small class="form-text text-muted">Format: 05301234567 (11 haneli, 0 ile başlamalı)</small>
+    </div>
 
   <div class="mb-3">
     <label asp-for="Adres" class="form-label"></label>
@@ -147,4 +147,43 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+    // Telefon numarası input mask
+    document.addEventListener('DOMContentLoaded', function() {
+   const telefonInput = document.getElementById('telefonInput');
+     
+        if (telefonInput) {
+  telefonInput.addEventListener('input', function(e) {
+   // Sadece rakamları al
+          let value = e.target.value.replace(/\D/g, '');
+   
+    // 11 haneden fazla olmasın
+         if (value.length > 11) {
+     value = value.substring(0, 11);
+    }
+    
+       // İlk karakter 0 değilse 0 ekle
+     if (value.length > 0 && value.charAt(0) !== '0') {
+       value = '0' + value.substring(0, 10);
+        }
+  
+ e.target.value = value;
+  });
+      
+            // Paste eventini de kontrol et
+    telefonInput.addEventListener('paste', function(e) {
+       setTimeout(function() {
+        let value = telefonInput.value.replace(/\D/g, '');
+           if (value.length > 11) {
+ value = value.substring(0, 11);
+           }
+ if (value.length > 0 && value.charAt(0) !== '0') {
+      value = '0' + value.substring(0, 10);
+       }
+ telefonInput.value = value;
+    }, 0);
+   });
+      }
+    });
+    </script>
 }
