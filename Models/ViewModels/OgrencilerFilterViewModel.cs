@@ -13,6 +13,7 @@ namespace StudentApp.Models.ViewModels
         public DateTime? BaslangicKayitTarihi { get; set; }
         public DateTime? BitisKayitTarihi { get; set; }
   public bool ShowPasif { get; set; } = false;
+  public bool ShowList { get; set; } = false;
      
         // Sýralama parametreleri
         public string SortBy { get; set; } = "OgrenciSoyadi";
