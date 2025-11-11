@@ -27,26 +27,31 @@
       <i class="fas fa-book me-1"></i>@Html.DisplayFor(model => model.KursProgrami)
 </dd>
  
-     <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Taksit)</dt>
+     <dt class="col-sm-4">@Html.DisplayNameFor(model => model.TaksitSayisi)</dt>
     <dd class="col-sm-8">
-   <span class="badge bg-primary">@Model.Taksit Taksit</span>
+   <span class="badge bg-primary">@Model.TaksitSayisi Taksit</span>
    </dd>
 
-   <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Vade)</dt>
+   <dt class="col-sm-4">@Html.DisplayNameFor(model => model.TaksitTutari)</dt>
+  <dd class="col-sm-8">
+ <strong class="text-info">₺ @Model.TaksitTutari.ToString("N2")</strong>
+   </dd>
+
+ <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Vade)</dt>
   <dd class="col-sm-8">
       @if (Model.Vade.HasValue)
    {
  <span class="badge bg-info">@Model.Vade gün</span>
-     }
+  }
     else
     {
     <span class="text-muted">-</span>
    }
     </dd>
      
- <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Tutar)</dt>
+ <dt class="col-sm-4">@Html.DisplayNameFor(model => model.ToplamTutar)</dt>
 <dd class="col-sm-8">
- <strong class="text-success">@Model.Tutar.ToString("C2")</strong>
+ <strong class="text-success">₺ @Model.ToplamTutar.ToString("N2")</strong>
  </dd>
 
     <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Aktif)</dt>

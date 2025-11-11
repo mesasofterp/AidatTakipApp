@@ -358,7 +358,7 @@ private async Task LoadDropdownsAsync()
                 var students = await _context.Ogrenciler
                     .Include(s => s.OdemePlanlari)
                     .Where(s => selectedIds.Contains(s.Id))
-                    .Select(s => new { s.Id, s.OgrenciAdi, s.OgrenciSoyadi, s.Telefon, s.KayitTarihi, s.SonSmsTarihi, PlanTutar = (decimal?)s.OdemePlanlari.Tutar })
+                    .Select(s => new { s.Id, s.OgrenciAdi, s.OgrenciSoyadi, s.Telefon, s.KayitTarihi, s.SonSmsTarihi, PlanTutar = (decimal?)s.OdemePlanlari.ToplamTutar })
                     .ToListAsync();
 
                 var latestPayments = await _context.OgrenciOdemeTakvimi
@@ -443,8 +443,8 @@ private async Task LoadDropdownsAsync()
      s.Adres,
  s.KayitTarihi,
     OdemePlani = s.OdemePlanlari != null ? s.OdemePlanlari.KursProgrami : "",
-        ToplamTutar = s.OdemePlanlari != null ? s.OdemePlanlari.Tutar : 0,
-    TaksitSayisi = s.OdemePlanlari != null ? s.OdemePlanlari.Taksit : 0,
+        ToplamTutar = s.OdemePlanlari != null ? s.OdemePlanlari.ToplamTutar : 0,
+    TaksitSayisi = s.OdemePlanlari != null ? s.OdemePlanlari.TaksitSayisi : 0,
        s.SonSmsTarihi,
             s.Aktif
      })
@@ -544,8 +544,8 @@ ws.Row(r).Style.Fill.BackgroundColor = XLColor.LightGray;
      CinsiyetAdi = s.Cinsiyet != null ? s.Cinsiyet.Cinsiyet : "",
  s.KayitTarihi,
       OdemePlani = s.OdemePlanlari != null ? s.OdemePlanlari.KursProgrami : "",
-  ToplamTutar = s.OdemePlanlari != null ? s.OdemePlanlari.Tutar : 0,
-  TaksitSayisi = s.OdemePlanlari != null ? s.OdemePlanlari.Taksit : 0,
+  ToplamTutar = s.OdemePlanlari != null ? s.OdemePlanlari.ToplamTutar : 0,
+  TaksitSayisi = s.OdemePlanlari != null ? s.OdemePlanlari.TaksitSayisi : 0,
      s.SonSmsTarihi,
     s.Aktif
   })
@@ -570,8 +570,8 @@ ws.Row(r).Style.Fill.BackgroundColor = XLColor.LightGray;
         columns.RelativeColumn(1); // Yaş
      columns.RelativeColumn(1); // Cinsiyet
    columns.RelativeColumn(2); // Ödeme Planı
-  columns.RelativeColumn(1.5f); // Tutar
-       columns.RelativeColumn(1); // Taksit
+  columns.RelativeColumn(1.5f); // ToplamTutar
+       columns.RelativeColumn(1); // TaksitSayisi
     columns.RelativeColumn(1); // Durum
      });
 
@@ -584,8 +584,8 @@ ws.Row(r).Style.Fill.BackgroundColor = XLColor.LightGray;
 header.Cell().Element(CellStyle).Text("Yaş").FontSize(9);
     header.Cell().Element(CellStyle).Text("Cinsiyet").FontSize(9);
      header.Cell().Element(CellStyle).Text("Ödeme Planı").FontSize(9);
-   header.Cell().Element(CellStyle).Text("Tutar").FontSize(9);
-           header.Cell().Element(CellStyle).Text("Taksit").FontSize(9);
+   header.Cell().Element(CellStyle).Text("ToplamTutar").FontSize(9);
+           header.Cell().Element(CellStyle).Text("TaksitSayisi").FontSize(9);
     header.Cell().Element(CellStyle).Text("Durum").FontSize(9);
 
     static IContainer CellStyle(IContainer container)

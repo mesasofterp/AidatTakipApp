@@ -30,7 +30,7 @@ namespace StudentApp.Services
 
             return await query
                 .OrderBy(s => s.KursProgrami)
-                .ThenBy(s => s.Tutar)
+                .ThenBy(s => s.TaksitTutari)
                 .ToListAsync();
         }
 
@@ -62,8 +62,8 @@ namespace StudentApp.Services
                 return null;
 
             existingOdemePlani.KursProgrami = odemePlani.KursProgrami;
-            existingOdemePlani.Taksit = odemePlani.Taksit;
-            existingOdemePlani.Tutar = odemePlani.Tutar;
+            existingOdemePlani.TaksitSayisi = odemePlani.TaksitSayisi;
+            existingOdemePlani.TaksitTutari = odemePlani.TaksitTutari;
             existingOdemePlani.Vade = odemePlani.Vade;
             existingOdemePlani.Version++;
 

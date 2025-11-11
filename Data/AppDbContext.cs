@@ -61,8 +61,11 @@ namespace StudentApp.Data
                 entity.ToTable("OdemePlanlari");
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.KursProgrami).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.Taksit).IsRequired();
-                entity.Property(e => e.Tutar).HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.TaksitSayisi).IsRequired();
+                entity.Property(e => e.TaksitTutari).HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.ToplamTutar)
+                    .HasColumnType("decimal(18,2)")
+                    .HasComputedColumnSql("[TaksitTutari] * [TaksitSayisi]", stored: true);
             });
 
             // Configure OgrenciOdemeTakvimi entity

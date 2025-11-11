@@ -15,23 +15,21 @@ namespace StudentApp.Models
         [Required(ErrorMessage = "Taksit sayýsý zorunludur")]
         [Range(1, 100, ErrorMessage = "Taksit sayýsý 1 ile 100 arasýnda olmalýdýr")]
         [Display(Name = "Taksit Sayýsý")]
-        public int Taksit { get; set; }
+        public int TaksitSayisi { get; set; }
 
         [Display(Name = "Vade (Gün)")]
         [Range(1, 3650, ErrorMessage = "Vade 1 ile 3650 gün arasýnda olmalýdýr")]
         public int? Vade { get; set; }
 
-        [Required(ErrorMessage = "Toplam tutar alaný zorunludur")]
-        [Range(0.01, double.MaxValue, ErrorMessage = "Toplam tutar 0'dan büyük olmalýdýr")]
-        [Display(Name = "Toplam Tutar")]
-        [DisplayFormat(DataFormatString = "{0:C2}", ApplyFormatInEditMode = false)]
-        public decimal Tutar { get; set; } = 0;
-
-        /// <summary>
-        /// Taksit baþýna düþen tutar (Hesaplanmýþ alan)
-        /// </summary>
-        [NotMapped]
+        [Required(ErrorMessage = "Taksit tutarý alaný zorunludur")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Taksit tutarý 0'dan büyük olmalýdýr")]
         [Display(Name = "Taksit Tutarý")]
-        public decimal TaksitTutari => Taksit > 0 ? Math.Round(Tutar / Taksit, 2) : 0;
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal TaksitTutari { get; set; } = 0;
+
+        [Display(Name = "Toplam Tutar")]
+        [Column(TypeName = "decimal(18,2)")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public decimal ToplamTutar { get; set; }
     }
 }

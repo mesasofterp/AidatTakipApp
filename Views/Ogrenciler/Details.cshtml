@@ -156,32 +156,32 @@
          {
     <div class="card bg-light">
 <div class="card-body p-3">
-          <h6 class="mb-2">
+     <h6 class="mb-2">
          <i class="fas fa-book me-1"></i>@Model.OdemePlanlari.KursProgrami
-               </h6>
+    </h6>
              <div class="row">
-            <div class="col-md-4">
+ <div class="col-md-4">
         <small class="text-muted d-block">Toplam Tutar</small>
-       <strong class="text-success">₺ @Model.OdemePlanlari.Tutar.ToString("N2")</strong>
+       <strong class="text-success">₺ @Model.OdemePlanlari.ToplamTutar.ToString("N2")</strong>
                </div>
-          <div class="col-md-4">
+   <div class="col-md-4">
        <small class="text-muted d-block">Taksit Sayısı</small>
- <span class="badge bg-primary">@Model.OdemePlanlari.Taksit Taksit</span>
+ <span class="badge bg-primary">@Model.OdemePlanlari.TaksitSayisi Taksit</span>
      </div>
      <div class="col-md-4">
       <small class="text-muted d-block">Taksit Tutarı</small>
    <strong class="text-info">₺ @Model.OdemePlanlari.TaksitTutari.ToString("N2")</strong>
-        </div>
+</div>
  </div>
-            @if (Model.OdemePlanlari.Vade.HasValue)
+       @if (Model.OdemePlanlari.Vade.HasValue)
        {
         <div class="mt-2">
-              <small class="text-muted">Vade:</small>
+        <small class="text-muted">Vade:</small>
           <span class="badge bg-warning text-dark ms-1">@Model.OdemePlanlari.Vade gün</span>
-             </div>
-        }
+   </div>
+      }
       </div>
-        </div>
+  </div>
   }
         else
                  {

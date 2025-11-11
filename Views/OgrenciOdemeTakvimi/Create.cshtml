@@ -3,23 +3,23 @@
 @{
     ViewData["Title"] = "Ödeme Gir";
     var ogrenciAdi = ViewBag.OgrenciAdi as string;
-    var kalanBorc = ViewBag.KalanBorc as decimal? ?? 0;
+ var kalanBorc = ViewBag.KalanBorc as decimal? ?? 0;
     var toplamOdenen = ViewBag.ToplamOdenen as decimal? ?? 0;
     var odemePlani = ViewBag.OdemePlani as StudentApp.Models.OdemePlanlari;
     var taksitTutari = 0m;
     
-    if (odemePlani != null && odemePlani.Taksit > 0)
+    if (odemePlani != null && odemePlani.TaksitSayisi > 0)
     {
- taksitTutari = Math.Round(odemePlani.Tutar / odemePlani.Taksit, 2);
+ taksitTutari = odemePlani.TaksitTutari;
     }
 
     // Öðrenci yoksa uyarý göster
     if (Model.OgrenciId <= 0)
-    {
+ {
         <div class="alert alert-danger text-center" role="alert">
-        <h4><i class="fas fa-exclamation-triangle me-2"></i>Hata</h4>
+     <h4><i class="fas fa-exclamation-triangle me-2"></i>Hata</h4>
             <p>Ödeme giriþi yapmak için önce bir öðrenci seçmelisiniz.</p>
-            <a asp-controller="Ogrenciler" asp-action="Index" class="btn btn-primary">
+      <a asp-controller="Ogrenciler" asp-action="Index" class="btn btn-primary">
            <i class="fas fa-users me-1"></i>Öðrenci Listesine Git
             </a>
         </div>
@@ -32,30 +32,30 @@
     function doldurTaksit() {
         var taksitTutariValue = @(taksitTutari.ToString("F2", System.Globalization.CultureInfo.InvariantCulture));
         var kalanBorcValue = @(kalanBorc.ToString("F2", System.Globalization.CultureInfo.InvariantCulture));
-        
-        var input = document.getElementById('odenenTutarInput');
+  
+    var input = document.getElementById('odenenTutarInput');
         var borcInput = document.getElementById('borcTutariInput');
    
-        if (input) {
+    if (input) {
             input.value = taksitTutariValue;
   input.focus();
     
-            // Görsel feedback
+         // Görsel feedback
        input.style.borderColor = '#198754';
             input.style.borderWidth = '3px';
             input.style.transition = 'all 0.3s ease';
  
             setTimeout(function() {
-                input.style.borderColor = '';
-       input.style.borderWidth = '';
+     input.style.borderColor = '';
+     input.style.borderWidth = '';
           }, 1000);
        
             // Kalan borcu hesapla
  if (borcInput) {
-            var yeniBorc = Math.max(0, kalanBorcValue - taksitTutariValue);
+      var yeniBorc = Math.max(0, kalanBorcValue - taksitTutariValue);
    borcInput.value = yeniBorc.toFixed(2);
    }
-      
+  
             alert('Taksit tutarý girildi: ' + taksitTutariValue + ' TL');
         } else {
       alert('Hata: Input alaný bulunamadý!');
@@ -67,30 +67,30 @@
   <div class="col-md-10">
      <div class="card">
       <div class="card-header bg-success text-white">
-         <h4 style="font-family: Arial, sans-serif;"><span style="font-size: 1.2em;">&#8378;</span> Ödeme Gir</h4>
+     <h4 style="font-family: Arial, sans-serif;"><span style="font-size: 1.2em;">&#8378;</span> Ödeme Gir</h4>
      </div>
-            <div class="card-body">
+  <div class="card-body">
         @if (!string.IsNullOrEmpty(ogrenciAdi))
                 {
-         <div class="alert alert-info mb-4">
-         <div class="row">
-           <div class="col-md-4">
-              <h5 class="mb-2">
-            <i class="fas fa-user me-1"></i>@ogrenciAdi
-                 </h5>
+     <div class="alert alert-info mb-4">
+     <div class="row">
+     <div class="col-md-4">
+      <h5 class="mb-2">
+     <i class="fas fa-user me-1"></i>@ogrenciAdi
+               </h5>
   </div>
   <div class="col-md-8">
              <div class="row">
-       <div class="col-md-4">
+     <div class="col-md-4">
         <div class="mb-1">
        <strong>Toplam Ödenen:</strong>
    <span class="text-success" style="font-family: Arial, sans-serif;">&#8378;@toplamOdenen.ToString("N2")</span>
         </div>
-   </div>
+ </div>
 <div class="col-md-4">
       <div>
        <strong>Kalan Borç:</strong>
-    <span class="text-danger" style="font-family: Arial, sans-serif;">&#8378;@kalanBorc.ToString("N2")</span>
+  <span class="text-danger" style="font-family: Arial, sans-serif;">&#8378;@kalanBorc.ToString("N2")</span>
           </div>
          </div>
       @if (taksitTutari > 0)
@@ -101,32 +101,32 @@
   <button type="button" class="btn btn-sm btn-outline-primary" onclick="doldurTaksit(); return false;">
        <span style="font-family: Arial, sans-serif;">&#8378;@taksitTutari.ToString("N2")</span> <i class="fas fa-arrow-right ms-1"></i>
              </button>
-           </div>
+   </div>
      </div>
            }
-              </div>
            </div>
-                   </div>
+           </div>
+           </div>
 
      @if (odemePlani != null && taksitTutari > 0)
      {
-           <div class="mt-2 pt-2 border-top">
+  <div class="mt-2 pt-2 border-top">
             <small class="text-muted">
-            <strong>Ödeme Planý:</strong> @odemePlani.KursProgrami -
-       <strong>@odemePlani.Taksit taksit</strong> ×
+    <strong>Ödeme Planý:</strong> @odemePlani.KursProgrami -
+     <strong>@odemePlani.TaksitSayisi taksit</strong> ×
      <button type="button" class="btn btn-sm btn-link p-0 text-primary" onclick="doldurTaksit(); return false;">
  <strong style="font-family: Arial, sans-serif;">&#8378;@taksitTutari.ToString("N2")</strong>
   </button> =
-               <strong style="font-family: Arial, sans-serif;">&#8378;@odemePlani.Tutar.ToString("N2")</strong>
+               <strong style="font-family: Arial, sans-serif;">&#8378;@odemePlani.ToplamTutar.ToString("N2")</strong>
       @if (odemePlani.Vade.HasValue)
-            {
+       {
          <span> (@odemePlani.Vade gün vade)</span>
    }
     </small>
         </div>
           }
    </div>
-          }
+    }
 
       <form asp-action="Create" method="post">
          <input type="hidden" asp-for="OgrenciId" />
@@ -136,26 +136,26 @@
    <label asp-for="OdemeTarihi" class="form-label"></label>
        <div class="input-group">
  <span class="input-group-text"><i class="fas fa-calendar"></i></span>
-           <input asp-for="OdemeTarihi" type="date" class="form-control" />
+   <input asp-for="OdemeTarihi" type="date" class="form-control" />
          </div>
 <span asp-validation-for="OdemeTarihi" class="text-danger"></span>
-             <small class="form-text text-muted">Boþ býrakýlýrsa bugünün tarihi kullanýlýr</small>
+       <small class="form-text text-muted">Boþ býrakýlýrsa bugünün tarihi kullanýlýr</small>
         </div>
 
             <div class="mb-3">
      <label asp-for="OdenenTutar" class="form-label">
          Ödenen Tutar
-     @if (taksitTutari > 0)
+  @if (taksitTutari > 0)
              {
   <button type="button" class="btn btn-sm btn-primary ms-2" onclick="doldurTaksit(); return false;">
-          <i class="fas fa-hand-pointer me-1"></i>Taksit Tutarý: <span style="font-family: Arial, sans-serif;">&#8378;@taksitTutari.ToString("N2")</span>
+      <i class="fas fa-hand-pointer me-1"></i>Taksit Tutarý: <span style="font-family: Arial, sans-serif;">&#8378;@taksitTutari.ToString("N2")</span>
         </button>
          }
    </label>
-             <div class="input-group">
-   <span class="input-group-text" style="font-family: Arial, sans-serif;">&#8378;</span>
-            <input asp-for="OdenenTutar" type="number" step="0.01" class="form-control"
-       placeholder="0.00" min="0.01" id="odenenTutarInput" />
+         <div class="input-group">
+ <span class="input-group-text" style="font-family: Arial, sans-serif;">&#8378;</span>
+   <input asp-for="OdenenTutar" type="number" step="0.01" class="form-control"
+ placeholder="0.00" min="0.01" id="odenenTutarInput" />
         </div>
           <span asp-validation-for="OdenenTutar" class="text-danger"></span>
       @if (taksitTutari > 0)
@@ -163,9 +163,9 @@
 <small class="form-text text-muted">
  <i class="fas fa-info-circle me-1"></i>
   <span class="text-primary">Yukarýdaki butona týklayarak taksit tutarýný otomatik girebilirsiniz</span>
-               </small>
+        </small>
     }
-                 </div>
+          </div>
 
    <div class="mb-3">
    <label asp-for="BorcTutari" class="form-label"></label>
@@ -173,28 +173,28 @@
      <span class="input-group-text" style="font-family: Arial, sans-serif;">&#8378;</span>
       <input asp-for="BorcTutari" type="number" step="0.01" class="form-control"
       placeholder="0.00" min="0" value="@(kalanBorc)" id="borcTutariInput" />
-                  </div>
+           </div>
        <span asp-validation-for="BorcTutari" class="text-danger"></span>
   <small class="form-text text-muted">Ödeme sonrasý kalan borç tutarý</small>
           </div>
 
     <div class="mb-3">
-              <label asp-for="Aciklama" class="form-label"></label>
+    <label asp-for="Aciklama" class="form-label"></label>
 <textarea asp-for="Aciklama" class="form-control" rows="3"
          placeholder="Ödeme ile ilgili not veya açýklama..."></textarea>
   <span asp-validation-for="Aciklama" class="text-danger"></span>
-            </div>
+   </div>
 
   <div class="d-flex justify-content-between">
-  <a asp-controller="Ogrenciler" asp-action="Index" class="btn btn-secondary">
-          <i class="fas fa-arrow-left me-1"></i>Ýptal
+<a asp-controller="Ogrenciler" asp-action="Index" class="btn btn-secondary">
+  <i class="fas fa-arrow-left me-1"></i>Ýptal
   </a>
    <button type="submit" class="btn btn-success">
             <i class="fas fa-save me-1"></i>Ödemeyi Kaydet
             </button>
   </div>
     </form>
-            </div>
+         </div>
    </div>
     </div>
 </div>
@@ -202,9 +202,9 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
-     // Sayfa yüklendikten sonra input change event'i
+  // Sayfa yüklendikten sonra input change event'i
         document.addEventListener('DOMContentLoaded', function() {
-            var odenenInput = document.getElementById('odenenTutarInput');
+    var odenenInput = document.getElementById('odenenTutarInput');
        var borcInput = document.getElementById('borcTutariInput');
  var kalanBorcBaslangic = @(kalanBorc.ToString("F2", System.Globalization.CultureInfo.InvariantCulture));
 
@@ -212,9 +212,9 @@
     odenenInput.addEventListener('input', function() {
           var odenenTutar = parseFloat(this.value) || 0;
  var yeniBorc = Math.max(0, kalanBorcBaslangic - odenenTutar);
-            borcInput.value = yeniBorc.toFixed(2);
+    borcInput.value = yeniBorc.toFixed(2);
    });
-            }
+     }
         });
-    </script>
+</script>
 }

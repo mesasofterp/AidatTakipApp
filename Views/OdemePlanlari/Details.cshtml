@@ -17,19 +17,19 @@
       <i class="fas fa-book me-1"></i>@Html.DisplayFor(model => model.KursProgrami)
      </dd>
 
-        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Tutar)</dt>
+        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.ToplamTutar)</dt>
        <dd class="col-sm-8">
     <div class="card bg-success text-white d-inline-block px-3 py-2">
      <h5 class="mb-0">
-    ₺ @Model.Tutar.ToString("N2")
+    ₺ @Model.ToplamTutar.ToString("N2")
      </h5>
            <small>Toplam Tutar</small>
       </div>
        </dd>
    
-   <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Taksit)</dt>
+   <dt class="col-sm-4">@Html.DisplayNameFor(model => model.TaksitSayisi)</dt>
         <dd class="col-sm-8">
-   <span class="badge bg-primary fs-5">@Model.Taksit Taksit</span>
+   <span class="badge bg-primary fs-5">@Model.TaksitSayisi Taksit</span>
       </dd>
 
         <dt class="col-sm-4">Taksit Tutarı</dt>
@@ -88,9 +88,9 @@
 
     <div class="alert alert-light border">
        <h6 class="mb-2"><i class="fas fa-info-circle me-1"></i>Ödeme Planı Özeti</h6>
-      <ul class="mb-0">
-       <li><strong>Toplam Ödenecek:</strong> ₺ @Model.Tutar.ToString("N2")</li>
-   <li><strong>Taksit Sayısı:</strong> @Model.Taksit adet</li>
+    <ul class="mb-0">
+       <li><strong>Toplam Ödenecek:</strong> ₺ @Model.ToplamTutar.ToString("N2")</li>
+   <li><strong>Taksit Sayısı:</strong> @Model.TaksitSayisi adet</li>
    <li><strong>Taksit Başına:</strong> ₺ @Model.TaksitTutari.ToString("N2")</li>
        @if (Model.Vade.HasValue)
        {

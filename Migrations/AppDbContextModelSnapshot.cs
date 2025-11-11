@@ -260,11 +260,16 @@ namespace StudentApp.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("Taksit")
+                    b.Property<int>("TaksitSayisi")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("Tutar")
+                    b.Property<decimal>("TaksitTutari")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("ToplamTutar")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("decimal(18,2)")
+                        .HasComputedColumnSql("[TaksitTutari] * [TaksitSayisi]", true);
 
                     b.Property<int?>("Vade")
                         .HasColumnType("int");

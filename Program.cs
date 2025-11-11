@@ -127,7 +127,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
-    name: "default",
+  name: "default",
     pattern: "{controller=Account}/{action=Login}/{id?}");
 
 // Ensure database is created and migrated
@@ -137,78 +137,29 @@ using (var scope = app.Services.CreateScope())
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     
     try
-    {
+ {
         // Check if database exists and apply pending migrations
         var pendingMigrations = context.Database.GetPendingMigrations();
-        
+     
         if (pendingMigrations.Any())
+  {
+          logger.LogInformation("Bekleyen migration'lar uygulanıyor: {Migrations}", 
+  string.Join(", ", pendingMigrations));
+        context.Database.Migrate();
+  logger.LogInformation("Migration'lar başarıyla uygulandı.");
+      }
+  else
         {
-            logger.LogInformation("Bekleyen migration'lar uygulanıyor: {Migrations}", 
-                string.Join(", ", pendingMigrations));
-            context.Database.Migrate();
-            logger.LogInformation("Migration'lar başarıyla uygulandı.");
+      logger.LogInformation("Bekleyen migration yok, database güncel.");
         }
-        else
-        {
-            logger.LogInformation("Bekleyen migration yok, database güncel.");
-        }
+      
+  // Seed data oluştur
+        await SeedData.InitializeAsync(app.Services);
     }
     catch (Exception ex)
     {
-        logger.LogError(ex, "Migration uygulanırken hata oluştu. Database zaten mevcut olabilir.");
-        
-        // Database zaten varsa ve migration geçmişi yoksa, migration'ı baseline olarak işaretle
-        try
-        {
-            var appliedMigrations = context.Database.GetAppliedMigrations();
-            if (!appliedMigrations.Any())
-            {
-                logger.LogWarning("Database mevcut ancak migration geçmişi yok. Manuel migration geçmişi kontrolü gerekebilir.");
-            }
-        }
-        catch
-        {
-            // Ignore
-        }
+        logger.LogError(ex, "Migration veya seed data uygulanırken hata oluştu.");
     }
 }
-//using (var scope = app.Services.CreateScope())
-//{
-//    var services = scope.ServiceProvider;
-//    var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
-//    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-//    // Rol varsa geç, yoksa oluştur
-//    string adminRole = "Admin";
-//    if (!await roleManager.RoleExistsAsync(adminRole))
-//        await roleManager.CreateAsync(new IdentityRole(adminRole));
-
-//    // Varsayılan kullanıcı bilgileri
-//    string adminEmail = "email@email.com";
-//    string adminPassword = "12345678";
-
-//    // Kullanıcı var mı kontrol et
-//    var user = await userManager.FindByEmailAsync(adminEmail);
-//    if (user == null)
-//    {
-//        var newUser = new IdentityUser
-//        {
-//            UserName = "admin",
-//            Email = adminEmail,
-//            EmailConfirmed = true
-//        };
-
-//        var result = await userManager.CreateAsync(newUser, adminPassword);
-//        if (result.Succeeded)
-//        {
-//            await userManager.AddToRoleAsync(newUser, adminRole);
-//        }
-//        else
-//        {
-//            Console.WriteLine("Kullanıcı oluşturulamadı:");
-//            foreach (var error in result.Errors)
-//                Console.WriteLine($"- {error.Description}");
-//        }
-//    }
-//}
 app.Run();
