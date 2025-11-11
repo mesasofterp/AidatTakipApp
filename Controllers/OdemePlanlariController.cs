@@ -101,7 +101,7 @@ namespace StudentApp.Controllers
                         return NotFound();
                     }
 
-                    TempData["SuccessMessage"] = "Ödeme planı başarıyla güncellendi!";
+                    TempData["SuccessMessage"] = "Ödeme planı başarıyla güncellendi! Bu plana bağlı öğrencilerin ödenmemiş taksitleri de otomatik olarak güncellendi.";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)

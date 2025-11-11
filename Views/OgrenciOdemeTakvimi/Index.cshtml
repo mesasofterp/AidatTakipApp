@@ -99,7 +99,7 @@
 {
 var toplamOdenen = Model.Sum(o => o.OdenenTutar);
     var sonBorc = ogrenciId.HasValue 
-     ? Model.OrderByDescending(o => o.OdemeTarihi).FirstOrDefault()?.BorcTutari ?? 0
+     ? Model.Where(o => !o.Odendi).FirstOrDefault()?.BorcTutari ?? 0//Model.OrderByDescending(o => o.OdemeTarihi).FirstOrDefault()?.BorcTutari ?? 0
      : (ViewBag.ToplamKalanBorc as decimal? ?? 0);
 
     <div class="row mb-4">
