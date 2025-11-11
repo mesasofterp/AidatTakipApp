@@ -222,7 +222,7 @@ namespace StudentApp.Services
                 {
                     OgrenciId = ogrenciId,
                     TaksitNo = i + 1,
-                    TaksitTutari = buTaksitTutari,  // Bu taksit için ödenecek tutar
+                    TaksitTutari = taksitTutari,//buTaksitTutari,  // Bu taksit için ödenecek tutar
                     SonOdemeTarihi = sonOdemeTarihi,
                     OdenenTutar = 0, // Henüz ödenmedi
                     BorcTutari = kalanBorc, // Bu taksit ÖNCESÝ kalan borç (ilk taksitte ToplamTutar)
