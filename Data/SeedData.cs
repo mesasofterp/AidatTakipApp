@@ -73,13 +73,13 @@ UserName = adminEmail,
 
             // Cinsiyetler seed data
          if (!context.Cinsiyetler.Any())
- {
-      context.Cinsiyetler.AddRange(
-  new Cinsiyetler { Cinsiyet = "Erkek" },
-  new Cinsiyetler { Cinsiyet = "Kadýn" }
-       );
-   await context.SaveChangesAsync();
-         Console.WriteLine("Cinsiyet verileri oluþturuldu.");
+         {
+            context.Cinsiyetler.AddRange(
+            new Cinsiyetler { Cinsiyet = "Erkek" },
+            new Cinsiyetler { Cinsiyet = "Kadýn" }
+            );
+            await context.SaveChangesAsync();
+            Console.WriteLine("Cinsiyet verileri oluþturuldu.");
          }
         }
  }
