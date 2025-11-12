@@ -154,7 +154,7 @@ var toplamOdenen = Model.Sum(o => o.OdenenTutar);
     var grupId = $"collapse{grup.Key.OgrenciId}";
          var odemeler = grup.OrderBy(o => o.TaksitNo ?? 0).ToList();
  var ogrenciToplamOdenen = odemeler.Sum(o => o.OdenenTutar);
- var ogrenciKalanBorc = odemeler.LastOrDefault()?.BorcTutari ?? 0;
+ var ogrenciKalanBorc = odemeler.Any(o => !o.Odendi) ? odemeler.LastOrDefault()?.BorcTutari ?? 0 : 0;
     var odenenTaksitSayisi = odemeler.Count(o => o.Odendi);
      var toplamTaksitSayisi = odemeler.Count;
  var gecikmisTaksitSayisi = odemeler.Count(o => !o.Odendi && o.SonOdemeTarihi.HasValue && o.SonOdemeTarihi.Value.Date < DateTime.Today);
