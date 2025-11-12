@@ -55,6 +55,10 @@ namespace StudentApp.Models
         [DataType(DataType.Date)]
         public DateTime DogumTarihi { get; set; }
 
+        [Display(Name = "İlk Taksit Son Ödeme Tarihi")]
+        [DataType(DataType.Date)]
+        public DateTime? IlkTaksitSonOdemeTarihi { get; set; }
+
         public DateTime? SonSmsTarihi { get; set; }
 
         [Required(ErrorMessage = "Ödeme planı seçimi zorunludur")]
