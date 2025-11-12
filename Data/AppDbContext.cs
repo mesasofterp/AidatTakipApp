@@ -16,6 +16,7 @@ namespace StudentApp.Data
         public DbSet<OdemePlanlari> OdemePlanlari { get; set; }
         public DbSet<OgrenciOdemeTakvimi> OgrenciOdemeTakvimi { get; set; }
         public DbSet<ZamanlayiciAyarlar> ZamanlayiciAyarlar { get; set; }
+        public DbSet<Envanterler> Envanterler { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -96,6 +97,16 @@ namespace StudentApp.Data
                 entity.Property(e => e.Aciklama).HasMaxLength(500);
                 entity.Property(e => e.MesajSablonu).HasMaxLength(500);
                 entity.Property(e => e.OlusturmaTarihi).IsRequired();
+            });
+
+            // Configure Envanterler entity
+            modelBuilder.Entity<Envanterler>(entity =>
+            {
+                entity.ToTable("Envanterler");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.EnvanterAdi).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Adet).IsRequired();
+                entity.Property(e => e.BirimFiyat).HasColumnType("decimal(18,2)").IsRequired();
             });
         }
     }

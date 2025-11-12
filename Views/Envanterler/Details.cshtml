@@ -1,0 +1,109 @@
+@model StudentApp.Models.Envanterler
+
+@{
+    ViewData["Title"] = "Envanter Detaylarý";
+    var toplamDeger = Model.Adet * Model.BirimFiyat;
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+     <div class="card-header bg-info text-white">
+     <h4><i class="fas fa-info-circle me-2"></i>Envanter Detaylarý</h4>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+      <dt class="col-sm-4">
+        <i class="fas fa-box me-2"></i>Envanter Adý
+     </dt>
+<dd class="col-sm-8">
+        <strong class="fs-5">@Model.EnvanterAdi</strong>
+  </dd>
+
+     <dt class="col-sm-4">
+    <i class="fas fa-sort-numeric-up me-2"></i>Adet
+        </dt>
+      <dd class="col-sm-8">
+      <span class="badge bg-info fs-6">@Model.Adet</span>
+   </dd>
+
+  <dt class="col-sm-4">
+  <i class="fas fa-tag me-2"></i>Birim Fiyat
+    </dt>
+ <dd class="col-sm-8">
+       <span class="fs-5" style="font-family: Arial, sans-serif;">?@Model.BirimFiyat.ToString("N2")</span>
+  </dd>
+
+        <dt class="col-sm-4">
+    <i class="fas fa-calculator me-2"></i>Toplam Deðer
+  </dt>
+ <dd class="col-sm-8">
+     <span class="badge bg-success fs-5" style="font-family: Arial, sans-serif;">?@toplamDeger.ToString("N2")</span>
+        </dd>
+
+        <dt class="col-sm-4">
+      <i class="fas fa-toggle-on me-2"></i>Durum
+  </dt>
+    <dd class="col-sm-8">
+     @if (Model.Aktif)
+    {
+      <span class="badge bg-success fs-6">
+       <i class="fas fa-check-circle me-1"></i>Aktif
+ </span>
+    }
+       else
+ {
+     <span class="badge bg-secondary fs-6">
+       <i class="fas fa-times-circle me-1"></i>Pasif
+ </span>
+      }
+  </dd>
+
+  @if (!string.IsNullOrWhiteSpace(Model.Aciklama))
+  {
+     <dt class="col-sm-4">
+     <i class="fas fa-comment me-2"></i>Açýklama
+      </dt>
+       <dd class="col-sm-8">
+     <div class="alert alert-light mb-0">
+      @Model.Aciklama
+      </div>
+ </dd>
+      }
+  </dl>
+
+   <hr class="my-4" />
+
+   <div class="card bg-light">
+      <div class="card-body">
+    <h6 class="card-title"><i class="fas fa-info-circle me-2"></i>Sistem Bilgileri</h6>
+   <small class="text-muted">
+        <div class="row">
+      <div class="col-md-6">
+    <i class="fas fa-hashtag me-1"></i><strong>ID:</strong> @Model.Id
+  </div>
+   <div class="col-md-6">
+           <i class="fas fa-code-branch me-1"></i><strong>Versiyon:</strong> @Model.Version
+      </div>
+       </div>
+     </small>
+  </div>
+        </div>
+
+    <div class="d-flex justify-content-between mt-4">
+   <a asp-action="Index" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-1"></i>Listeye Dön
+     </a>
+     <div>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">
+<i class="fas fa-edit me-1"></i>Düzenle
+       </a>
+        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+    <i class="fas fa-trash me-1"></i>Sil
+  </a>
+   </div>
+   </div>
+   </div>
+   </div>
+    </div>
+</div>

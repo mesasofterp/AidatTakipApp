@@ -64,6 +64,11 @@
   <i class="fas fa-money-check-alt me-1"></i>Ödeme Takvimleri
     </a>
      </li>
+                 <li class="nav-item">
+  <a class="nav-link" asp-area="" asp-controller="Envanterler" asp-action="Index">
+    <i class="fas fa-boxes me-1"></i>Envanter
+           </a>
+          </li>
              <li class="nav-item dropdown">
          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
       <i class="fas fa-plus me-1"></i>Yeni Ekle
@@ -79,12 +84,17 @@
      <i class="fas fa-calendar-plus me-1"></i>Yeni Ödeme Planı
 </a>
        </li>
-                                <li>
-                                    <a class="dropdown-item" asp-controller="Zamanlayici" asp-action="Index">
-                                        <i class="fas fa-clock me-1"></i>SMS Zamanlayıcı
-                                    </a>
-                                </li>
-         </ul>
+          <li>
+     <a class="dropdown-item" asp-controller="Envanterler" asp-action="Create">
+    <i class="fas fa-box-open me-1"></i>Yeni Envanter
+                 </a>
+        </li>
+      <li>
+      <a class="dropdown-item" asp-controller="Zamanlayici" asp-action="Index">
+   <i class="fas fa-clock me-1"></i>SMS Zamanlayıcı
+</a>
+  </li>
+       </ul>
             </li>
          }
      </ul>

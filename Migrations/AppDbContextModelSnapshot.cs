@@ -238,6 +238,42 @@ namespace StudentApp.Migrations
                     b.ToTable("Cinsiyetler", (string)null);
                 });
 
+            modelBuilder.Entity("StudentApp.Models.Envanterler", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Aciklama")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Adet")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Aktif")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("BirimFiyat")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("EnvanterAdi")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Envanterler", (string)null);
+                });
+
             modelBuilder.Entity("StudentApp.Models.OdemePlanlari", b =>
                 {
                     b.Property<long>("Id")
