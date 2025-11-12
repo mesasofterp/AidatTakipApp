@@ -21,6 +21,7 @@ namespace StudentApp.Controllers
         private readonly ISmsService _smsService;
         private readonly StudentApp.Data.AppDbContext _context;
         private readonly IZamanlayiciService _schedulerService;
+        private readonly IEnvanterlerService _envanterlerService;
 
         public OgrencilerController(
             IOgrencilerService ogrencilerService,
@@ -28,7 +29,8 @@ namespace StudentApp.Controllers
             ICinsiyetlerService cinsiyetlerService,
             ISmsService smsService,
             StudentApp.Data.AppDbContext context,
-            IZamanlayiciService schedulerService)
+            IZamanlayiciService schedulerService,
+            IEnvanterlerService envanterlerService)
         {
             _ogrenciService = ogrencilerService;
             _odemePlanlariService = odemePlanlariService;
@@ -36,6 +38,7 @@ namespace StudentApp.Controllers
             _smsService = smsService;
             _context = context;
             _schedulerService = schedulerService;
+            _envanterlerService = envanterlerService;
         }
 
         // GET: Student
@@ -161,14 +164,32 @@ var today = DateTime.Now;
         // POST: Student/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Ogrenciler ogrenci)
+        public async Task<IActionResult> Create(Ogrenciler ogrenci, long? EnvanterId, DateTime? SatisTarihi, decimal? OdenenTutar, string EnvanterAciklama)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
                     await _ogrenciService.AddOgrenciAsync(ogrenci);
-                    TempData["SuccessMessage"] = "Öğrenci başarıyla eklendi!";
+                    // Envanter satış kaydı varsa ekle
+    if (EnvanterId.HasValue && EnvanterId.Value > 0)
+     {
+       var envanterSatis = new OgrenciEnvanterSatis
+      {
+OgrenciId = ogrenci.Id,
+       EnvanterId = EnvanterId.Value,
+      SatisTarihi = SatisTarihi ?? DateTime.Now,
+   OdenenTutar = OdenenTutar ?? 0,
+   Aciklama = EnvanterAciklama,
+     Aktif = true,
+         IsDeleted = false
+     };
+
+await _context.OgrenciEnvanterSatis.AddAsync(envanterSatis);
+      await _context.SaveChangesAsync();
+  }
+
+    TempData["SuccessMessage"] = "Öğrenci başarıyla eklendi!";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
@@ -227,7 +248,7 @@ var today = DateTime.Now;
         // POST: Student/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, Ogrenciler ogrenci)
+        public async Task<IActionResult> Edit(long id, Ogrenciler ogrenci, long? EnvanterId, DateTime? SatisTarihi, decimal? OdenenTutar, string EnvanterAciklama)
         {
             if (id != ogrenci.Id)
             {
@@ -244,27 +265,45 @@ var today = DateTime.Now;
                         return NotFound();
                     }
 
-                    TempData["SuccessMessage"] = "Öğrenci başarıyla güncellendi!";
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", $"Öğrenci güncellenirken bir hata oluştu: {ex.Message}");
-                }
-            }
-            else
-            {
-                // ModelState hatalarını logla
-                var errors = ModelState.Values.SelectMany(v => v.Errors);
-                foreach (var error in errors)
-                {
-                    Console.WriteLine($"Model Error: {error.ErrorMessage}");
-                }
-            }
+                    // Envanter satış kaydı varsa ekle
+if (EnvanterId.HasValue && EnvanterId.Value > 0)
+   {
+    var envanterSatis = new OgrenciEnvanterSatis
+  {
+   OgrenciId = ogrenci.Id,
+    EnvanterId = EnvanterId.Value,
+    SatisTarihi = SatisTarihi ?? DateTime.Now,
+     OdenenTutar = OdenenTutar ?? 0,
+Aciklama = EnvanterAciklama,
+      Aktif = true,
+    IsDeleted = false
+     };
 
-            await LoadDropdownsAsync();
-            return View(ogrenci);
-        }
+     await _context.OgrenciEnvanterSatis.AddAsync(envanterSatis);
+   await _context.SaveChangesAsync();
+      }
+
+     TempData["SuccessMessage"] = "Öğrenci başarıyla güncellendi!";
+   return RedirectToAction(nameof(Index));
+     }
+      catch (Exception ex)
+        {
+         ModelState.AddModelError("", $"Öğrenci güncellenirken bir hata oluştu: {ex.Message}");
+      }
+ }
+        else
+    {
+           // ModelState hatalarını logla
+           var errors = ModelState.Values.SelectMany(v => v.Errors);
+    foreach (var error in errors)
+     {
+      Console.WriteLine($"Model Error: {error.ErrorMessage}");
+ }
+  }
+
+          await LoadDropdownsAsync();
+        return View(ogrenci);
+     }
 
         // GET: Student/Delete/5
         public async Task<IActionResult> Delete(long id)
@@ -335,8 +374,11 @@ private async Task LoadDropdownsAsync()
     var odemePlanlari = await _odemePlanlariService.GetAllOdemePlanlariAsync();
     ViewBag.OdemePlanlari = new SelectList(odemePlanlari, "Id", "KursProgrami");
 
-    var cinsiyetler = await _cinsiyetlerService.GetAllCinsiyetlerAsync();
-    ViewBag.Cinsiyetler = new SelectList(cinsiyetler, "Id", "Cinsiyet");
+  var cinsiyetler = await _cinsiyetlerService.GetAllCinsiyetlerAsync();
+   ViewBag.Cinsiyetler = new SelectList(cinsiyetler, "Id", "Cinsiyet");
+
+            var envanterler = await _envanterlerService.GetActiveAsync();
+ ViewBag.Envanterler = new SelectList(envanterler, "Id", "EnvanterAdi");
         }
 
         // POST: Ogrenciler/SendSmsSelected

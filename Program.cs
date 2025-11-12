@@ -55,6 +55,7 @@ builder.Services.AddScoped<IOgrencilerService, OgrenciService>();
 builder.Services.AddScoped<IOdemePlanlariService, OdemePlanlariService>();
 builder.Services.AddScoped<ICinsiyetlerService, CinsiyetlerService>();
 builder.Services.AddScoped<IOgrenciOdemeTakvimiService, OgrenciOdemeTakvimiService>();
+builder.Services.AddScoped<IEnvanterlerService, EnvanterlerService>();
 
 // Add Daily Task Service and SMS Service
 builder.Services.AddScoped<IGunlukZamanlayiciService, GunlukZamanlayiciService>();

@@ -16,6 +16,8 @@ namespace StudentApp.Data
         public DbSet<OdemePlanlari> OdemePlanlari { get; set; }
         public DbSet<OgrenciOdemeTakvimi> OgrenciOdemeTakvimi { get; set; }
         public DbSet<ZamanlayiciAyarlar> ZamanlayiciAyarlar { get; set; }
+        public DbSet<Envanterler> Envanterler { get; set; }
+        public DbSet<OgrenciEnvanterSatis> OgrenciEnvanterSatis { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -96,6 +98,37 @@ namespace StudentApp.Data
                 entity.Property(e => e.Aciklama).HasMaxLength(500);
                 entity.Property(e => e.MesajSablonu).HasMaxLength(500);
                 entity.Property(e => e.OlusturmaTarihi).IsRequired();
+            });
+
+            // Configure Envanterler entity
+            modelBuilder.Entity<Envanterler>(entity =>
+            {
+                entity.ToTable("Envanterler");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.EnvanterAdi).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Adet).IsRequired();
+                entity.Property(e => e.AlisFiyat).HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.SatisFiyat).HasColumnType("decimal(18,2)").IsRequired();
+            });
+
+            // Configure OgrenciEnvanterSatis entity
+            modelBuilder.Entity<OgrenciEnvanterSatis>(entity =>
+            {
+                entity.ToTable("OgrenciEnvanterSatis");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.SatisTarihi);
+                entity.Property(e => e.OdenenTutar).HasColumnType("decimal(18,2)").IsRequired();
+
+                // Foreign key relationships
+                entity.HasOne(e => e.Ogrenci)
+                    .WithMany()
+                    .HasForeignKey(e => e.OgrenciId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.Envanter)
+                    .WithMany()
+                    .HasForeignKey(e => e.EnvanterId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
         }
     }
