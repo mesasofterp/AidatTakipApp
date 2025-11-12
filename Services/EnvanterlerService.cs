@@ -104,8 +104,9 @@ namespace StudentApp.Services
 
            existingEnvanter.EnvanterAdi = envanter.EnvanterAdi;
         existingEnvanter.Adet = envanter.Adet;
-     existingEnvanter.BirimFiyat = envanter.BirimFiyat;
-      existingEnvanter.Aktif = envanter.Aktif;
+     existingEnvanter.AlisFiyat = envanter.AlisFiyat;
+      existingEnvanter.SatisFiyat = envanter.SatisFiyat;
+     existingEnvanter.Aktif = envanter.Aktif;
      existingEnvanter.Aciklama = envanter.Aciklama;
      existingEnvanter.Version++;
 
@@ -179,13 +180,13 @@ if (envanter == null)
             {
           return await _context.Envanterler
    .Where(e => !e.IsDeleted && e.Aktif)
-             .SumAsync(e => e.Adet * e.BirimFiyat);
-            }
-  catch (Exception ex)
-         {
- _logger.LogError(ex, "Toplam envanter deðeri hesaplanýrken hata oluþtu");
-       throw;
-          }
+     .SumAsync(e => e.Adet * e.AlisFiyat);
+   }
+    catch (Exception ex)
+       {
+     _logger.LogError(ex, "Toplam envanter deðeri hesaplanýrken hata oluþtu");
+      throw;
+   }
         }
     }
 }

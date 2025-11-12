@@ -77,7 +77,7 @@ namespace StudentApp.Controllers
      // POST: Envanterler/Create
      [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("EnvanterAdi,Adet,BirimFiyat,Aciklama")] Envanterler envanter)
+        public async Task<IActionResult> Create([Bind("EnvanterAdi,Adet,AlisFiyat,SatisFiyat,Aciklama")] Envanterler envanter)
       {
       if (ModelState.IsValid)
             {
@@ -127,33 +127,33 @@ namespace StudentApp.Controllers
         // POST: Envanterler/Edit/5
         [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(long id, [Bind("Id,EnvanterAdi,Adet,BirimFiyat,Aktif,Aciklama,Version")] Envanterler envanter)
+    public async Task<IActionResult> Edit(long id, [Bind("Id,EnvanterAdi,Adet,AlisFiyat,SatisFiyat,Aktif,Aciklama,Version")] Envanterler envanter)
         {
   if (id != envanter.Id)
             {
        return NotFound();
             }
 
-if (ModelState.IsValid)
-     {
-      try
-                {
-               await _envanterlerService.UpdateAsync(envanter);
-  TempData["SuccessMessage"] = "Envanter baþarýyla güncellendi.";
-        return RedirectToAction(nameof(Index));
-            }
-         catch (Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException)
+       if (ModelState.IsValid)
         {
-   ModelState.AddModelError("", "Bu envanter baþka bir kullanýcý tarafýndan deðiþtirilmiþ. Lütfen sayfayý yenileyin.");
+    try
+     {
+       await _envanterlerService.UpdateAsync(envanter);
+     TempData["SuccessMessage"] = "Envanter baþarýyla güncellendi.";
+    return RedirectToAction(nameof(Index));
   }
-        catch (Exception ex)
-   {
-            _logger.LogError(ex, "Envanter güncellenirken hata oluþtu. ID: {Id}", id);
-     ModelState.AddModelError("", "Envanter güncellenirken bir hata oluþtu: " + ex.Message);
-      }
-            }
-            
-          return View(envanter);
+       catch (Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException)
+     {
+      ModelState.AddModelError("", "Bu envanter baþka bir kullanýcý tarafýndan deðiþtirilmiþ. Lütfen sayfayý yenileyin.");
+  }
+  catch (Exception ex)
+      {
+   _logger.LogError(ex, "Envanter güncellenirken hata oluþtu. ID: {Id}", id);
+    ModelState.AddModelError("", "Envanter güncellenirken bir hata oluþtu: " + ex.Message);
+     }
+   }
+          
+   return View(envanter);
         }
 
         // GET: Envanterler/Delete/5

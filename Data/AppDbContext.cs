@@ -106,7 +106,8 @@ namespace StudentApp.Data
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.EnvanterAdi).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.Adet).IsRequired();
-                entity.Property(e => e.BirimFiyat).HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.AlisFiyat).HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.SatisFiyat).HasColumnType("decimal(18,2)").IsRequired();
             });
         }
     }

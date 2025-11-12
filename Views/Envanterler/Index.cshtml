@@ -55,15 +55,15 @@
       </div>
     </div>
     <div class="col-md-4">
-        <div class="card bg-success text-white">
+      <div class="card bg-success text-white">
         <div class="card-body">
-             <h5 class="card-title">
-     <i class="fas fa-lira-sign me-2"></i>Toplam Deðer
-            </h5>
-       <h3 class="mb-0" style="font-family: Arial, sans-serif;">?@toplamDeger.ToString("N2")</h3>
-   <small>Envanter toplam deðeri</small>
+    <h5 class="card-title">
+       <span style="font-family: Arial, sans-serif;">&#8378;</span> Toplam Alýþ Deðer
+   </h5>
+       <h3 class="mb-0"><span style="font-family: Arial, sans-serif;">&#8378;</span> @toplamDeger.ToString("N2")</h3>
+   <small>Envanter toplam alýþ deðeri</small>
      </div>
-        </div>
+     </div>
     </div>
 </div>
 
@@ -81,81 +81,87 @@
     <th class="text-center">
    <i class="fas fa-sort-numeric-up me-1"></i>Adet
        </th>
-        <th class="text-end">
-       <i class="fas fa-tag me-1"></i>Birim Fiyat
-    </th>
-    <th class="text-end">
-           <i class="fas fa-calculator me-1"></i>Toplam Deðer
-    </th>
-        <th class="text-center">
-           <i class="fas fa-toggle-on me-1"></i>Durum
-  </th>
-            <th>
-          <i class="fas fa-comment me-1"></i>Açýklama
+       <th class="text-end">
+      <i class="fas fa-shopping-cart me-1"></i>Alýþ Fiyatý
+   </th>
+  <th class="text-end">
+    <i class="fas fa-tag me-1"></i>Satýþ Fiyatý
      </th>
- <th class="text-center">Ýþlemler</th>
-       </tr>
-</thead>
-       <tbody>
-      @foreach (var item in Model)
-               {
-          var toplamDegerItem = item.Adet * item.BirimFiyat;
+     <th class="text-end">
+    <i class="fas fa-calculator me-1"></i>Toplam Alýþ Deðeri
+  </th>
+       <th class="text-center">
+    <i class="fas fa-toggle-on me-1"></i>Durum
+</th>
+      <th>
+    <i class="fas fa-comment me-1"></i>Açýklama
+    </th>
+       <th class="text-center">Ýþlemler</th>
+  </tr>
+            </thead>
+        <tbody>
+        @foreach (var item in Model)
+     {
+ var toplamDegerItem = item.Adet * item.AlisFiyat;
       <tr>
     <td>
-        <strong>@item.EnvanterAdi</strong>
+     <strong>@item.EnvanterAdi</strong>
         </td>
-            <td class="text-center">
- <span class="badge bg-info fs-6">@item.Adet</span>
-       </td>
-       <td class="text-end">
-         <span style="font-family: Arial, sans-serif;">?@item.BirimFiyat.ToString("N2")</span>
-              </td>
+       <td class="text-center">
+     <span class="badge bg-info fs-6">@item.Adet</span>
+ </td>
     <td class="text-end">
-             <strong style="font-family: Arial, sans-serif;">?@toplamDegerItem.ToString("N2")</strong>
-              </td>
+    <span style="font-family: Arial, sans-serif;">&#8378;@item.AlisFiyat.ToString("N2")</span>
+     </td>
+       <td class="text-end">
+  <span style="font-family: Arial, sans-serif;">&#8378;@item.SatisFiyat.ToString("N2")</span>
+  </td>
+      <td class="text-end">
+     <strong style="font-family: Arial, sans-serif;">&#8378;@toplamDegerItem.ToString("N2")</strong>
+     </td>
    <td class="text-center">
-    @if (item.Aktif)
-         {
- <span class="badge bg-success">
-     <i class="fas fa-check-circle me-1"></i>Aktif
-           </span>
-          }
-       else
-     {
-         <span class="badge bg-secondary">
-           <i class="fas fa-times-circle me-1"></i>Pasif
-               </span>
-         }
-        </td>
-             <td>
-            @if (!string.IsNullOrWhiteSpace(item.Aciklama))
-   {
-               <small>@item.Aciklama</small>
-                 }
-else
+   @if (item.Aktif)
       {
-            <span class="text-muted">-</span>
- }
-        </td>
-        <td class="text-center">
+       <span class="badge bg-success">
+        <i class="fas fa-check-circle me-1"></i>Aktif
+    </span>
+    }
+ else
+      {
+   <span class="badge bg-secondary">
+   <i class="fas fa-times-circle me-1"></i>Pasif
+  </span>
+       }
+      </td>
+      <td>
+   @if (!string.IsNullOrWhiteSpace(item.Aciklama))
+          {
+    <small>@item.Aciklama</small>
+     }
+   else
+       {
+   <span class="text-muted">-</span>
+   }
+  </td>
+     <td class="text-center">
       <div class="btn-group" role="group">
- <a asp-action="Details" asp-route-id="@item.Id"
-     class="btn btn-sm btn-outline-info" title="Detaylarý Görüntüle">
-        <i class="fas fa-eye"></i>
-            </a>
-     <a asp-action="Edit" asp-route-id="@item.Id"
-      class="btn btn-sm btn-outline-warning" title="Düzenle">
-           <i class="fas fa-edit"></i>
-          </a>
-         <a asp-action="Delete" asp-route-id="@item.Id"
-   class="btn btn-sm btn-outline-danger" title="Sil">
+       <a asp-action="Details" asp-route-id="@item.Id"
+    class="btn btn-sm btn-outline-info" title="Detaylarý Görüntüle">
+   <i class="fas fa-eye"></i>
+   </a>
+         <a asp-action="Edit" asp-route-id="@item.Id"
+        class="btn btn-sm btn-outline-warning" title="Düzenle">
+  <i class="fas fa-edit"></i>
+ </a>
+      <a asp-action="Delete" asp-route-id="@item.Id"
+         class="btn btn-sm btn-outline-danger" title="Sil">
   <i class="fas fa-trash"></i>
-              </a>
-         </div>
-          </td>
-    </tr>
-                }
-        </tbody>
+      </a>
+    </div>
+      </td>
+ </tr>
+      }
+ </tbody>
      </table>
             </div>
         </div>

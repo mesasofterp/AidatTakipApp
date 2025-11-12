@@ -17,10 +17,16 @@ namespace StudentApp.Models
         [Display(Name = "Adet")]
         public int Adet { get; set; }
 
-        [Required(ErrorMessage = "Fiyat alaný zorunludur")]
-        [Range(0.01, double.MaxValue, ErrorMessage = "Fiyat 0'dan büyük olmalýdýr")]
-        [Display(Name = "Birim Fiyat")]
+        [Required(ErrorMessage = "Alýþ fiyatý alaný zorunludur")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Alýþ fiyatý 0'dan büyük olmalýdýr")]
+        [Display(Name = "Alýþ Fiyatý")]
         [Column(TypeName = "decimal(18,2)")]
-        public decimal BirimFiyat { get; set; } = 0;
+        public decimal AlisFiyat { get; set; } = 0;
+
+        [Required(ErrorMessage = "Satýþ fiyatý alaný zorunludur")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Satýþ fiyatý 0'dan büyük olmalýdýr")]
+        [Display(Name = "Satýþ Fiyatý")]
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal SatisFiyat { get; set; } = 0;
     }
 }

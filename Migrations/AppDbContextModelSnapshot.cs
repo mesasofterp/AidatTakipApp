@@ -255,7 +255,7 @@ namespace StudentApp.Migrations
                     b.Property<bool>("Aktif")
                         .HasColumnType("bit");
 
-                    b.Property<decimal>("BirimFiyat")
+                    b.Property<decimal>("AlisFiyat")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("EnvanterAdi")
@@ -265,6 +265,9 @@ namespace StudentApp.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<decimal>("SatisFiyat")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Version")
                         .HasColumnType("int");
