@@ -5,9 +5,23 @@ using StudentApp.Jobs;
 using Quartz;
 using AppSchedulerFactory = StudentApp.Services.IZamanlayiciFactory;
 using Microsoft.AspNetCore.Identity;
+using StudentApp.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
+string keyPath = Path.Combine(builder.Environment.ContentRootPath, "App_Data", "public.key");
+string licPath = Path.Combine(builder.Environment.ContentRootPath, "App_Data", "license.lic");
 
+if (!LicenseManager.CheckLicense(keyPath, licPath, out string failReason))
+{
+    Console.ForegroundColor = ConsoleColor.Red;
+    Console.WriteLine("❌ Lisans geçersiz: " + failReason);
+    Console.ResetColor();
+    return; // Uygulamayı başlatma
+}
+
+
+//var app = builder.Build();
+//app.MapGet("/", () => "Lisans doğrulandı, uygulama çalışıyor.");
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -110,7 +124,6 @@ builder.Services.AddScoped<IZamanlayiciService>(sp =>
 });
 
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
