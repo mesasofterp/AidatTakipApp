@@ -117,19 +117,29 @@
   <h5 class="mb-3"><i class="fas fa-credit-card me-2"></i>Ödeme Bilgileri</h5>
 
      <div class="mb-3">
-        <label asp-for="OdemePlanlariId" class="form-label"></label>
-    <select asp-for="OdemePlanlariId" class="form-select" asp-items="ViewBag.OdemePlanlari">
-         <option value="">-- Ödeme Planı Seçiniz --</option>
-      </select>
+      <label asp-for="OdemePlanlariId" class="form-label"></label>
+   <select asp-for="OdemePlanlariId" class="form-select" asp-items="ViewBag.OdemePlanlari">
+    <option value="">-- Ödeme Planı Seçiniz --</option>
+ </select>
        <span asp-validation-for="OdemePlanlariId" class="text-danger"></span>
+ </div>
+
+  <div class="mb-3">
+     <label asp-for="IlkTaksitSonOdemeTarihi" class="form-label"></label>
+    <input asp-for="IlkTaksitSonOdemeTarihi" type="date" class="form-control" />
+    <span asp-validation-for="IlkTaksitSonOdemeTarihi" class="text-danger"></span>
+         <small class="form-text text-muted">
+<i class="fas fa-info-circle me-1"></i>
+       Opsiyonel - Girilmezse kayıt tarihi kullanılır. Bu tarih, ilk taksitin son ödeme tarihidir.
+            </small>
          </div>
 
-            <div class="mb-3">
-       <label asp-for="Aciklama" class="form-label">Notlar / Açıklama</label>
-          <textarea asp-for="Aciklama" class="form-control" rows="3" placeholder="Öğrenci hakkında notlar veya açıklama..."></textarea>
-         <span asp-validation-for="Aciklama" class="text-danger"></span>
-    <small class="form-text text-muted">Opsiyonel - Öğrenci hakkında özel notlar</small>
-         </div>
+      <div class="mb-3">
+   <label asp-for="Aciklama" class="form-label">Notlar / Açıklama</label>
+       <textarea asp-for="Aciklama" class="form-control" rows="3" placeholder="Öğrenci hakkında notlar veya açıklama..."></textarea>
+       <span asp-validation-for="Aciklama" class="text-danger"></span>
+     <small class="form-text text-muted">Opsiyonel - Öğrenci hakkında özel notlar</small>
+     </div>
    
      <div class="d-flex justify-content-between mt-4">
      <a asp-action="Index" class="btn btn-secondary">
