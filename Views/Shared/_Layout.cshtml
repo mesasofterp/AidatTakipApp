@@ -9,7 +9,7 @@
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            padding-top: 56px; /* Navbar height */
+            padding-top: 90px; /* Navbar height */
         }
 
         /* Sidebar başlangıçta kapalı */
@@ -276,6 +276,23 @@
                     this.querySelector(".toggle-icon").classList.add("fa-rotate-180");
                 }
             });
+        });
+    </script>
+    <script>
+        const sidebar = document.getElementById("mySidebar");
+
+        // Hamburger buton toggle
+        function toggleNav() {
+            sidebar.classList.toggle("open");
+        }
+
+        // Sayfa içerik alanına tıklayınca sidebar kapansın
+        document.addEventListener("click", function(event) {
+            // Eğer tıklanan sidebar veya hamburger buton değilse
+            if (!sidebar.contains(event.target) &&
+                !event.target.closest('.navbar .btn')) {
+                sidebar.classList.remove("open");
+            }
         });
     </script>
 
