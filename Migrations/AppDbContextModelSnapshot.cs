@@ -347,6 +347,9 @@ namespace StudentApp.Migrations
                     b.Property<long>("OgrenciId")
                         .HasColumnType("bigint");
 
+                    b.Property<int>("SatisAdet")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("SatisTarihi")
                         .HasColumnType("datetime2");
 

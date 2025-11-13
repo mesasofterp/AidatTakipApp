@@ -1,4 +1,5 @@
 @model StudentApp.Models.Ogrenciler
+@using StudentApp.Models.ViewModels
 
 @{
     ViewData["Title"] = "Öğrenci Düzenle";
@@ -153,57 +154,141 @@
    <small class="form-text text-muted">Opsiyonel - Öğrenci hakkında özel notlar</small>
        </div>
     <hr class="my-4" />
-    <h5 class="mb-3"><i class="fas fa-boxes me-2"></i>Envanter Satışı</h5>
-  <div class="alert alert-info" role="alert">
-      <i class="fas fa-info-circle me-2"></i>
-        Öğrenciye envanter satışı yapmak isterseniz aşağıdaki alanları doldurun. Boş bırakılırsa envanter kaydı yapılmaz.
+    <h5 class="mb-3"><i class="fas fa-boxes me-2"></i>Envanter Satışları</h5>
+    <div class="alert alert-info" role="alert">
+<i class="fas fa-info-circle me-2"></i>
+      Öğrencinin envanter satışlarını görüntüleyebilir, yeni satış ekleyebilir veya mevcut satışları silebilirsiniz.
     </div>
 
-<div id="envanterSatisAlani">
-  <div class="row">
-    <div class="col-md-6 mb-3">
- <label for="EnvanterId" class="form-label">Envanter Seç</label>
-   <select id="EnvanterId" name="EnvanterId" class="form-select">
- <option value="">-- Envanter Seçiniz --</option>
-        @if (ViewBag.Envanterler != null)
+<div id="envanterSatisAlani" class="card">
+    <div class="card-body">
+    <div class="table-responsive">
+            <table class="table table-hover" id="envanterTable">
+    <thead class="table-light">
+    <tr>
+   <th style="width: 25%;">
+     <i class="fas fa-box me-1"></i>Envanter
+  </th>
+     <th style="width: 10%;" class="text-center">
+     <i class="fas fa-sort-numeric-up me-1"></i>Adet
+     </th>
+   <th style="width: 15%;">
+      <i class="fas fa-calendar me-1"></i>Satış Tarihi
+         </th>
+     <th style="width: 15%;">
+   <i class="fas fa-lira-sign me-1"></i>Fiyat
+           </th>
+         <th style="width: 25%;">
+             <i class="fas fa-comment me-1"></i>Not
+     </th>
+     <th style="width: 10%;" class="text-center">
+     <i class="fas fa-trash me-1"></i>İşlem
+      </th>
+     </tr>
+      </thead>
+     <tbody id="envanterTbody">
+    @if (ViewBag.MevcutEnvanterSatislari != null)
+         {
+var mevcutSatislar = (List<EnvanterSatisViewModel>)ViewBag.MevcutEnvanterSatislari;
+ for (int i = 0; i < mevcutSatislar.Count; i++)
   {
-    foreach (var item in (IEnumerable<SelectListItem>)ViewBag.Envanterler)
-     {
- <option value="@item.Value" data-satis-fiyat="@item.Text">@item.Text</option>
-  }
-         }
-          </select>
- <small class="form-text text-muted">Opsiyonel - Satılacak envanteri seçin</small>
-</div>
-
- <div class="col-md-6 mb-3">
-    <label for="SatisTarihi" class="form-label">Satış Tarihi</label>
- <input type="date" id="SatisTarihi" name="SatisTarihi" class="form-control" />
-     <small class="form-text text-muted">Opsiyonel - Boş bırakılırsa bugünün tarihi kullanılır</small>
-    </div>
- </div>
-
- <div class="mb-3">
- <label for="OdenenTutar" class="form-label">Ödenen Tutar</label>
-      <div class="input-group">
-      <span class="input-group-text"><span style="font-family: Arial, sans-serif;">&#8378;</span></span>
-       <input type="number" step="0.01" id="OdenenTutar" name="OdenenTutar" class="form-control" placeholder="0.00" min="0" />
-       </div>
-        <small class="form-text text-muted">Opsiyonel - Öğrencinin ödediği tutar</small>
+       var satis = mevcutSatislar[i];
+       <tr class="envanter-satir" data-index="@i">
+     <td>
+  <input type="hidden" name="EnvanterSatislari[@i].Id" value="@satis.Id" />
+       <input type="hidden" name="EnvanterSatislari[@i].EnvanterId" value="@satis.EnvanterId" />
+    <input type="hidden" name="EnvanterSatislari[@i].SilinecekMi" value="false" class="silinecek-input" />
+            <strong>@satis.EnvanterAdi</strong>
+  <input type="hidden" class="envanter-adi-hidden" value="@satis.EnvanterAdi" />
+     </td>
+       <td class="text-center">
+     <input type="number" name="EnvanterSatislari[@i].SatisAdet" value="@satis.SatisAdet" 
+      class="form-control form-control-sm text-center" min="1" required />
+         </td>
+        <td>
+  <input type="date" name="EnvanterSatislari[@i].SatisTarihi" 
+   value="@(satis.SatisTarihi?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))" 
+         class="form-control form-control-sm" />
+ </td>
+  <td>
+<div class="input-group input-group-sm">
+        <span class="input-group-text"><span style="font-family: Arial, sans-serif;">&#8378;</span></span>
+     <input type="number" name="EnvanterSatislari[@i].OdenenTutar" value="@satis.OdenenTutar.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)" 
+      class="form-control" step="0.01" min="0" required />
   </div>
+       </td>
+        <td>
+           <input type="text" name="EnvanterSatislari[@i].Aciklama" value="@satis.Aciklama" 
+      class="form-control form-control-sm" placeholder="Not..." />
+      </td>
+  <td class="text-center">
+      <button type="button" class="btn btn-sm btn-danger sil-btn" title="Sil">
+     <i class="fas fa-trash"></i>
+       </button>
+    </td>
+  </tr>
+  }
+       }
+          </tbody>
+      </table>
+        </div>
+        
+        <button type="button" id="yeniSatirEkleBtn" class="btn btn-success btn-sm mt-2">
+            <i class="fas fa-plus me-1"></i>Yeni Envanter Satışı Ekle
+ </button>
+    </div>
+</div>
 
-          <div class="mb-3">
-  <label for="EnvanterAciklama" class="form-label">Satış Notu</label>
-  <textarea id="EnvanterAciklama" name="EnvanterAciklama" class="form-control" rows="2" placeholder="Satış hakkında not..."></textarea>
-  <small class="form-text text-muted">Opsiyonel - Envanter satışı hakkında not</small>
-</div>
-</div>
-    
-    <div class="d-flex justify-content-between mt-4">
-     <a asp-action="Index" class="btn btn-secondary">
+<!-- Yeni Satır Template -->
+<template id="yeniSatirTemplate">
+    <tr class="envanter-satir yeni-satir">
+        <td>
+            <input type="hidden" name="EnvanterSatislari[{INDEX}].Id" value="0" />
+   <input type="hidden" name="EnvanterSatislari[{INDEX}].SilinecekMi" value="false" class="silinecek-input" />
+  <select name="EnvanterSatislari[{INDEX}].EnvanterId" class="form-select form-select-sm envanter-select" required>
+   <option value="">-- Envanter Seçiniz --</option>
+   @if (ViewBag.Envanterler != null)
+                {
+  foreach (var item in (IEnumerable<SelectListItem>)ViewBag.Envanterler)
+      {
+            <option value="@item.Value">@item.Text</option>
+   }
+      }
+            </select>
+   </td>
+    <td class="text-center">
+      <input type="number" name="EnvanterSatislari[{INDEX}].SatisAdet" value="1" 
+   class="form-control form-control-sm text-center" min="1" required />
+        </td>
+     <td>
+            <input type="date" name="EnvanterSatislari[{INDEX}].SatisTarihi" 
+          value="@DateTime.Now.ToString("yyyy-MM-dd")" 
+         class="form-control form-control-sm" />
+        </td>
+      <td>
+      <div class="input-group input-group-sm">
+            <span class="input-group-text"><span style="font-family: Arial, sans-serif;">&#8378;</span></span>
+                <input type="number" name="EnvanterSatislari[{INDEX}].OdenenTutar" value="0" 
+             class="form-control" step="0.01" min="0" required />
+            </div>
+        </td>
+        <td>
+        <input type="text" name="EnvanterSatislari[{INDEX}].Aciklama" 
+ class="form-control form-control-sm" placeholder="Not..." />
+        </td>
+        <td class="text-center">
+     <button type="button" class="btn btn-sm btn-danger yeni-sil-btn" title="Satırı Kaldır">
+       <i class="fas fa-times"></i>
+            </button>
+        </td>
+    </tr>
+</template>
+   
+   <div class="d-flex justify-content-between mt-4">
+  <a asp-action="Index" class="btn btn-secondary">
        <i class="fas fa-arrow-left me-1"></i>Listeye Dön
-           </a>
-              <button type="submit" class="btn btn-primary">
+     </a>
+           <button type="submit" class="btn btn-primary">
     <i class="fas fa-save me-1"></i>Öğrenciyi Güncelle
      </button>
          </div>
@@ -218,13 +303,13 @@
 <script>
     // Telefon numarası input mask
  document.addEventListener('DOMContentLoaded', function() {
-        const telefonInput = document.getElementById('telefonInput');
-     
-        if (telefonInput) {
+    const telefonInput = document.getElementById('telefonInput');
+
+   if (telefonInput) {
     telefonInput.addEventListener('input', function(e) {
    // Sadece rakamları al
    let value = e.target.value.replace(/\D/g, '');
-     
+   
         // 11 haneden fazla olmasın
        if (value.length > 11) {
   value = value.substring(0, 11);
@@ -236,22 +321,96 @@ if (value.length > 0 && value.charAt(0) !== '0') {
      }
   
       e.target.value = value;
-  });
-      
-        // Paste eventini de kontrol et
-        telefonInput.addEventListener('paste', function(e) {
+});
+    
+     // Paste eventini de kontrol et
+    telefonInput.addEventListener('paste', function(e) {
        setTimeout(function() {
  let value = telefonInput.value.replace(/\D/g, '');
          if (value.length > 11) {
-      value = value.substring(0, 11);
-      }
+   value = value.substring(0, 11);
+  }
    if (value.length > 0 && value.charAt(0) !== '0') {
   value = '0' + value.substring(0, 10);
-     }
-       telefonInput.value = value;
-        }, 0);
-   });
+ }
+ telefonInput.value = value;
+    }, 0);
+ });
     }
-    });
+
+    // Envanter Tablosu İşlemleri
+        const tbody = document.getElementById('envanterTbody');
+  const yeniSatirEkleBtn = document.getElementById('yeniSatirEkleBtn');
+   const yeniSatirTemplate = document.getElementById('yeniSatirTemplate');
+        let yeniSatirIndex = @(ViewBag.MevcutEnvanterSatislari != null ? ((List<EnvanterSatisViewModel>)ViewBag.MevcutEnvanterSatislari).Count : 0);
+
+ // Yeni satır ekle
+ if (yeniSatirEkleBtn && yeniSatirTemplate && tbody) {
+   yeniSatirEkleBtn.addEventListener('click', function() {
+        const templateContent = yeniSatirTemplate.content.cloneNode(true);
+   const templateHTML = templateContent.querySelector('tr').outerHTML;
+const yeniSatir = templateHTML.replace(/{INDEX}/g, yeniSatirIndex);
+    
+  tbody.insertAdjacentHTML('beforeend', yeniSatir);
+   yeniSatirIndex++;
+    
+   // Yeni eklenen satırın sil butonunu dinle
+    guncelSilButonlari();
+     });
+ }
+
+ // Mevcut kayıtların sil butonları (soft delete)
+ document.querySelectorAll('.sil-btn').forEach(btn => {
+btn.addEventListener('click', function() {
+    if (confirm('Bu envanter satışını silmek istediğinizden emin misiniz? Stok geri eklenecektir.')) {
+  const row = this.closest('tr');
+   const silinecekInput = row.querySelector('.silinecek-input');
+    if (silinecekInput) {
+   silinecekInput.value = 'true';
+          }
+  
+    // Satırı görsel olarak gizle ve işaretle
+       row.style.opacity = '0.5';
+  row.style.textDecoration = 'line-through';
+   this.disabled = true;
+   this.innerHTML = '<i class="fas fa-check"></i> Silinecek';
+ this.classList.remove('btn-danger');
+ this.classList.add('btn-secondary');
+    }
+        });
+ });
+
+ // Sil butonlarını güncelle
+  function guncelSilButonlari() {
+   document.querySelectorAll('.yeni-sil-btn').forEach(btn => {
+    btn.removeEventListener('click', yeniSilHandler);
+btn.addEventListener('click', yeniSilHandler);
+});
+  }
+
+ function yeniSilHandler(e) {
+     const row = e.target.closest('tr');
+  if (row && confirm('Bu satırı kaldırmak istediğinizden emin misiniz?')) {
+        row.remove();
+ // Index'leri yeniden düzenle
+      yenidenIndexle();
+  }
+    }
+
+ // Satır index'lerini yeniden düzenle
+ function yenidenIndexle() {
+   const rows = tbody.querySelectorAll('tr');
+ rows.forEach((row, index) => {
+   row.querySelectorAll('[name]').forEach(input => {
+     const name = input.getAttribute('name');
+     if (name) {
+       const newName = name.replace(/\[\d+\]/, `[${index}]`);
+    input.setAttribute('name', newName);
+ }
+ });
+ });
+  yeniSatirIndex = rows.length;
+  }
+ });
     </script>
 }

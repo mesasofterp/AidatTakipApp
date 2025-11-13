@@ -22,6 +22,7 @@ namespace StudentApp.Models
         public decimal OdenenTutar { get; set; } = 0;
 
         public long EnvanterId { get; set; }
+        public int SatisAdet { get; set; }
 
         // Navigation property
         [ValidateNever]
