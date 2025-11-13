@@ -321,7 +321,7 @@ if (value.length > 0 && value.charAt(0) !== '0') {
      }
   
       e.target.value = value;
-  });
+});
     
      // Paste eventini de kontrol et
     telefonInput.addEventListener('paste', function(e) {
@@ -329,11 +329,11 @@ if (value.length > 0 && value.charAt(0) !== '0') {
  let value = telefonInput.value.replace(/\D/g, '');
          if (value.length > 11) {
    value = value.substring(0, 11);
-    }
+  }
    if (value.length > 0 && value.charAt(0) !== '0') {
   value = '0' + value.substring(0, 10);
  }
-       telefonInput.value = value;
+ telefonInput.value = value;
     }, 0);
  });
     }
@@ -347,7 +347,6 @@ if (value.length > 0 && value.charAt(0) !== '0') {
  // Yeni satır ekle
  if (yeniSatirEkleBtn && yeniSatirTemplate && tbody) {
    yeniSatirEkleBtn.addEventListener('click', function() {
-          console.log('Yeni satır ekleniyor, index:', yeniSatirIndex);
         const templateContent = yeniSatirTemplate.content.cloneNode(true);
    const templateHTML = templateContent.querySelector('tr').outerHTML;
 const yeniSatir = templateHTML.replace(/{INDEX}/g, yeniSatirIndex);
@@ -356,23 +355,19 @@ const yeniSatir = templateHTML.replace(/{INDEX}/g, yeniSatirIndex);
    yeniSatirIndex++;
     
    // Yeni eklenen satırın sil butonunu dinle
-    guncelYeniSilButonlari();
-            console.log('Yeni satır eklendi');
+    guncelSilButonlari();
      });
  }
 
-        // Mevcut kayıtların sil butonları (soft delete)
+ // Mevcut kayıtların sil butonları (soft delete)
  document.querySelectorAll('.sil-btn').forEach(btn => {
-        console.log('Mevcut sil butonu bulundu');
 btn.addEventListener('click', function() {
-         console.log('Mevcut satır silme tetiklendi');
     if (confirm('Bu envanter satışını silmek istediğinizden emin misiniz? Stok geri eklenecektir.')) {
   const row = this.closest('tr');
    const silinecekInput = row.querySelector('.silinecek-input');
     if (silinecekInput) {
-     silinecekInput.value = 'true';
-   console.log('SilinecekMi = true olarak işaretlendi');
-                }
+   silinecekInput.value = 'true';
+          }
   
     // Satırı görsel olarak gizle ve işaretle
        row.style.opacity = '0.5';
@@ -380,49 +375,41 @@ btn.addEventListener('click', function() {
    this.disabled = true;
    this.innerHTML = '<i class="fas fa-check"></i> Silinecek';
  this.classList.remove('btn-danger');
-       this.classList.add('btn-secondary');
-  console.log('Satır görsel olarak işaretlendi');
+ this.classList.add('btn-secondary');
     }
         });
  });
 
- // Yeni eklenen satırların sil butonları (DOM'dan kaldır)
-  function guncelYeniSilButonlari() {
-        console.log('Yeni sil butonları güncelleniyor');
+ // Sil butonlarını güncelle
+  function guncelSilButonlari() {
    document.querySelectorAll('.yeni-sil-btn').forEach(btn => {
     btn.removeEventListener('click', yeniSilHandler);
 btn.addEventListener('click', yeniSilHandler);
-   console.log('Yeni sil butonu dinleyicisi eklendi');
 });
   }
 
  function yeniSilHandler(e) {
-     console.log('Yeni satır silme tetiklendi');
-        const row = e.target.closest('tr');
+     const row = e.target.closest('tr');
   if (row && confirm('Bu satırı kaldırmak istediğinizden emin misiniz?')) {
         row.remove();
-  console.log('Satır DOM\'dan kaldırıldı');
-          // Index'leri yeniden düzenle
-   yenidenIndexle();
+ // Index'leri yeniden düzenle
+      yenidenIndexle();
   }
     }
 
  // Satır index'lerini yeniden düzenle
  function yenidenIndexle() {
-        console.log('Index\'ler yeniden düzenleniyor');
-const rows = tbody.querySelectorAll('tr');
+   const rows = tbody.querySelectorAll('tr');
  rows.forEach((row, index) => {
-      row.dataset.index = index;
    row.querySelectorAll('[name]').forEach(input => {
      const name = input.getAttribute('name');
-       if (name) {
-  const newName = name.replace(/\[\d+\]/, `[${index}]`);
+     if (name) {
+       const newName = name.replace(/\[\d+\]/, `[${index}]`);
     input.setAttribute('name', newName);
-   console.log('Input name güncellendi:', name, '->', newName);
-     }
+ }
  });
-      yeniSatirIndex = rows.length;
-        console.log('Yeni index:', yeniSatirIndex);
+ });
+  yeniSatirIndex = rows.length;
   }
  });
     </script>
