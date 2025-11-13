@@ -164,6 +164,83 @@
             </dl>
           }
 
+           @if (Model.OgrenciDetay != null && (!string.IsNullOrWhiteSpace(Model.OgrenciDetay.VeliAdSoyad) || 
+                !string.IsNullOrWhiteSpace(Model.OgrenciDetay.VeliTelefonNumarasi) || 
+                !string.IsNullOrWhiteSpace(Model.OgrenciDetay.OkulAdi) || 
+                !string.IsNullOrWhiteSpace(Model.OgrenciDetay.OkulAdresi) || 
+                !string.IsNullOrWhiteSpace(Model.OgrenciDetay.Sinif) || 
+                !string.IsNullOrWhiteSpace(Model.OgrenciDetay.OkulHocasiAdSoyad) || 
+                !string.IsNullOrWhiteSpace(Model.OgrenciDetay.OkulHocasiTelefon)))
+          {
+              <hr class="my-4" />
+              <h5 class="mb-3"><i class="fas fa-users me-2"></i>Veli Bilgileri</h5>
+              <dl class="row">
+                  @if (!string.IsNullOrWhiteSpace(Model.OgrenciDetay.VeliAdSoyad))
+                  {
+                      <dt class="col-sm-4">Veli Ad Soyad</dt>
+                      <dd class="col-sm-8">
+                          <i class="fas fa-user me-1"></i>@Model.OgrenciDetay.VeliAdSoyad
+                      </dd>
+                  }
+                  
+                  @if (!string.IsNullOrWhiteSpace(Model.OgrenciDetay.VeliTelefonNumarasi))
+                  {
+                      <dt class="col-sm-4">Veli Telefon Numarası</dt>
+                      <dd class="col-sm-8">
+                          <a href="tel:@Model.OgrenciDetay.VeliTelefonNumarasi" class="text-decoration-none">
+                              <i class="fas fa-phone me-1"></i>@Model.OgrenciDetay.VeliTelefonNumarasi
+                          </a>
+                      </dd>
+                  }
+              </dl>
+
+              <hr class="my-4" />
+              <h5 class="mb-3"><i class="fas fa-school me-2"></i>Okul Bilgileri</h5>
+              <dl class="row">
+                  @if (!string.IsNullOrWhiteSpace(Model.OgrenciDetay.OkulAdi))
+                  {
+                      <dt class="col-sm-4">Okul Adı</dt>
+                      <dd class="col-sm-8">
+                          <i class="fas fa-school me-1"></i>@Model.OgrenciDetay.OkulAdi
+                      </dd>
+                  }
+                  
+                  @if (!string.IsNullOrWhiteSpace(Model.OgrenciDetay.Sinif))
+                  {
+                      <dt class="col-sm-4">Sınıf</dt>
+                      <dd class="col-sm-8">
+                          <span class="badge bg-info">@Model.OgrenciDetay.Sinif</span>
+                      </dd>
+                  }
+                  
+                  @if (!string.IsNullOrWhiteSpace(Model.OgrenciDetay.OkulAdresi))
+                  {
+                      <dt class="col-sm-4">Okul Adresi</dt>
+                      <dd class="col-sm-8">
+                          <i class="fas fa-map-marker-alt me-1"></i>@Model.OgrenciDetay.OkulAdresi
+                      </dd>
+                  }
+                  
+                  @if (!string.IsNullOrWhiteSpace(Model.OgrenciDetay.OkulHocasiAdSoyad))
+                  {
+                      <dt class="col-sm-4">Okul Hocası Ad Soyad</dt>
+                      <dd class="col-sm-8">
+                          <i class="fas fa-chalkboard-teacher me-1"></i>@Model.OgrenciDetay.OkulHocasiAdSoyad
+                      </dd>
+                  }
+                  
+                  @if (!string.IsNullOrWhiteSpace(Model.OgrenciDetay.OkulHocasiTelefon))
+                  {
+                      <dt class="col-sm-4">Okul Hocası Telefon</dt>
+                      <dd class="col-sm-8">
+                          <a href="tel:@Model.OgrenciDetay.OkulHocasiTelefon" class="text-decoration-none">
+                              <i class="fas fa-phone me-1"></i>@Model.OgrenciDetay.OkulHocasiTelefon
+                          </a>
+                      </dd>
+                  }
+              </dl>
+          }
+
            <hr class="my-4" />
           <h5 class="mb-3"><i class="fas fa-credit-card me-2"></i>Ödeme Bilgileri</h5>
      <dl class="row">

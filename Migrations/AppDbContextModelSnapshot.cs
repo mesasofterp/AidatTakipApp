@@ -364,6 +364,65 @@ namespace StudentApp.Migrations
                     b.ToTable("OgrenciBasarilari", (string)null);
                 });
 
+            modelBuilder.Entity("StudentApp.Models.OgrenciDetay", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Aciklama")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Aktif")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("OgrenciId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("OkulAdi")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("OkulAdresi")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("OkulHocasiAdSoyad")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("OkulHocasiTelefon")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Sinif")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("VeliAdSoyad")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("VeliTelefonNumarasi")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OgrenciId")
+                        .IsUnique();
+
+                    b.ToTable("OgrenciDetay", (string)null);
+                });
+
             modelBuilder.Entity("StudentApp.Models.OgrenciEnvanterSatis", b =>
                 {
                     b.Property<long>("Id")
@@ -669,6 +728,17 @@ namespace StudentApp.Migrations
                     b.Navigation("Ogrenci");
                 });
 
+            modelBuilder.Entity("StudentApp.Models.OgrenciDetay", b =>
+                {
+                    b.HasOne("StudentApp.Models.Ogrenciler", "Ogrenci")
+                        .WithOne("OgrenciDetay")
+                        .HasForeignKey("StudentApp.Models.OgrenciDetay", "OgrenciId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ogrenci");
+                });
+
             modelBuilder.Entity("StudentApp.Models.OgrenciEnvanterSatis", b =>
                 {
                     b.HasOne("StudentApp.Models.Envanterler", "Envanter")
@@ -721,6 +791,8 @@ namespace StudentApp.Migrations
             modelBuilder.Entity("StudentApp.Models.Ogrenciler", b =>
                 {
                     b.Navigation("OgrenciBasarilari");
+
+                    b.Navigation("OgrenciDetay");
                 });
 #pragma warning restore 612, 618
         }

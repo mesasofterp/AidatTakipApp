@@ -19,6 +19,7 @@ namespace StudentApp.Data
         public DbSet<Envanterler> Envanterler { get; set; }
         public DbSet<OgrenciEnvanterSatis> OgrenciEnvanterSatis { get; set; }
         public DbSet<OgrenciBasarilari> OgrenciBasarilari { get; set; }
+        public DbSet<OgrenciDetay> OgrenciDetay { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -154,6 +155,26 @@ namespace StudentApp.Data
                 entity.HasOne(e => e.Ogrenci)
                     .WithMany(o => o.OgrenciBasarilari)
                     .HasForeignKey(e => e.OgrenciId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // Configure OgrenciDetay entity
+            modelBuilder.Entity<OgrenciDetay>(entity =>
+            {
+                entity.ToTable("OgrenciDetay");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.VeliAdSoyad).HasMaxLength(200);
+                entity.Property(e => e.VeliTelefonNumarasi).HasMaxLength(20);
+                entity.Property(e => e.OkulAdi).HasMaxLength(200);
+                entity.Property(e => e.OkulAdresi).HasMaxLength(300);
+                entity.Property(e => e.Sinif).HasMaxLength(50);
+                entity.Property(e => e.OkulHocasiAdSoyad).HasMaxLength(200);
+                entity.Property(e => e.OkulHocasiTelefon).HasMaxLength(20);
+
+                // Foreign key relationship
+                entity.HasOne(e => e.Ogrenci)
+                    .WithOne(o => o.OgrenciDetay)
+                    .HasForeignKey<OgrenciDetay>(e => e.OgrenciId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
         }

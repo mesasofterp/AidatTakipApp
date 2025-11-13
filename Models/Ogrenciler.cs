@@ -82,5 +82,8 @@ namespace StudentApp.Models
 
         [ValidateNever]
         public ICollection<OgrenciBasarilari> OgrenciBasarilari { get; set; } = new List<OgrenciBasarilari>();
+
+        [ValidateNever]
+        public OgrenciDetay? OgrenciDetay { get; set; }
     }
 }
