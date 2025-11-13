@@ -525,6 +525,9 @@ namespace StudentApp.Migrations
                     b.Property<int>("Dakika")
                         .HasColumnType("int");
 
+                    b.Property<int>("GorevCalismaGunuOfseti")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("GuncellenmeTarihi")
                         .HasColumnType("datetime2");
 

@@ -20,8 +20,20 @@ public class DailyJob : IJob
 
         try
         {
+            // Job data'dan scheduler ID'sini al
+            long? schedulerId = null;
+            if (context.JobDetail.JobDataMap.ContainsKey("SchedulerId"))
+            {
+                var schedulerIdStr = context.JobDetail.JobDataMap.GetString("SchedulerId");
+                if (long.TryParse(schedulerIdStr, out var id))
+                {
+                    schedulerId = id;
+                    _logger.LogInformation("Scheduler ID: {SchedulerId} için job çalışıyor", schedulerId);
+                }
+            }
+
             // Servis üzerinden günlük görevleri çalıştır
-            await _dailyTaskService.ExecuteDailyTaskAsync();
+            await _dailyTaskService.ExecuteDailyTaskAsync(schedulerId);
 
             _logger.LogInformation("DailyJob başarıyla tamamlandı - {0}", DateTime.Now);
         }

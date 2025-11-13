@@ -5,7 +5,8 @@ namespace StudentApp.Services;
 
 public interface IZamanlayiciFactory
 {
-    Task RecreateJobAsync(ZamanlayiciAyarlar settings);
-    Task DeleteJobAsync();
+    Task CreateJobAsync(ZamanlayiciAyarlar settings);
+    Task UpdateJobAsync(ZamanlayiciAyarlar settings);
+    Task DeleteJobAsync(long schedulerId);
 }
 

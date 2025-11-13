@@ -21,9 +21,9 @@ public class GunlukZamanlayiciService : IGunlukZamanlayiciService
     /// <summary>
     /// Ana günlük görev metodunu çalıştırır
     /// </summary>
-    public async Task ExecuteDailyTaskAsync()
+    public async Task ExecuteDailyTaskAsync(long? schedulerId = null)
     {
-        _logger.LogInformation("Günlük görev başlatılıyor - {0}", DateTime.Now);
+        _logger.LogInformation("Günlük görev başlatılıyor - {0}, Scheduler ID: {SchedulerId}", DateTime.Now, schedulerId);
 
         try
         {
@@ -32,7 +32,7 @@ public class GunlukZamanlayiciService : IGunlukZamanlayiciService
             _logger.LogInformation("Toplam öğrenci sayısı: {OgrenciCount}", ogrenciCount);
 
             // Günlük bildirimleri gönder
-            await SendDailyNotificationsAsync();
+            await SendDailyNotificationsAsync(schedulerId);
 
             // Buraya daha fazla görev ekleyebilirsiniz
             // Örnek: Rapor oluşturma, veri temizleme, backup alma vb.
@@ -57,71 +57,122 @@ public class GunlukZamanlayiciService : IGunlukZamanlayiciService
     /// <summary>
     /// Günlük bildirimleri gönderir - ödeme süresi dolmuş öğrencilere SMS gönderir
     /// OgrenciOdemeTakvimi tablosundan ödenmemiş kayıtları kontrol eder
+    /// Belirli bir scheduler için çalışır
     /// </summary>
-    public async Task SendDailyNotificationsAsync()
+    public async Task SendDailyNotificationsAsync(long? schedulerId = null)
     {
         _logger.LogInformation("Otomatik SMS ödeme takibi başlatıldı ({Date})", DateTime.Now);
         var today = DateTime.Today;
 
-        // Ödeme takviminde: ödenmemiş ve sms gitmemiş kayıtlar (aktif öğrenci)
-        var bekleyenOdemeler = await _context.OgrenciOdemeTakvimi
-            .Include(t => t.Ogrenci)
-            .Where(t => !t.IsDeleted && !t.Odendi && !t.SmsGittiMi && t.Ogrenci != null && !t.Ogrenci.IsDeleted && t.Ogrenci.Aktif && t.SonOdemeTarihi < today)
-            .ToListAsync();
-
-        var smsList = new List<(string telefon, string mesaj, long ogrenciId, long odemeId)>();
-        var activeSettings = await _schedulerService.GetActiveSchedulerAsync();
-        var template = activeSettings?.MesajSablonu ?? "Sayın [ÖĞRENCİ_ADI] [ÖĞRENCİ_SOYADI], ödemeniz [REFERANS_TARIH] tarihinden beri yapılmamıştır. Lütfen ödemenizi yapınız.";
-        var logDetay = new List<string>();
-
-        foreach (var takvim in bekleyenOdemeler)
+        // Aktif scheduler'ları al
+        var activeSchedulers = await _schedulerService.GetActiveSchedulersAsync();
+        
+        // Eğer belirli bir scheduler ID verilmişse, sadece onu kullan
+        if (schedulerId.HasValue)
         {
-            var ogrenci = takvim.Ogrenci;
-            if (ogrenci == null) continue;
-            if (string.IsNullOrWhiteSpace(ogrenci.Telefon))
-            {
-                _logger.LogWarning("Telefon numarası olmayan öğrenci: {Ad} {Soyad}", ogrenci.OgrenciAdi, ogrenci.OgrenciSoyadi);
-                continue;
-            }
-            var referansTarih = takvim.SonOdemeTarihi?.Date ?? today;
-            var days = (today - referansTarih).Days;
-            var borc = takvim.BorcTutari;  
-
-            string mesaj = template
-                .Replace("[ÖĞRENCİ_ADI]", ogrenci.OgrenciAdi ?? "")
-                .Replace("[ÖĞRENCİ_SOYADI]", ogrenci.OgrenciSoyadi ?? "")
-                .Replace("[GEÇEN_GÜN]", days.ToString())
-                .Replace("[BORÇ_TUTARI]", borc.ToString("N2"))
-                .Replace("[REFERANS_TARIH]", referansTarih.ToString("dd.MM.yyyy"));
-            smsList.Add((telefon: ogrenci.Telefon, mesaj: mesaj, ogrenciId: ogrenci.Id, odemeId: takvim.Id));
+            activeSchedulers = activeSchedulers.Where(s => s.Id == schedulerId.Value).ToList();
         }
 
-        _logger.LogInformation("SMS gönderilecek öğrenci sayısı: {Count}", smsList.Count);
+        if (!activeSchedulers.Any())
+        {
+            _logger.LogInformation("Aktif scheduler bulunamadı.");
+            return;
+        }
+
+        var smsList = new List<(string telefon, string mesaj, long ogrenciId, long odemeId, long schedulerId)>();
+        var logDetay = new List<string>();
+
+        // Her scheduler için ayrı ayrı kontrol yap
+        foreach (var scheduler in activeSchedulers)
+        {
+            var offset = scheduler.GorevCalismaGunuOfseti;
+            var kontrolTarihi = today.AddDays(-offset); // Offset'e göre kontrol tarihini hesapla
+
+            _logger.LogInformation("Scheduler kontrol ediliyor: {Name}, Gün Ofseti: {Offset}, Kontrol Tarihi: {KontrolTarihi}", 
+                scheduler.Isim, offset, kontrolTarihi.ToString("dd.MM.yyyy"));
+
+            // Ödeme takviminde: ödenmemiş ve sms gitmemiş kayıtlar (aktif öğrenci)
+            // Son ödeme tarihi, kontrol tarihine eşit olan kayıtları bul
+            var bekleyenOdemeler = await _context.OgrenciOdemeTakvimi
+                .Include(t => t.Ogrenci)
+                .Where(t => !t.IsDeleted 
+                    && !t.Odendi 
+                    && t.Ogrenci != null 
+                    && !t.Ogrenci.IsDeleted 
+                    && t.Ogrenci.Aktif 
+                    && t.SonOdemeTarihi.HasValue
+                    && t.SonOdemeTarihi.Value.Date == kontrolTarihi.Date)
+                .ToListAsync();
+
+            _logger.LogInformation("Scheduler {Name} için {Count} adet ödeme kaydı bulundu.", scheduler.Isim, bekleyenOdemeler.Count);
+
+            foreach (var takvim in bekleyenOdemeler)
+            {
+                var ogrenci = takvim.Ogrenci;
+                if (ogrenci == null) continue;
+                if (string.IsNullOrWhiteSpace(ogrenci.Telefon))
+                {
+                    _logger.LogWarning("Telefon numarası olmayan öğrenci: {Ad} {Soyad}", ogrenci.OgrenciAdi, ogrenci.OgrenciSoyadi);
+                    continue;
+                }
+
+                var referansTarih = takvim.SonOdemeTarihi?.Date ?? today;
+                var days = (today - referansTarih).Days;
+                var borc = takvim.BorcTutari;
+                var template = scheduler.MesajSablonu;
+
+                string mesaj = template
+                    .Replace("[ÖĞRENCİ_ADI]", ogrenci.OgrenciAdi ?? "")
+                    .Replace("[ÖĞRENCİ_SOYADI]", ogrenci.OgrenciSoyadi ?? "")
+                    .Replace("[GEÇEN_GÜN]", days.ToString())
+                    .Replace("[KALAN_GÜN]", Math.Max(0, -days).ToString())
+                    .Replace("[BORÇ_TUTARI]", borc.ToString("N2"))
+                    .Replace("[REFERANS_TARIH]", referansTarih.ToString("dd.MM.yyyy"));
+
+                smsList.Add((telefon: ogrenci.Telefon, mesaj: mesaj, ogrenciId: ogrenci.Id, odemeId: takvim.Id, schedulerId: scheduler.Id));
+            }
+        }
+
+        _logger.LogInformation("Toplam SMS gönderilecek öğrenci sayısı: {Count}", smsList.Count);
         if (smsList.Count == 0)
         {
             _logger.LogInformation("Kriterlere uyan öğrenci yok, SMS gönderilmedi.");
             return;
         }
 
-        // (phone, message, ogrenciId, odemeId) listesinden (phone, message) listesine dönüştür
-        var smsBatch = smsList.Select(x => (x.telefon, x.mesaj)).ToList();
-        bool topluSonuc = await _smsService.SendBulkSmsAsync(smsBatch);
-
-        if (!topluSonuc)
+        // Scheduler'lara göre grupla ve her biri için ayrı ayrı SMS gönder
+        var schedulerGroups = smsList.GroupBy(x => x.schedulerId);
+        
+        foreach (var group in schedulerGroups)
         {
-            // Başarılıysa ilgili ödeme kayıtlarında SmsGittiMi=true olarak işaretle
-            var odemeIds = smsList.Select(x => x.odemeId).ToList();
-            var toUpdate = await _context.OgrenciOdemeTakvimi.Where(t => odemeIds.Contains(t.Id)).ToListAsync();
-            foreach (var t in toUpdate)
+            var scheduler = activeSchedulers.FirstOrDefault(s => s.Id == group.Key);
+            if (scheduler == null)
             {
-                t.SmsGittiMi = true;
+                _logger.LogInformation("Scheduler {Id} bulunamadı.", group.Key);
+                continue;
             }
-            await _context.SaveChangesAsync();
-            _logger.LogInformation("Toplu SMS gönderimi başarılı. {Count} ödeme kaydı SmsGittiMi=true olarak işaretlendi.", toUpdate.Count);
-        }
-        else
-        {
-            _logger.LogError("Toplu SMS gönderimi sırasında hata oluştu.");
+
+            // (phone, message, ogrenciId, odemeId, schedulerId) listesinden (phone, message) listesine dönüştür
+            var smsBatch = group.Select(x => (x.telefon, x.mesaj)).ToList();
+            bool topluSonuc = await _smsService.SendBulkSmsAsync(smsBatch);
+
+            if (!topluSonuc)
+            {
+                // Başarılıysa ilgili ödeme kayıtlarında SmsGittiMi=true olarak işaretle
+                var odemeIds = group.Select(x => x.odemeId).ToList();
+                var toUpdate = await _context.OgrenciOdemeTakvimi.Where(t => odemeIds.Contains(t.Id)).ToListAsync();
+                foreach (var t in toUpdate)
+                {
+                    t.SmsGittiMi = true;
+                }
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Scheduler {Name} için toplu SMS gönderimi başarılı. {Count} ödeme kaydı SmsGittiMi=true olarak işaretlendi.", 
+                    scheduler.Isim, toUpdate.Count);
+            }
+            else
+            {
+                _logger.LogError("Scheduler {Name} için toplu SMS gönderimi sırasında hata oluştu.", scheduler.Isim);
+            }
         }
     }
 }

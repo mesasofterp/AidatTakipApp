@@ -37,6 +37,11 @@ public class ZamanlayiciAyarlar : BaseEntity
         "Sayın [ÖĞRENCİ_ADI] [ÖĞRENCİ_SOYADI], ödemeniz [GEÇEN_GÜN] gündür beklemektedir. " +
         "Borç tutarınız: [BORÇ_TUTARI]. Lütfen en kısa sürede ödemenizi yapınız.";
 
+    [Required]
+    [Display(Name = "Görev Çalışma Günü Ofseti")]
+    [Range(-30, 30, ErrorMessage = "Gün ofseti -30 ile 30 arasında olmalıdır.")]
+    public int GorevCalismaGunuOfseti { get; set; } = 0; // 0 = son ödeme tarihi günü, -1 = 1 gün önce, 1 = 1 gün sonra
+
     [Display(Name = "Oluşturulma Tarihi")]
     public DateTime OlusturmaTarihi { get; set; } = DateTime.Now;
 

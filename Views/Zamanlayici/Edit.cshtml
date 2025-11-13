@@ -1,25 +1,26 @@
 @model StudentApp.Models.ZamanlayiciAyarlar
 @{
-    ViewData["Title"] = "Yeni Zamanlayıcı Oluştur";
+    ViewData["Title"] = "Zamanlayıcı Düzenle";
 }
 
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-8 offset-md-2">
             <div class="card">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-warning text-dark">
                     <h4 class="mb-0">
-                        <i class="bi bi-plus-circle"></i> Yeni Zamanlayıcı Oluştur
+                        <i class="bi bi-pencil"></i> Zamanlayıcı Düzenle
                     </h4>
                 </div>
                 <div class="card-body">
                     <div class="alert alert-info">
-                        <i class="bi bi-info-circle"></i> <strong>Bilgi:</strong> Birden fazla zamanlayıcı oluşturabilirsiniz. 
-                        Her zamanlayıcı farklı bir gün ofseti ile çalışabilir (örn: 1 gün önce, son ödeme tarihi günü, 1 gün sonra).
+                        <i class="bi bi-info-circle"></i> <strong>Bilgi:</strong> Zamanlayıcı ayarlarını güncelleyebilirsiniz. 
+                        Değişiklikler kaydedildikten sonra job otomatik olarak yeniden oluşturulacaktır.
                     </div>
 
-                    <form asp-action="Create" method="post">
+                    <form asp-action="Edit" method="post">
                         @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
                         
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
@@ -90,8 +91,9 @@
                                 <code>[ÖĞRENCİ_ADI]</code> - Öğrencinin adı<br>
                                 <code>[ÖĞRENCİ_SOYADI]</code> - Öğrencinin soyadı<br>
                                 <code>[GEÇEN_GÜN]</code> - Geçen gün sayısı<br>
+                                <code>[KALAN_GÜN]</code> - Kalan gün sayısı<br>
                                 <code>[BORÇ_TUTARI]</code> - Borç tutarı<br>
-                                <code>[SON_ÖDEME_TARİHİ]</code> - Son ödeme tarihi
+                                <code>[REFERANS_TARIH]</code> - Son ödeme tarihi
                             </small>
                             <span asp-validation-for="MesajSablonu" class="text-danger"></span>
                         </div>
@@ -107,9 +109,9 @@
 
                         <div class="mb-3">
                             <div class="form-check">
-                                <input asp-for="Aktif" class="form-check-input" type="checkbox" checked />
+                                <input asp-for="Aktif" class="form-check-input" type="checkbox" />
                                 <label asp-for="Aktif" class="form-check-label">
-                                    Zamanlayıcıyı oluşturur oluşturmaz aktif et
+                                    Zamanlayıcıyı aktif et
                                 </label>
                             </div>
                         </div>
@@ -122,8 +124,8 @@
                             <a asp-action="Index" class="btn btn-secondary">
                                 <i class="bi bi-arrow-left"></i> İptal
                             </a>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check-circle"></i> Zamanlayıcı Oluştur
+                            <button type="submit" class="btn btn-warning">
+                                <i class="bi bi-check-circle"></i> Güncelle
                             </button>
                         </div>
                     </form>

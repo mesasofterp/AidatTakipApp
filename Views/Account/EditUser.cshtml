@@ -1,0 +1,100 @@
+@model StudentApp.Models.ViewModels.CreateUserViewModel
+@{
+    ViewData["Title"] = "Kullanıcı Düzenle";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-edit"></i> Kullanıcı Düzenle
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="EditUser" asp-route-id="@ViewBag.UserId" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@ViewBag.UserId" />
+                        
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="UserName" class="form-label">
+                                <i class="fas fa-user me-2"></i>Kullanıcı Adı <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="UserName" class="form-control" />
+                            <span asp-validation-for="UserName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">
+                                <i class="fas fa-envelope me-2"></i>E-posta <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Email" class="form-control" type="email" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="PhoneNumber" class="form-label">
+                                <i class="fas fa-phone me-2"></i>Telefon Numarası
+                            </label>
+                            <input asp-for="PhoneNumber" class="form-control" type="tel" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-user-tag me-2"></i>Roller
+                            </label>
+                            @if (ViewBag.Roles != null)
+                            {
+                                @foreach (var role in (SelectList)ViewBag.Roles)
+                                {
+                                    if (!string.IsNullOrEmpty(role.Value))
+                                    {
+                                        var isChecked = Model.SelectedRoles != null && Model.SelectedRoles.Contains(role.Value);
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="SelectedRoles" value="@role.Value" id="role_@role.Value" @(isChecked ? "checked" : "") />
+                                            <label class="form-check-label" for="role_@role.Value">
+                                                @role.Text
+                                            </label>
+                                        </div>
+                                    }
+                                }
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input asp-for="EmailConfirmed" class="form-check-input" type="checkbox" />
+                                <label asp-for="EmailConfirmed" class="form-check-label">
+                                    E-posta onaylı
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Not:</strong> Şifre değiştirmek için kullanıcı listesinden "Şifre Sıfırla" butonunu kullanın.
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Users" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>İptal
+                            </a>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-save me-2"></i>Güncelle
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

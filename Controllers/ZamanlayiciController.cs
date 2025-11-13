@@ -20,8 +20,8 @@ public class ZamanlayiciController : Controller
     // GET: Scheduler
     public async Task<IActionResult> Index()
     {
-        var activeScheduler = await _schedulerService.GetActiveSchedulerAsync();
-        return View(activeScheduler);
+        var activeSchedulers = await _schedulerService.GetActiveSchedulersAsync();
+        return View(activeSchedulers.ToList());
     }
 
     // GET: Scheduler/Create
@@ -32,7 +32,8 @@ public class ZamanlayiciController : Controller
             Saat = 9,
             Dakika = 0,
             CronIfadesi = "0 0 9 * * ?",
-            Isim = "SMS HATIRLATICI"
+            Isim = "SMS HATIRLATICI",
+            GorevCalismaGunuOfseti = 0
         };
         return View(model);
     }
@@ -53,12 +54,13 @@ public class ZamanlayiciController : Controller
                     true // Her gün
                 );
 
-                // Aktif scheduler varsa sil ve yenisi oluştur
-                await _schedulerService.CreateOrUpdateSchedulerAsync(model);
+                // Yeni scheduler oluştur
+                await _schedulerService.CreateSchedulerAsync(model);
 
-                _logger.LogInformation("Yeni Zamanlayıcı oluşturuldu: {Name} - {Hour}:{Minute}", 
-                    model.Isim, model.Saat, model.Dakika);
+                _logger.LogInformation("Yeni Zamanlayıcı oluşturuldu: {Name} - {Hour}:{Minute}, Gün Ofseti: {Offset}", 
+                    model.Isim, model.Saat, model.Dakika, model.GorevCalismaGunuOfseti);
 
+                TempData["SuccessMessage"] = $"Zamanlayıcı '{model.Isim}' başarıyla oluşturuldu.";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -71,22 +73,82 @@ public class ZamanlayiciController : Controller
         return View(model);
     }
 
-    // POST: Scheduler/Delete
+    // GET: Scheduler/Edit/5
+    public async Task<IActionResult> Edit(long id)
+    {
+        var scheduler = await _schedulerService.GetSchedulerByIdAsync(id);
+        if (scheduler == null)
+        {
+            TempData["ErrorMessage"] = "Zamanlayıcı bulunamadı.";
+            return RedirectToAction(nameof(Index));
+        }
+        return View(scheduler);
+    }
+
+    // POST: Scheduler/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete()
+    public async Task<IActionResult> Edit(long id, ZamanlayiciAyarlar model)
+    {
+        if (id != model.Id)
+        {
+            TempData["ErrorMessage"] = "Geçersiz zamanlayıcı ID'si.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        if (ModelState.IsValid)
+        {
+            try
+            {
+                // Cron expression oluştur
+                model.CronIfadesi = await _schedulerService.GenerateCronExpressionAsync(
+                    model.Saat, 
+                    model.Dakika, 
+                    true // Her gün
+                );
+
+                // Scheduler'ı güncelle
+                await _schedulerService.UpdateSchedulerAsync(model);
+
+                _logger.LogInformation("Zamanlayıcı güncellendi: {Name} - {Hour}:{Minute}, Gün Ofseti: {Offset}", 
+                    model.Isim, model.Saat, model.Dakika, model.GorevCalismaGunuOfseti);
+
+                TempData["SuccessMessage"] = $"Zamanlayıcı '{model.Isim}' başarıyla güncellendi.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Zamanlayıcı güncellenirken hata oluştu");
+                ModelState.AddModelError("", "Zamanlayıcı güncellenirken bir hata oluştu: " + ex.Message);
+            }
+        }
+
+        return View(model);
+    }
+
+    // POST: Scheduler/Delete/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(long id)
     {
         try
         {
-            var deleted = await _schedulerService.DeleteActiveSchedulerAsync();
+            var scheduler = await _schedulerService.GetSchedulerByIdAsync(id);
+            if (scheduler == null)
+            {
+                TempData["ErrorMessage"] = "Zamanlayıcı bulunamadı.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var deleted = await _schedulerService.DeleteSchedulerAsync(id);
             
             if (deleted)
             {
-                TempData["SuccessMessage"] = "Zamanlayıcı başarıyla durduruldu.";
+                TempData["SuccessMessage"] = $"Zamanlayıcı '{scheduler.Isim}' başarıyla silindi.";
             }
             else
             {
-                TempData["ErrorMessage"] = "Aktif zamanlayıcı bulunamadı.";
+                TempData["ErrorMessage"] = "Zamanlayıcı silinemedi.";
             }
         }
         catch (Exception ex)

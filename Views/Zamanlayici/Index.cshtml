@@ -1,16 +1,19 @@
-@model StudentApp.Models.ZamanlayiciAyarlar?
+@model List<StudentApp.Models.ZamanlayiciAyarlar>
 @{
     ViewData["Title"] = "Zamanlayıcı Ayarları";
 }
 
 <div class="container mt-4">
     <div class="row">
-        <div class="col-md-8 offset-md-2">
+        <div class="col-md-12">
             <div class="card">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h4 class="mb-0">
-                        <i class="bi bi-clock"></i> Zamanlayıcı Ayarları
+                        <i class="fas fa-clock"></i> Zamanlayıcı Ayarları
                     </h4>
+                    <a asp-action="Create" class="btn btn-light btn-sm">
+                        <i class="fas fa-plus-circle"></i> Yeni Zamanlayıcı Ekle
+                    </a>
                 </div>
                 <div class="card-body">
                     @if (TempData["SuccessMessage"] != null)
@@ -29,33 +32,60 @@
                         </div>
                     }
 
-                    @if (Model == null || !Model.Aktif)
+                    @if (Model == null || !Model.Any())
                     {
                         <div class="alert alert-info">
-                            <h5><i class="bi bi-info-circle"></i> Aktif Zamanlayıcı Yok</h5>
-                            <p>Şu anda aktif bir zamanlayıcı bulunmuyor. Yeni bir zamanlayıcı oluşturmak için aşağıdaki butona tıklayın.</p>
-                            <div class="mt-3">
-                                <a asp-action="Create" class="btn btn-primary">
-                                    <i class="bi bi-plus-circle"></i> Yeni Zamanlayıcı Oluştur
-                                </a>
-                            </div>
+                            <h5><i class="fas fa-info-circle"></i> Aktif Zamanlayıcı Yok</h5>
+                            <p>Şu anda aktif bir zamanlayıcı bulunmuyor. Yeni bir zamanlayıcı oluşturmak için yukarıdaki butona tıklayın.</p>
                         </div>
                     }
                     else
                     {
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h5 class="mb-3">Aktif Zamanlayıcı</h5>
-                                <table class="table table-bordered table-hover">
-                                    <tbody>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>İsim</th>
+                                        <th>Gün Ofseti</th>
+                                        <th>Çalışma Zamanı</th>
+                                        <th>Durum</th>
+                                        <th>Oluşturulma</th>
+                                        <th>İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var scheduler in Model)
+                                    {
                                         <tr>
-                                            <th width="200">İsim:</th>
-                                            <td>@Model.Isim</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Durum:</th>
                                             <td>
-                                                @if (Model.Aktif && Model.Aktif)
+                                                <strong>@scheduler.Isim</strong>
+                                                @if (!string.IsNullOrEmpty(scheduler.Aciklama))
+                                                {
+                                                    <br />
+                                                    <small class="text-muted">@scheduler.Aciklama</small>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (scheduler.GorevCalismaGunuOfseti == 0)
+                                                {
+                                                    <span class="badge bg-primary">Son ödeme tarihi günü</span>
+                                                }
+                                                else if (scheduler.GorevCalismaGunuOfseti < 0)
+                                                {
+                                                    <span class="badge bg-info">@Math.Abs(scheduler.GorevCalismaGunuOfseti) gün önce</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-warning">@scheduler.GorevCalismaGunuOfseti gün sonra</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                Her gün <strong>@scheduler.Saat.ToString("00"):@scheduler.Dakika.ToString("00")</strong>
+                                                <br />
+                                                <small class="text-muted"><code>@scheduler.CronIfadesi</code></small>
+                                            </td>
+                                            <td>
+                                                @if (scheduler.Aktif)
                                                 {
                                                     <span class="badge bg-success">Aktif</span>
                                                 }
@@ -64,52 +94,24 @@
                                                     <span class="badge bg-danger">Pasif</span>
                                                 }
                                             </td>
-                                        </tr>
-                                        <tr>
-                                            <th>Çalışma Zamanı:</th>
-                                            <td>Her gün <strong>@Model.Saat.ToString("00"):@Model.Dakika.ToString("00")</strong> da çalışır</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Cron Expression:</th>
-                                            <td><code>@Model.CronIfadesi</code></td>
-                                        </tr>
-                                        <tr>
-                                            <th>SMS Mesajı:</th>
+                                            <td>@scheduler.OlusturmaTarihi.ToString("dd.MM.yyyy HH:mm")</td>
                                             <td>
-                                                <div class="border rounded p-2 bg-light">
-                                                    <small>@Model.MesajSablonu</small>
+                                                <div class="btn-group" role="group">
+                                                    <a asp-action="Edit" asp-route-id="@scheduler.Id" class="btn btn-warning btn-sm" title="Düzenle">
+                                                        <i class="fas fa-edit"></i> Düzenle
+                                                    </a>
+                                                    <form asp-action="Delete" asp-route-id="@scheduler.Id" method="post" class="d-inline" onsubmit="return confirm('Bu zamanlayıcıyı silmek istediğinizden emin misiniz?');">
+                                                        @Html.AntiForgeryToken()
+                                                        <button type="submit" class="btn btn-danger btn-sm" title="Sil">
+                                                            <i class="fas fa-trash-alt"></i> Sil
+                                                        </button>
+                                                    </form>
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr>
-                                            <th>Oluşturulma:</th>
-                                            <td>@Model.OlusturmaTarihi.ToString("dd.MM.yyyy HH:mm")</td>
-                                        </tr>
-                                        @if (Model.Aciklama != null)
-                                        {
-                                            <tr>
-                                                <th>Açıklama:</th>
-                                                <td>@Model.Aciklama</td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <div class="mt-4">
-                            <h6 class="mb-3">İşlemler</h6>
-                            <div class="d-flex gap-2">
-                                <a asp-action="Create" class="btn btn-warning">
-                                    <i class="bi bi-pencil"></i> Zamanlayıcıyı Güncelle
-                                </a>
-                                <form asp-action="Delete" method="post" onsubmit="return confirm('Zamanlayıcıyı durdurmak istediğinizden emin misiniz?');">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-danger">
-                                        <i class="bi bi-stop-circle"></i> Zamanlayıcıyı Durdur
-                                    </button>
-                                </form>
-                            </div>
+                                    }
+                                </tbody>
+                            </table>
                         </div>
                     }
                 </div>

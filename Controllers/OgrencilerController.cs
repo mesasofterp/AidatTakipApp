@@ -394,7 +394,8 @@ private async Task LoadDropdownsAsync()
                 }
 
                 var today = DateTime.Today;
-                var activeSettings = await _schedulerService.GetActiveSchedulerAsync();
+                var activeSchedulers = await _schedulerService.GetActiveSchedulersAsync();
+                var activeSettings = activeSchedulers.FirstOrDefault();
                 var template = activeSettings?.MesajSablonu ?? "Sayın [ÖĞRENCİ_ADI] [ÖĞRENCİ_SOYADI], ödemeniz [REFERANS_TARIH] tarihinden beri yapılmamıştır. Lütfen ödemenizi yapınız.";
 
                 var students = await _context.Ogrenciler
