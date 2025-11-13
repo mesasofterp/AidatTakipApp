@@ -164,12 +164,18 @@ var today = DateTime.Now;
         // POST: Student/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Ogrenciler ogrenci, List<EnvanterSatisViewModel>? EnvanterSatislari)
+  public async Task<IActionResult> Create(Ogrenciler ogrenci, List<EnvanterSatisViewModel>? EnvanterSatislari)
     {
        if (ModelState.IsValid)
   {
 try
-       {
+    {
+    // İlk Taksit Son Ödeme Tarihi girilmemişse, Kayıt Tarihi ile doldur
+     if (!ogrenci.IlkTaksitSonOdemeTarihi.HasValue)
+    {
+   ogrenci.IlkTaksitSonOdemeTarihi = ogrenci.KayitTarihi;
+   }
+
   await _ogrenciService.AddOgrenciAsync(ogrenci);
        
        // Envanter satışları varsa işle
@@ -181,32 +187,32 @@ if (EnvanterSatislari != null && EnvanterSatislari.Any())
       if (satisViewModel.EnvanterId <= 0)
        continue;
 
-     var satisAdedi = satisViewModel.SatisAdet > 0 ? satisViewModel.SatisAdet : 1;
+ var satisAdedi = satisViewModel.SatisAdet > 0 ? satisViewModel.SatisAdet : 1;
    
 // Envanter stok kontrolü
           var envanter = await _context.Envanterler.FindAsync(satisViewModel.EnvanterId);
-      if (envanter == null)
+   if (envanter == null)
    {
 ModelState.AddModelError("", $"Seçilen envanter (ID: {satisViewModel.EnvanterId}) bulunamadı.");
       continue;
    }
 
  if (envanter.Adet < satisAdedi)
-        {
+      {
    ModelState.AddModelError("", $"{envanter.EnvanterAdi}: Yetersiz stok! Mevcut: {envanter.Adet}, İstenen: {satisAdedi}");
     continue;
-    }
+ }
 
        // Envanter satış kaydı oluştur
  var envanterSatis = new OgrenciEnvanterSatis
       {
 OgrenciId = ogrenci.Id,
        EnvanterId = satisViewModel.EnvanterId,
-      SatisTarihi = satisViewModel.SatisTarihi ?? DateTime.Now,
+ SatisTarihi = satisViewModel.SatisTarihi ?? DateTime.Now,
    OdenenTutar = satisViewModel.OdenenTutar,
     SatisAdet = satisAdedi,
    Aciklama = satisViewModel.Aciklama,
-     Aktif = true,
+Aktif = true,
       IsDeleted = false
  };
 
@@ -216,7 +222,7 @@ await _context.OgrenciEnvanterSatis.AddAsync(envanterSatis);
    envanter.Adet -= satisAdedi;
       _context.Envanterler.Update(envanter);
  }
-        
+    
       await _context.SaveChangesAsync();
 }
 
@@ -224,7 +230,7 @@ await _context.OgrenciEnvanterSatis.AddAsync(envanterSatis);
    return RedirectToAction(nameof(Index));
      }
   catch (Exception ex)
-        {
+  {
     // Inner exception'ı da kontrol et
 var innerMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
     var fullMessage = $"Öğrenci eklenirken bir hata oluştu: {innerMessage}";
@@ -239,7 +245,7 @@ var innerMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Me
       }
    else
   {
-          // ModelState hatalarını logla
+       // ModelState hatalarını logla
      var errors = ModelState.Values.SelectMany(v => v.Errors);
   foreach (var error in errors)
      {

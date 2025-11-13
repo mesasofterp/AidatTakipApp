@@ -125,7 +125,7 @@ namespace StudentApp.Services
             existingOgrenci.Adres = ogrenci.Adres;
             existingOgrenci.KayitTarihi = ogrenci.KayitTarihi;
             existingOgrenci.DogumTarihi = ogrenci.DogumTarihi;
-            existingOgrenci.IlkTaksitSonOdemeTarihi = ogrenci.IlkTaksitSonOdemeTarihi;
+            // ÝlkTaksitSonOdemeTarihi güncellenmiyor - Controller'da korunuyor
             existingOgrenci.CinsiyetId = ogrenci.CinsiyetId;
             existingOgrenci.OdemePlanlariId = ogrenci.OdemePlanlariId;
             existingOgrenci.Aciklama = ogrenci.Aciklama;
