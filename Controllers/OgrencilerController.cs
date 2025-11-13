@@ -166,6 +166,20 @@ var today = DateTime.Now;
         [ValidateAntiForgeryToken]
   public async Task<IActionResult> Create(Ogrenciler ogrenci, List<EnvanterSatisViewModel>? EnvanterSatislari)
     {
+       // Model State'deki tarih hatalarını temizle (culture sorunu için)
+      if (ModelState.ContainsKey(nameof(ogrenci.IlkTaksitSonOdemeTarihi)))
+   {
+           var ilkTaksitError = ModelState[nameof(ogrenci.IlkTaksitSonOdemeTarihi)];
+      if (ilkTaksitError?.Errors.Any() == true)
+         {
+         // Eğer sadece format hatası varsa temizle
+  if (ilkTaksitError.Errors.All(e => e.ErrorMessage.Contains("not valid") || e.ErrorMessage.Contains("geçerli değil")))
+   {
+      ModelState.Remove(nameof(ogrenci.IlkTaksitSonOdemeTarihi));
+   }
+   }
+  }
+
        if (ModelState.IsValid)
   {
 try
@@ -190,7 +204,7 @@ if (EnvanterSatislari != null && EnvanterSatislari.Any())
  var satisAdedi = satisViewModel.SatisAdet > 0 ? satisViewModel.SatisAdet : 1;
    
 // Envanter stok kontrolü
-          var envanter = await _context.Envanterler.FindAsync(satisViewModel.EnvanterId);
+var envanter = await _context.Envanterler.FindAsync(satisViewModel.EnvanterId);
    if (envanter == null)
    {
 ModelState.AddModelError("", $"Seçilen envanter (ID: {satisViewModel.EnvanterId}) bulunamadı.");
@@ -200,7 +214,7 @@ ModelState.AddModelError("", $"Seçilen envanter (ID: {satisViewModel.EnvanterId
  if (envanter.Adet < satisAdedi)
       {
    ModelState.AddModelError("", $"{envanter.EnvanterAdi}: Yetersiz stok! Mevcut: {envanter.Adet}, İstenen: {satisAdedi}");
-    continue;
+continue;
  }
 
        // Envanter satış kaydı oluştur
@@ -234,10 +248,10 @@ await _context.OgrenciEnvanterSatis.AddAsync(envanterSatis);
     // Inner exception'ı da kontrol et
 var innerMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
     var fullMessage = $"Öğrenci eklenirken bir hata oluştu: {innerMessage}";
-   
+ 
    // Daha detaylı log
     Console.WriteLine($"Hata: {ex.Message}");
-     Console.WriteLine($"Inner Exception: {ex.InnerException?.Message}");
+  Console.WriteLine($"Inner Exception: {ex.InnerException?.Message}");
  Console.WriteLine($"Stack Trace: {ex.StackTrace}");
         
         ModelState.AddModelError("", fullMessage);
@@ -245,7 +259,7 @@ var innerMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Me
       }
    else
   {
-       // ModelState hatalarını logla
+   // ModelState hatalarını logla
      var errors = ModelState.Values.SelectMany(v => v.Errors);
   foreach (var error in errors)
      {
@@ -327,39 +341,45 @@ Console.WriteLine($"Model Error: {error.ErrorMessage}");
      ogrenci.IlkTaksitSonOdemeTarihi = mevcutOgrenci.IlkTaksitSonOdemeTarihi;
       }
 
+  // Model State'deki IlkTaksitSonOdemeTarihi hatalarını temizle (form'da yok artık)
+      if (ModelState.ContainsKey(nameof(ogrenci.IlkTaksitSonOdemeTarihi)))
+   {
+      ModelState.Remove(nameof(ogrenci.IlkTaksitSonOdemeTarihi));
+  }
+
    if (ModelState.IsValid)
    {
-          try
-         {
+  try
+     {
        var updatedOgrenci = await _ogrenciService.UpdateOgrenciAsync(ogrenci);
-       if (updatedOgrenci == null)
+ if (updatedOgrenci == null)
      {
      return NotFound();
-          }
+  }
 
    // Envanter satışları varsa işle
 if (EnvanterSatislari != null && EnvanterSatislari.Any())
    {
-       foreach (var satisViewModel in EnvanterSatislari)
+ foreach (var satisViewModel in EnvanterSatislari)
         {
    // Silinecek kayıtları işle
          if (satisViewModel.SilinecekMi && satisViewModel.Id > 0)
    {
     var silinecekSatis = await _context.OgrenciEnvanterSatis.FindAsync(satisViewModel.Id);
-        if (silinecekSatis != null)
+ if (silinecekSatis != null)
  {
-    // Envanter stoğunu geri ekle
+ // Envanter stoğunu geri ekle
      var envanter = await _context.Envanterler.FindAsync(silinecekSatis.EnvanterId);
-      if (envanter != null)
+    if (envanter != null)
    {
-      envanter.Adet += silinecekSatis.SatisAdet;
+  envanter.Adet += silinecekSatis.SatisAdet;
      _context.Envanterler.Update(envanter);
-          }
+     }
 
     // Soft delete
   silinecekSatis.IsDeleted = true;
        silinecekSatis.Aktif = false;
-            _context.OgrenciEnvanterSatis.Update(silinecekSatis);
+   _context.OgrenciEnvanterSatis.Update(silinecekSatis);
          }
      continue;
        }
@@ -369,36 +389,36 @@ if (EnvanterSatislari != null && EnvanterSatislari.Any())
  {
    var mevcutSatis = await _context.OgrenciEnvanterSatis.FindAsync(satisViewModel.Id);
       if (mevcutSatis != null)
-         {
+       {
       // Adet değiştiyse stok güncelle
      if (mevcutSatis.SatisAdet != satisViewModel.SatisAdet)
     {
        var envanter = await _context.Envanterler.FindAsync(mevcutSatis.EnvanterId);
    if (envanter != null)
-             {
-       int fark = satisViewModel.SatisAdet - mevcutSatis.SatisAdet;
+   {
+   int fark = satisViewModel.SatisAdet - mevcutSatis.SatisAdet;
        if (envanter.Adet < fark)
          {
          ModelState.AddModelError("", $"{envanter.EnvanterAdi}: Yetersiz stok! Mevcut: {envanter.Adet}, Gerekli: {fark}");
   continue;
         }
-       envanter.Adet -= fark;
+     envanter.Adet -= fark;
         _context.Envanterler.Update(envanter);
-          }
+  }
     }
 
-           // Diğer alanları güncelle
+     // Diğer alanları güncelle
     mevcutSatis.SatisTarihi = satisViewModel.SatisTarihi ?? DateTime.Now;
          mevcutSatis.OdenenTutar = satisViewModel.OdenenTutar;
     mevcutSatis.SatisAdet = satisViewModel.SatisAdet;
-            mevcutSatis.Aciklama = satisViewModel.Aciklama;
+         mevcutSatis.Aciklama = satisViewModel.Aciklama;
    _context.OgrenciEnvanterSatis.Update(mevcutSatis);
-     }
+   }
    continue;
    }
 
      // Yeni kayıt ekleme (Id == 0)
-     // Boş kayıtları atla
+  // Boş kayıtları atla
         if (satisViewModel.EnvanterId <= 0)
  continue;
 
@@ -410,22 +430,22 @@ if (EnvanterSatislari != null && EnvanterSatislari.Any())
       {
       ModelState.AddModelError("", $"Seçilen envanter (ID: {satisViewModel.EnvanterId}) bulunamadı.");
 continue;
-    }
+ }
 
    if (yeniEnvanter.Adet < satisAdedi)
     {
      ModelState.AddModelError("", $"{yeniEnvanter.EnvanterAdi}: Yetersiz stok! Mevcut: {yeniEnvanter.Adet}, İstenen: {satisAdedi}");
   continue;
-   }
+ }
 
-       // Envanter satış kaydı oluştur
+ // Envanter satış kaydı oluştur
    var envanterSatis = new OgrenciEnvanterSatis
    {
 OgrenciId = ogrenci.Id,
    EnvanterId = satisViewModel.EnvanterId,
   SatisTarihi = satisViewModel.SatisTarihi ?? DateTime.Now,
          OdenenTutar = satisViewModel.OdenenTutar,
-    SatisAdet = satisAdedi,
+  SatisAdet = satisAdedi,
     Aciklama = satisViewModel.Aciklama,
   Aktif = true,
  IsDeleted = false
@@ -466,8 +486,8 @@ yeniEnvanter.Adet -= satisAdedi;
    .OrderByDescending(e => e.SatisTarihi)
   .Select(e => new EnvanterSatisViewModel
     {
-    Id = e.Id,
-         EnvanterId = e.EnvanterId,
+  Id = e.Id,
+  EnvanterId = e.EnvanterId,
     EnvanterAdi = e.Envanter.EnvanterAdi,
          SatisTarihi = e.SatisTarihi,
  SatisAdet = e.SatisAdet,
@@ -675,7 +695,7 @@ private async Task LoadDropdownsAsync()
             // Başlık satırı
             int c = 1;
    ws.Cell(1, c++).Value = "Ad";
-       ws.Cell(1, c++).Value = "Soyad";
+    ws.Cell(1, c++).Value = "Soyad";
     ws.Cell(1, c++).Value = "TC Kimlik No";
   ws.Cell(1, c++).Value = "Telefon";
       ws.Cell(1, c++).Value = "Email";
@@ -687,8 +707,8 @@ private async Task LoadDropdownsAsync()
 ws.Cell(1, c++).Value = "Ödeme Planı";
 ws.Cell(1, c++).Value = "Toplam Tutar";
   ws.Cell(1, c++).Value = "Taksit Sayısı";
-       ws.Cell(1, c++).Value = "Son SMS Tarihi";
-          ws.Cell(1, c++).Value = "Durum";
+    ws.Cell(1, c++).Value = "Son SMS Tarihi";
+  ws.Cell(1, c++).Value = "Durum";
 
             // Başlık satırını stillendir
  var headerRow = ws.Row(1);

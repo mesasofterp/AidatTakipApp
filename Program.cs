@@ -6,6 +6,7 @@ using Quartz;
 using AppSchedulerFactory = StudentApp.Services.IZamanlayiciFactory;
 using Microsoft.AspNetCore.Identity;
 using StudentApp.Helpers;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 string keyPath = Path.Combine(builder.Environment.ContentRootPath, "App_Data", "public.key");
@@ -19,6 +20,10 @@ if (!LicenseManager.CheckLicense(keyPath, licPath, out string failReason))
     return; // Uygulamayı başlatma
 }
 
+// Tarih formatını ayarla - Türkiye lokalizasyonu
+var cultureInfo = new CultureInfo("tr-TR");
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 //var app = builder.Build();
 //app.MapGet("/", () => "Lisans doğrulandı, uygulama çalışıyor.");

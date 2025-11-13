@@ -130,24 +130,6 @@
 </div>
 
   <div class="mb-3">
-       <label asp-for="IlkTaksitSonOdemeTarihi" class="form-label"></label>
-       <input asp-for="IlkTaksitSonOdemeTarihi" type="date" class="form-control" disabled />
-     <input asp-for="IlkTaksitSonOdemeTarihi" type="hidden" />
-    <small class="form-text text-muted">
-      <i class="fas fa-lock me-1 text-warning"></i>
-        Bu alan sadece öğrenci kaydı sırasında belirlenir ve sonradan değiştirilemez.
-            @if (Model.IlkTaksitSonOdemeTarihi.HasValue)
- {
-         <span class="text-info">Mevcut değer: @Model.IlkTaksitSonOdemeTarihi.Value.ToString("dd.MM.yyyy")</span>
- }
-         else
- {
-     <span class="text-muted">(Kayıt tarihi kullanılmış)</span>
-      }
-       </small>
- </div>
-
-        <div class="mb-3">
    <label asp-for="Aciklama" class="form-label">Notlar / Açıklama</label>
  <textarea asp-for="Aciklama" class="form-control" rows="3" placeholder="Öğrenci hakkında notlar veya açıklama..."></textarea>
     <span asp-validation-for="Aciklama" class="text-danger"></span>
