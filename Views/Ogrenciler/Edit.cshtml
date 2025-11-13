@@ -189,47 +189,47 @@
      <tbody id="envanterTbody">
     @if (ViewBag.MevcutEnvanterSatislari != null)
          {
-       var mevcutSatislar = (List<EnvanterSatisViewModel>)ViewBag.MevcutEnvanterSatislari;
+var mevcutSatislar = (List<EnvanterSatisViewModel>)ViewBag.MevcutEnvanterSatislari;
  for (int i = 0; i < mevcutSatislar.Count; i++)
   {
-         var satis = mevcutSatislar[i];
-           <tr class="envanter-satir" data-index="@i">
+       var satis = mevcutSatislar[i];
+       <tr class="envanter-satir" data-index="@i">
      <td>
   <input type="hidden" name="EnvanterSatislari[@i].Id" value="@satis.Id" />
-          <input type="hidden" name="EnvanterSatislari[@i].EnvanterId" value="@satis.EnvanterId" />
+       <input type="hidden" name="EnvanterSatislari[@i].EnvanterId" value="@satis.EnvanterId" />
     <input type="hidden" name="EnvanterSatislari[@i].SilinecekMi" value="false" class="silinecek-input" />
             <strong>@satis.EnvanterAdi</strong>
   <input type="hidden" class="envanter-adi-hidden" value="@satis.EnvanterAdi" />
      </td>
-               <td class="text-center">
+       <td class="text-center">
      <input type="number" name="EnvanterSatislari[@i].SatisAdet" value="@satis.SatisAdet" 
       class="form-control form-control-sm text-center" min="1" required />
-            </td>
+         </td>
         <td>
-         <input type="date" name="EnvanterSatislari[@i].SatisTarihi" 
+  <input type="date" name="EnvanterSatislari[@i].SatisTarihi" 
    value="@(satis.SatisTarihi?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))" 
-           class="form-control form-control-sm" />
-               </td>
+         class="form-control form-control-sm" />
+ </td>
   <td>
-              <div class="input-group input-group-sm">
+<div class="input-group input-group-sm">
         <span class="input-group-text"><span style="font-family: Arial, sans-serif;">&#8378;</span></span>
-                <input type="number" name="EnvanterSatislari[@i].OdenenTutar" value="@satis.OdenenTutar" 
+     <input type="number" name="EnvanterSatislari[@i].OdenenTutar" value="@satis.OdenenTutar.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)" 
       class="form-control" step="0.01" min="0" required />
   </div>
-          </td>
+       </td>
         <td>
            <input type="text" name="EnvanterSatislari[@i].Aciklama" value="@satis.Aciklama" 
       class="form-control form-control-sm" placeholder="Not..." />
-          </td>
+      </td>
   <td class="text-center">
       <button type="button" class="btn btn-sm btn-danger sil-btn" title="Sil">
      <i class="fas fa-trash"></i>
-                 </button>
-            </td>
+       </button>
+    </td>
   </tr>
   }
        }
-                </tbody>
+          </tbody>
       </table>
         </div>
         
@@ -324,12 +324,12 @@ if (value.length > 0 && value.charAt(0) !== '0') {
   });
     
      // Paste eventini de kontrol et
-        telefonInput.addEventListener('paste', function(e) {
+    telefonInput.addEventListener('paste', function(e) {
        setTimeout(function() {
  let value = telefonInput.value.replace(/\D/g, '');
          if (value.length > 11) {
    value = value.substring(0, 11);
-      }
+    }
    if (value.length > 0 && value.charAt(0) !== '0') {
   value = '0' + value.substring(0, 10);
  }
@@ -345,8 +345,10 @@ if (value.length > 0 && value.charAt(0) !== '0') {
         let yeniSatirIndex = @(ViewBag.MevcutEnvanterSatislari != null ? ((List<EnvanterSatisViewModel>)ViewBag.MevcutEnvanterSatislari).Count : 0);
 
  // Yeni satır ekle
- yeniSatirEkleBtn.addEventListener('click', function() {
-     const templateContent = yeniSatirTemplate.content.cloneNode(true);
+ if (yeniSatirEkleBtn && yeniSatirTemplate && tbody) {
+   yeniSatirEkleBtn.addEventListener('click', function() {
+          console.log('Yeni satır ekleniyor, index:', yeniSatirIndex);
+        const templateContent = yeniSatirTemplate.content.cloneNode(true);
    const templateHTML = templateContent.querySelector('tr').outerHTML;
 const yeniSatir = templateHTML.replace(/{INDEX}/g, yeniSatirIndex);
     
@@ -355,56 +357,72 @@ const yeniSatir = templateHTML.replace(/{INDEX}/g, yeniSatirIndex);
     
    // Yeni eklenen satırın sil butonunu dinle
     guncelYeniSilButonlari();
- });
+            console.log('Yeni satır eklendi');
+     });
+ }
 
         // Mevcut kayıtların sil butonları (soft delete)
  document.querySelectorAll('.sil-btn').forEach(btn => {
+        console.log('Mevcut sil butonu bulundu');
 btn.addEventListener('click', function() {
+         console.log('Mevcut satır silme tetiklendi');
     if (confirm('Bu envanter satışını silmek istediğinizden emin misiniz? Stok geri eklenecektir.')) {
   const row = this.closest('tr');
    const silinecekInput = row.querySelector('.silinecek-input');
-    silinecekInput.value = 'true';
-      
+    if (silinecekInput) {
+     silinecekInput.value = 'true';
+   console.log('SilinecekMi = true olarak işaretlendi');
+                }
+  
     // Satırı görsel olarak gizle ve işaretle
-         row.style.opacity = '0.5';
+       row.style.opacity = '0.5';
   row.style.textDecoration = 'line-through';
-       this.disabled = true;
-         this.innerHTML = '<i class="fas fa-check"></i> Silinecek';
+   this.disabled = true;
+   this.innerHTML = '<i class="fas fa-check"></i> Silinecek';
  this.classList.remove('btn-danger');
        this.classList.add('btn-secondary');
+  console.log('Satır görsel olarak işaretlendi');
     }
         });
  });
 
  // Yeni eklenen satırların sil butonları (DOM'dan kaldır)
   function guncelYeniSilButonlari() {
+        console.log('Yeni sil butonları güncelleniyor');
    document.querySelectorAll('.yeni-sil-btn').forEach(btn => {
     btn.removeEventListener('click', yeniSilHandler);
 btn.addEventListener('click', yeniSilHandler);
+   console.log('Yeni sil butonu dinleyicisi eklendi');
 });
   }
 
  function yeniSilHandler(e) {
+     console.log('Yeni satır silme tetiklendi');
         const row = e.target.closest('tr');
   if (row && confirm('Bu satırı kaldırmak istediğinizden emin misiniz?')) {
         row.remove();
+  console.log('Satır DOM\'dan kaldırıldı');
           // Index'leri yeniden düzenle
-      yenidenIndexle();
+   yenidenIndexle();
   }
     }
 
  // Satır index'lerini yeniden düzenle
  function yenidenIndexle() {
-   const rows = tbody.querySelectorAll('tr');
+        console.log('Index\'ler yeniden düzenleniyor');
+const rows = tbody.querySelectorAll('tr');
  rows.forEach((row, index) => {
       row.dataset.index = index;
    row.querySelectorAll('[name]').forEach(input => {
      const name = input.getAttribute('name');
        if (name) {
-       const newName = name.replace(/\[\d+\]/, `[${index}]`);
+  const newName = name.replace(/\[\d+\]/, `[${index}]`);
     input.setAttribute('name', newName);
+   console.log('Input name güncellendi:', name, '->', newName);
      }
  });
+      yeniSatirIndex = rows.length;
+        console.log('Yeni index:', yeniSatirIndex);
   }
  });
     </script>
