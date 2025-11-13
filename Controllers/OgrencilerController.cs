@@ -265,17 +265,26 @@ Console.WriteLine($"Model Error: {error.ErrorMessage}");
                 return NotFound();
             }
 
- // Öğrencinin envanter satışlarını getir
-   var envanterSatislari = await _context.OgrenciEnvanterSatis
-      .Include(e => e.Envanter)
-            .Where(e => e.OgrenciId == id && !e.IsDeleted)
-    .OrderByDescending(e => e.SatisTarihi)
-   .ToListAsync();
+            // Öğrencinin başarılarını getir
+            var basarilar = await _context.OgrenciBasarilari
+                .Where(b => b.OgrenciId == id && !b.IsDeleted)
+                .OrderByDescending(b => b.Tarih)
+                .ThenByDescending(b => b.Id)
+                .ToListAsync();
 
-       ViewBag.EnvanterSatislari = envanterSatislari;
-      ViewBag.ToplamEnvanterHarcama = envanterSatislari.Sum(e => e.OdenenTutar);
+            ViewBag.Basarilar = basarilar;
 
-   return View(ogrenci);
+            // Öğrencinin envanter satışlarını getir
+            var envanterSatislari = await _context.OgrenciEnvanterSatis
+                .Include(e => e.Envanter)
+                .Where(e => e.OgrenciId == id && !e.IsDeleted)
+                .OrderByDescending(e => e.SatisTarihi)
+                .ToListAsync();
+
+            ViewBag.EnvanterSatislari = envanterSatislari;
+            ViewBag.ToplamEnvanterHarcama = envanterSatislari.Sum(e => e.OdenenTutar);
+
+            return View(ogrenci);
         }
 
         // GET: Student/Edit/5

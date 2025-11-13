@@ -1,0 +1,105 @@
+@model StudentApp.Models.OgrenciBasarilari
+
+@{
+    ViewData["Title"] = "Başarı Detayları";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-trophy me-2"></i>Başarı Detayları</h4>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">
+                        <i class="fas fa-heading me-2"></i>Başlık
+                    </dt>
+                    <dd class="col-sm-8">
+                        <strong>@Model.Baslik</strong>
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        <i class="fas fa-tag me-2"></i>Tür
+                    </dt>
+                    <dd class="col-sm-8">
+                        <span class="badge bg-primary">@Model.Turu</span>
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        <i class="fas fa-calendar me-2"></i>Tarih
+                    </dt>
+                    <dd class="col-sm-8">
+                        @if (Model.Tarih.HasValue)
+                        {
+                            <i class="fas fa-calendar-alt me-1"></i>@Model.Tarih.Value.ToString("dd.MM.yyyy")
+                        }
+                        else
+                        {
+                            <span class="text-muted">Belirtilmemiş</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        <i class="fas fa-user me-2"></i>Öğrenci
+                    </dt>
+                    <dd class="col-sm-8">
+                        @if (Model.Ogrenci != null)
+                        {
+                            <a asp-controller="Ogrenciler" asp-action="Details" asp-route-id="@Model.OgrenciId" class="text-decoration-none">
+                                <i class="fas fa-user-circle me-1"></i>@Model.Ogrenci.OgrenciAdi @Model.Ogrenci.OgrenciSoyadi
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="text-muted">-</span>
+                        }
+                    </dd>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.Aciklama))
+                    {
+                        <dt class="col-sm-4">
+                            <i class="fas fa-comment me-2"></i>Açıklama
+                        </dt>
+                        <dd class="col-sm-8">
+                            <div class="alert alert-light">
+                                @Model.Aciklama
+                            </div>
+                        </dd>
+                    }
+
+                    <dt class="col-sm-4">Durum</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.Aktif)
+                        {
+                            <span class="badge bg-success">
+                                <i class="fas fa-check me-1"></i>Aktif
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">
+                                <i class="fas fa-times me-1"></i>Pasif
+                            </span>
+                        }
+                    </dd>
+                </dl>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="Index" asp-route-ogrenciId="@Model.OgrenciId" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Listeye Dön
+                    </a>
+                    <div>
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">
+                            <i class="fas fa-edit me-1"></i>Düzenle
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                            <i class="fas fa-trash me-1"></i>Sil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

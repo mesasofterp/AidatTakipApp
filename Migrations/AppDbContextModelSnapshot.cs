@@ -321,6 +321,49 @@ namespace StudentApp.Migrations
                     b.ToTable("OdemePlanlari", (string)null);
                 });
 
+            modelBuilder.Entity("StudentApp.Models.OgrenciBasarilari", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Aciklama")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Aktif")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Baslik")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("OgrenciId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("Tarih")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Turu")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OgrenciId");
+
+                    b.ToTable("OgrenciBasarilari", (string)null);
+                });
+
             modelBuilder.Entity("StudentApp.Models.OgrenciEnvanterSatis", b =>
                 {
                     b.Property<long>("Id")
@@ -439,6 +482,9 @@ namespace StudentApp.Migrations
 
                     b.Property<bool>("Aktif")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Biyografi")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Boy")
                         .HasColumnType("int");
@@ -612,6 +658,17 @@ namespace StudentApp.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("StudentApp.Models.OgrenciBasarilari", b =>
+                {
+                    b.HasOne("StudentApp.Models.Ogrenciler", "Ogrenci")
+                        .WithMany("OgrenciBasarilari")
+                        .HasForeignKey("OgrenciId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ogrenci");
+                });
+
             modelBuilder.Entity("StudentApp.Models.OgrenciEnvanterSatis", b =>
                 {
                     b.HasOne("StudentApp.Models.Envanterler", "Envanter")
@@ -659,6 +716,11 @@ namespace StudentApp.Migrations
                     b.Navigation("Cinsiyet");
 
                     b.Navigation("OdemePlanlari");
+                });
+
+            modelBuilder.Entity("StudentApp.Models.Ogrenciler", b =>
+                {
+                    b.Navigation("OgrenciBasarilari");
                 });
 #pragma warning restore 612, 618
         }
