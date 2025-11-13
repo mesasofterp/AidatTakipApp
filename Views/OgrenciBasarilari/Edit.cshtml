@@ -1,0 +1,90 @@
+@model StudentApp.Models.OgrenciBasarilari
+
+@{
+    ViewData["Title"] = "Başarı Düzenle";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-edit me-2"></i>Başarı Düzenle</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit" method="post">
+                    <input asp-for="Id" type="hidden" />
+                    <input asp-for="Version" type="hidden" />
+                    <input asp-for="Aktif" type="hidden" />
+                    <input asp-for="IsDeleted" type="hidden" />
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="OgrenciId" class="form-label"></label>
+                        <select asp-for="OgrenciId" class="form-select" asp-items="ViewBag.OgrenciId">
+                            <option value="">-- Öğrenci Seçiniz --</option>
+                        </select>
+                        <span asp-validation-for="OgrenciId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Baslik" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-heading"></i></span>
+                            <input asp-for="Baslik" class="form-control" placeholder="Örn: 2024 İstanbul Turnuvası Birinciliği" />
+                        </div>
+                        <span asp-validation-for="Baslik" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Turu" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                            <input asp-for="Turu" class="form-control" placeholder="Örn: Turnuva, Kupa, Sertifika" list="turuListesi" />
+                            <datalist id="turuListesi">
+                                <option value="Turnuva" />
+                                <option value="Kupa" />
+                                <option value="Sertifika" />
+                                <option value="Madalya" />
+                                <option value="Şampiyonluk" />
+                                <option value="Başarı Belgesi" />
+                            </datalist>
+                        </div>
+                        <span asp-validation-for="Turu" class="text-danger"></span>
+                        <small class="form-text text-muted">Örn: Turnuva, Kupa, Sertifika, Madalya, Şampiyonluk, Başarı Belgesi</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Tarih" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                            <input asp-for="Tarih" type="date" class="form-control" />
+                        </div>
+                        <span asp-validation-for="Tarih" class="text-danger"></span>
+                        <small class="form-text text-muted">Opsiyonel - Başarının gerçekleştiği tarih</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Aciklama" class="form-label"></label>
+                        <textarea asp-for="Aciklama" class="form-control" rows="5" placeholder="Başarı hakkında detaylı açıklama..."></textarea>
+                        <span asp-validation-for="Aciklama" class="text-danger"></span>
+                        <small class="form-text text-muted">Opsiyonel - Başarı hakkında ek bilgiler</small>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Index" asp-route-ogrenciId="@Model.OgrenciId" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Listeye Dön
+                        </a>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-save me-1"></i>Değişiklikleri Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

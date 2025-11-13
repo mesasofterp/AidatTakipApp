@@ -1,4 +1,5 @@
 @model StudentApp.Models.Ogrenciler
+@using StudentApp.Models
 
 @{
     ViewData["Title"] = "Öğrenci Detayları";
@@ -15,6 +16,13 @@
         var boyMetre = Model.Boy.Value / 100.0m;
         vki = Model.Kilo.Value / (boyMetre * boyMetre);
     }
+    
+    // Başarıları al
+    var basarilar = (ViewBag.Basarilar as List<OgrenciBasarilari>) ?? new List<OgrenciBasarilari>();
+    
+    // Envanter satışlarını al
+    var envanterSatislari = (ViewBag.EnvanterSatislari as List<OgrenciEnvanterSatis>) ?? new List<OgrenciEnvanterSatis>();
+    var toplamEnvanterHarcama = ViewBag.ToplamEnvanterHarcama as decimal? ?? 0m;
 }
 
 <div class="row justify-content-center">
@@ -24,7 +32,16 @@
        <h4><i class="fas fa-user me-2"></i>Öğrenci Detayları</h4>
     </div>
             <div class="card-body">
-   <h5 class="mb-3"><i class="fas fa-user me-2"></i>Kişisel Bilgiler</h5>
+                @if (!string.IsNullOrWhiteSpace(Model.Biyografi))
+                {
+                    <h5 class="mb-3"><i class="fas fa-book-open me-2"></i>Biyografi</h5>
+                    <div class="alert alert-light border">
+                        <p class="mb-0" style="white-space: pre-wrap;">@Model.Biyografi</p>
+                    </div>
+                    <hr class="my-4" />
+                }
+                
+                <h5 class="mb-3"><i class="fas fa-user me-2"></i>Kişisel Bilgiler</h5>
            <dl class="row">
              <dt class="col-sm-4">@Html.DisplayNameFor(model => model.OgrenciAdi)</dt>
 <dd class="col-sm-8">
@@ -147,6 +164,83 @@
             </dl>
           }
 
+           @if (Model.OgrenciDetay != null && (!string.IsNullOrWhiteSpace(Model.OgrenciDetay.VeliAdSoyad) || 
+                !string.IsNullOrWhiteSpace(Model.OgrenciDetay.VeliTelefonNumarasi) || 
+                !string.IsNullOrWhiteSpace(Model.OgrenciDetay.OkulAdi) || 
+                !string.IsNullOrWhiteSpace(Model.OgrenciDetay.OkulAdresi) || 
+                !string.IsNullOrWhiteSpace(Model.OgrenciDetay.Sinif) || 
+                !string.IsNullOrWhiteSpace(Model.OgrenciDetay.OkulHocasiAdSoyad) || 
+                !string.IsNullOrWhiteSpace(Model.OgrenciDetay.OkulHocasiTelefon)))
+          {
+              <hr class="my-4" />
+              <h5 class="mb-3"><i class="fas fa-users me-2"></i>Veli Bilgileri</h5>
+              <dl class="row">
+                  @if (!string.IsNullOrWhiteSpace(Model.OgrenciDetay.VeliAdSoyad))
+                  {
+                      <dt class="col-sm-4">Veli Ad Soyad</dt>
+                      <dd class="col-sm-8">
+                          <i class="fas fa-user me-1"></i>@Model.OgrenciDetay.VeliAdSoyad
+                      </dd>
+                  }
+                  
+                  @if (!string.IsNullOrWhiteSpace(Model.OgrenciDetay.VeliTelefonNumarasi))
+                  {
+                      <dt class="col-sm-4">Veli Telefon Numarası</dt>
+                      <dd class="col-sm-8">
+                          <a href="tel:@Model.OgrenciDetay.VeliTelefonNumarasi" class="text-decoration-none">
+                              <i class="fas fa-phone me-1"></i>@Model.OgrenciDetay.VeliTelefonNumarasi
+                          </a>
+                      </dd>
+                  }
+              </dl>
+
+              <hr class="my-4" />
+              <h5 class="mb-3"><i class="fas fa-school me-2"></i>Okul Bilgileri</h5>
+              <dl class="row">
+                  @if (!string.IsNullOrWhiteSpace(Model.OgrenciDetay.OkulAdi))
+                  {
+                      <dt class="col-sm-4">Okul Adı</dt>
+                      <dd class="col-sm-8">
+                          <i class="fas fa-school me-1"></i>@Model.OgrenciDetay.OkulAdi
+                      </dd>
+                  }
+                  
+                  @if (!string.IsNullOrWhiteSpace(Model.OgrenciDetay.Sinif))
+                  {
+                      <dt class="col-sm-4">Sınıf</dt>
+                      <dd class="col-sm-8">
+                          <span class="badge bg-info">@Model.OgrenciDetay.Sinif</span>
+                      </dd>
+                  }
+                  
+                  @if (!string.IsNullOrWhiteSpace(Model.OgrenciDetay.OkulAdresi))
+                  {
+                      <dt class="col-sm-4">Okul Adresi</dt>
+                      <dd class="col-sm-8">
+                          <i class="fas fa-map-marker-alt me-1"></i>@Model.OgrenciDetay.OkulAdresi
+                      </dd>
+                  }
+                  
+                  @if (!string.IsNullOrWhiteSpace(Model.OgrenciDetay.OkulHocasiAdSoyad))
+                  {
+                      <dt class="col-sm-4">Okul Hocası Ad Soyad</dt>
+                      <dd class="col-sm-8">
+                          <i class="fas fa-chalkboard-teacher me-1"></i>@Model.OgrenciDetay.OkulHocasiAdSoyad
+                      </dd>
+                  }
+                  
+                  @if (!string.IsNullOrWhiteSpace(Model.OgrenciDetay.OkulHocasiTelefon))
+                  {
+                      <dt class="col-sm-4">Okul Hocası Telefon</dt>
+                      <dd class="col-sm-8">
+                          <a href="tel:@Model.OgrenciDetay.OkulHocasiTelefon" class="text-decoration-none">
+                              <i class="fas fa-phone me-1"></i>@Model.OgrenciDetay.OkulHocasiTelefon
+                          </a>
+                      </dd>
+                  }
+              </dl>
+          }
+
            <hr class="my-4" />
           <h5 class="mb-3"><i class="fas fa-credit-card me-2"></i>Ödeme Bilgileri</h5>
      <dl class="row">
@@ -220,12 +314,12 @@
    </dd>
      </dl>
 
-   @if (ViewBag.EnvanterSatislari != null && ((IEnumerable<StudentApp.Models.OgrenciEnvanterSatis>)ViewBag.EnvanterSatislari).Any())
+   @if (envanterSatislari.Any())
     {
    <hr class="my-4" />
         <h5 class="mb-3">
       <i class="fas fa-boxes me-2"></i>Envanter Satış Geçmişi
-     <span class="badge bg-primary ms-2">@((IEnumerable<StudentApp.Models.OgrenciEnvanterSatis>)ViewBag.EnvanterSatislari).Count()</span>
+     <span class="badge bg-primary ms-2">@envanterSatislari.Count</span>
        </h5>
 
             <div class="card bg-light mb-3">
@@ -233,11 +327,11 @@
         <div class="row">
   <div class="col-md-6">
    <h6 class="text-muted mb-1">Toplam Harcama</h6>
-       <h4 class="mb-0"><span style="font-family: Arial, sans-serif;">&#8378;</span>@((decimal)ViewBag.ToplamEnvanterHarcama).ToString("N2")</h4>
+       <h4 class="mb-0"><span style="font-family: Arial, sans-serif;">&#8378;</span>@toplamEnvanterHarcama.ToString("N2")</h4>
         </div>
   <div class="col-md-6 text-end">
   <h6 class="text-muted mb-1">İşlem Sayısı</h6>
-<h4 class="mb-0">@((IEnumerable<StudentApp.Models.OgrenciEnvanterSatis>)ViewBag.EnvanterSatislari).Count() Adet</h4>
+<h4 class="mb-0">@envanterSatislari.Count Adet</h4>
  </div>
        </div>
   </div>
@@ -250,13 +344,13 @@
          <th><i class="fas fa-calendar me-1"></i>Satış Tarihi</th>
      <th><i class="fas fa-box me-1"></i>Envanter</th>
             <th class="text-center"><i class="fas fa-sort-numeric-up me-1"></i>Adet</th>
-<th class="text-end"><i class="fas fa-lira-sign me-1"></i>Ödenen Tutar</th>
+                                    <th class="text-end"><i class="fa-solid fa-turkish-lira-sign me-1"></i>Ödenen Tutar</th>
      <th><i class="fas fa-comment me-1"></i>Açıklama</th>
      <th class="text-center"><i class="fas fa-toggle-on me-1"></i>Durum</th>
         </tr>
     </thead>
   <tbody>
-        @foreach (var satis in (IEnumerable<StudentApp.Models.OgrenciEnvanterSatis>)ViewBag.EnvanterSatislari)
+        @foreach (var satis in envanterSatislari)
     {
    <tr>
    <td>
@@ -310,6 +404,67 @@ else
     </tbody>
   </table>
  </div>
+    }
+
+    @if (basarilar.Any())
+    {
+        <hr class="my-4" />
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">
+                <i class="fas fa-trophy me-2"></i>Başarılar
+                <span class="badge bg-primary ms-2">@basarilar.Count.ToString()</span>
+            </h5>
+            <a asp-controller="OgrenciBasarilari" asp-action="Create" asp-route-ogrenciId="@Model.Id" class="btn btn-sm btn-success">
+                <i class="fas fa-plus me-1"></i>Yeni Başarı Ekle
+            </a>
+        </div>
+
+        <div class="row">
+            @foreach (var basari in basarilar)
+            {
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="card-title mb-0">
+                                    <i class="fas fa-trophy text-warning me-2"></i>@basari.Baslik
+                                </h6>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a asp-controller="OgrenciBasarilari" asp-action="Edit" asp-route-id="@basari.Id" class="btn btn-sm btn-outline-warning" title="Düzenle">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a asp-controller="OgrenciBasarilari" asp-action="Delete" asp-route-id="@basari.Id" class="btn btn-sm btn-outline-danger" title="Sil">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <span class="badge bg-primary">@basari.Turu</span>
+                                @if (basari.Tarih.HasValue)
+                                {
+                                    <span class="badge bg-info ms-1">
+                                        <i class="fas fa-calendar me-1"></i>@basari.Tarih.Value.ToString("dd.MM.yyyy")
+                                    </span>
+                                }
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(basari.Aciklama))
+                            {
+                                <p class="card-text text-muted small mb-0">@basari.Aciklama</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <hr class="my-4" />
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            Henüz başarı kaydı bulunmamaktadır.
+            <a asp-controller="OgrenciBasarilari" asp-action="Create" asp-route-ogrenciId="@Model.Id" class="alert-link">İlk başarıyı eklemek için tıklayın</a>.
+        </div>
     }
     
       <div class="d-flex justify-content-between mt-4">

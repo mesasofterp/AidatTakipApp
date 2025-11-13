@@ -164,7 +164,7 @@ var today = DateTime.Now;
         // POST: Student/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-  public async Task<IActionResult> Create(Ogrenciler ogrenci, List<EnvanterSatisViewModel>? EnvanterSatislari)
+  public async Task<IActionResult> Create(Ogrenciler ogrenci, OgrenciDetay? ogrenciDetay, List<EnvanterSatisViewModel>? EnvanterSatislari)
     {
        // Model State'deki tarih hatalarını temizle (culture sorunu için)
       if (ModelState.ContainsKey(nameof(ogrenci.IlkTaksitSonOdemeTarihi)))
@@ -191,6 +191,19 @@ try
    }
 
   await _ogrenciService.AddOgrenciAsync(ogrenci);
+       
+       // OgrenciDetay kaydı oluştur (varsa)
+       if (ogrenciDetay != null && (ogrenciDetay.VeliAdSoyad != null || ogrenciDetay.VeliTelefonNumarasi != null || 
+           ogrenciDetay.OkulAdi != null || ogrenciDetay.OkulAdresi != null || ogrenciDetay.Sinif != null ||
+           ogrenciDetay.OkulHocasiAdSoyad != null || ogrenciDetay.OkulHocasiTelefon != null))
+       {
+           ogrenciDetay.OgrenciId = ogrenci.Id;
+           ogrenciDetay.Aktif = true;
+           ogrenciDetay.IsDeleted = false;
+           ogrenciDetay.Version = 0;
+           await _context.OgrenciDetay.AddAsync(ogrenciDetay);
+           await _context.SaveChangesAsync();
+       }
        
        // Envanter satışları varsa işle
 if (EnvanterSatislari != null && EnvanterSatislari.Any())
@@ -273,29 +286,50 @@ Console.WriteLine($"Model Error: {error.ErrorMessage}");
         // GET: Student/Details/5
         public async Task<IActionResult> Details(long id)
         {
-            var ogrenci = await _ogrenciService.GetOgrenciByIdAsync(id);
+            var ogrenci = await _context.Ogrenciler
+                .Include(s => s.Cinsiyet)
+                .Include(s => s.OdemePlanlari)
+                .Include(s => s.OgrenciDetay)
+                .Where(s => !s.IsDeleted && s.Id == id)
+                .FirstOrDefaultAsync();
+            
             if (ogrenci == null)
             {
                 return NotFound();
             }
 
- // Öğrencinin envanter satışlarını getir
-   var envanterSatislari = await _context.OgrenciEnvanterSatis
-      .Include(e => e.Envanter)
-            .Where(e => e.OgrenciId == id && !e.IsDeleted)
-    .OrderByDescending(e => e.SatisTarihi)
-   .ToListAsync();
+            // Öğrencinin başarılarını getir
+            var basarilar = await _context.OgrenciBasarilari
+                .Where(b => b.OgrenciId == id && !b.IsDeleted)
+                .OrderByDescending(b => b.Tarih)
+                .ThenByDescending(b => b.Id)
+                .ToListAsync();
 
-       ViewBag.EnvanterSatislari = envanterSatislari;
-      ViewBag.ToplamEnvanterHarcama = envanterSatislari.Sum(e => e.OdenenTutar);
+            ViewBag.Basarilar = basarilar;
 
-   return View(ogrenci);
+            // Öğrencinin envanter satışlarını getir
+            var envanterSatislari = await _context.OgrenciEnvanterSatis
+                .Include(e => e.Envanter)
+                .Where(e => e.OgrenciId == id && !e.IsDeleted)
+                .OrderByDescending(e => e.SatisTarihi)
+                .ToListAsync();
+
+            ViewBag.EnvanterSatislari = envanterSatislari;
+            ViewBag.ToplamEnvanterHarcama = envanterSatislari.Sum(e => e.OdenenTutar);
+
+            return View(ogrenci);
         }
 
         // GET: Student/Edit/5
         public async Task<IActionResult> Edit(long id)
         {
-            var ogrenci = await _ogrenciService.GetOgrenciByIdAsync(id);
+            var ogrenci = await _context.Ogrenciler
+                .Include(s => s.Cinsiyet)
+                .Include(s => s.OdemePlanlari)
+                .Include(s => s.OgrenciDetay)
+                .Where(s => !s.IsDeleted && s.Id == id)
+                .FirstOrDefaultAsync();
+            
             if (ogrenci == null)
          {
                 return NotFound();
@@ -327,7 +361,7 @@ Console.WriteLine($"Model Error: {error.ErrorMessage}");
         // POST: Student/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, Ogrenciler ogrenci, List<EnvanterSatisViewModel>? EnvanterSatislari)
+        public async Task<IActionResult> Edit(long id, Ogrenciler ogrenci, OgrenciDetay? ogrenciDetay, List<EnvanterSatisViewModel>? EnvanterSatislari)
         {
             if (id != ogrenci.Id)
             {
@@ -356,6 +390,67 @@ Console.WriteLine($"Model Error: {error.ErrorMessage}");
      {
      return NotFound();
   }
+
+          // OgrenciDetay kaydını güncelle veya oluştur
+          // Form'dan gelen verileri oku (önce model binding, sonra Request.Form)
+          string? GetFormValue(string key, string? modelValue)
+          {
+              // Önce model binding'den gelen değeri kontrol et
+              if (!string.IsNullOrWhiteSpace(modelValue))
+                  return modelValue;
+              
+              // Model binding'den değer yoksa Request.Form'dan oku
+              var formValue = Request.Form[$"OgrenciDetay.{key}"].ToString();
+              return !string.IsNullOrWhiteSpace(formValue) ? formValue : null;
+          }
+
+          var veliAdSoyad = GetFormValue("VeliAdSoyad", ogrenciDetay?.VeliAdSoyad);
+          var veliTelefon = GetFormValue("VeliTelefonNumarasi", ogrenciDetay?.VeliTelefonNumarasi);
+          var okulAdi = GetFormValue("OkulAdi", ogrenciDetay?.OkulAdi);
+          var okulAdresi = GetFormValue("OkulAdresi", ogrenciDetay?.OkulAdresi);
+          var sinif = GetFormValue("Sinif", ogrenciDetay?.Sinif);
+          var okulHocasiAdSoyad = GetFormValue("OkulHocasiAdSoyad", ogrenciDetay?.OkulHocasiAdSoyad);
+          var okulHocasiTelefon = GetFormValue("OkulHocasiTelefon", ogrenciDetay?.OkulHocasiTelefon);
+
+          // En az bir alan dolu mu kontrol et
+          bool enAzBirAlanDolu = veliAdSoyad != null || veliTelefon != null || okulAdi != null || 
+                                  okulAdresi != null || sinif != null || okulHocasiAdSoyad != null || okulHocasiTelefon != null;
+
+          var mevcutDetay = await _context.OgrenciDetay
+              .FirstOrDefaultAsync(d => d.OgrenciId == ogrenci.Id && !d.IsDeleted);
+          
+          if (mevcutDetay != null)
+          {
+              // Güncelle
+              mevcutDetay.VeliAdSoyad = veliAdSoyad;
+              mevcutDetay.VeliTelefonNumarasi = veliTelefon;
+              mevcutDetay.OkulAdi = okulAdi;
+              mevcutDetay.OkulAdresi = okulAdresi;
+              mevcutDetay.Sinif = sinif;
+              mevcutDetay.OkulHocasiAdSoyad = okulHocasiAdSoyad;
+              mevcutDetay.OkulHocasiTelefon = okulHocasiTelefon;
+              mevcutDetay.Version++;
+              _context.OgrenciDetay.Update(mevcutDetay);
+          }
+          else if (enAzBirAlanDolu)
+          {
+              // Yeni kayıt oluştur
+              var yeniDetay = new OgrenciDetay
+              {
+                  OgrenciId = ogrenci.Id,
+                  VeliAdSoyad = veliAdSoyad,
+                  VeliTelefonNumarasi = veliTelefon,
+                  OkulAdi = okulAdi,
+                  OkulAdresi = okulAdresi,
+                  Sinif = sinif,
+                  OkulHocasiAdSoyad = okulHocasiAdSoyad,
+                  OkulHocasiTelefon = okulHocasiTelefon,
+                  Aktif = true,
+                  IsDeleted = false,
+                  Version = 0
+              };
+              await _context.OgrenciDetay.AddAsync(yeniDetay);
+          }
 
    // Envanter satışları varsa işle
 if (EnvanterSatislari != null && EnvanterSatislari.Any())

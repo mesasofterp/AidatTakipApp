@@ -69,11 +69,21 @@ namespace StudentApp.Models
         [Display(Name = "Cinsiyet")]
         public long CinsiyetId { get; set; }
 
+        [Display(Name = "Biyografi")]
+        [DataType(DataType.MultilineText)]
+        public string? Biyografi { get; set; }
+
         [ValidateNever]
         [Display(Name = "Ödeme Planı")]
         public OdemePlanlari OdemePlanlari { get; set; }
         
         [ValidateNever]
         public Cinsiyetler Cinsiyet { get; set; }
+
+        [ValidateNever]
+        public ICollection<OgrenciBasarilari> OgrenciBasarilari { get; set; } = new List<OgrenciBasarilari>();
+
+        [ValidateNever]
+        public OgrenciDetay? OgrenciDetay { get; set; }
     }
 }

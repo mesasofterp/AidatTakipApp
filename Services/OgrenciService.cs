@@ -41,23 +41,24 @@ namespace StudentApp.Services
             return await _context.Ogrenciler
                 .Include(s => s.Cinsiyet)
                 .Include(s => s.OdemePlanlari)
+                .Include(s => s.OgrenciDetay)
                 .Where(s => !s.IsDeleted)
                 .FirstOrDefaultAsync(s => s.Id == id);
         }
 
         public async Task<Ogrenciler> AddOgrenciAsync(Ogrenciler ogrenci)
         {
-            // Email kontrolü - Silinmemiþ kayýtlar arasýnda kontrol et
+            // Email kontrolï¿½ - Silinmemiï¿½ kayï¿½tlar arasï¿½nda kontrol et
             var existingEmail = await _context.Ogrenciler
                 .Where(o => !o.IsDeleted && o.Email == ogrenci.Email)
                 .FirstOrDefaultAsync();
 
             if (existingEmail != null)
             {
-                throw new InvalidOperationException($"Bu e-posta adresi ({ogrenci.Email}) zaten kullanýlýyor.");
+                throw new InvalidOperationException($"Bu e-posta adresi ({ogrenci.Email}) zaten kullanï¿½lï¿½yor.");
             }
 
-            // TC No kontrolü (eðer girilmiþse) - Silinmemiþ kayýtlar arasýnda kontrol et
+            // TC No kontrolï¿½ (eï¿½er girilmiï¿½se) - Silinmemiï¿½ kayï¿½tlar arasï¿½nda kontrol et
             if (!string.IsNullOrWhiteSpace(ogrenci.TCNO))
             {
                 var existingTCNO = await _context.Ogrenciler
@@ -66,7 +67,7 @@ namespace StudentApp.Services
 
                 if (existingTCNO != null)
                 {
-                    throw new InvalidOperationException($"Bu TC Kimlik No ({ogrenci.TCNO}) zaten kullanýlýyor.");
+                    throw new InvalidOperationException($"Bu TC Kimlik No ({ogrenci.TCNO}) zaten kullanï¿½lï¿½yor.");
                 }
             }
 
@@ -77,7 +78,7 @@ namespace StudentApp.Services
             _context.Ogrenciler.Add(ogrenci);
             await _context.SaveChangesAsync();
 
-            // Öðrenci oluþturulduktan sonra taksitleri oluþtur
+            // ï¿½ï¿½renci oluï¿½turulduktan sonra taksitleri oluï¿½tur
             await CreateTaksitlerForOgrenciAsync(ogrenci.Id);
 
             return ogrenci;
@@ -92,17 +93,17 @@ namespace StudentApp.Services
             if (existingOgrenci == null)
                 return null;
 
-            // Email kontrolü - Kendi kaydý hariç, silinmemiþ diðer kayýtlarda ayný email var mý?
+            // Email kontrolï¿½ - Kendi kaydï¿½ hariï¿½, silinmemiï¿½ diï¿½er kayï¿½tlarda aynï¿½ email var mï¿½?
             var duplicateEmail = await _context.Ogrenciler
                 .Where(o => !o.IsDeleted && o.Id != ogrenci.Id && o.Email == ogrenci.Email)
                 .FirstOrDefaultAsync();
 
             if (duplicateEmail != null)
             {
-                throw new InvalidOperationException($"Bu e-posta adresi ({ogrenci.Email}) baþka bir öðrenci tarafýndan kullanýlýyor.");
+                throw new InvalidOperationException($"Bu e-posta adresi ({ogrenci.Email}) baï¿½ka bir ï¿½ï¿½renci tarafï¿½ndan kullanï¿½lï¿½yor.");
             }
 
-            // TC No kontrolü - Kendi kaydý hariç, silinmemiþ diðer kayýtlarda ayný TC var mý?
+            // TC No kontrolï¿½ - Kendi kaydï¿½ hariï¿½, silinmemiï¿½ diï¿½er kayï¿½tlarda aynï¿½ TC var mï¿½?
             if (!string.IsNullOrWhiteSpace(ogrenci.TCNO))
             {
                 var duplicateTCNO = await _context.Ogrenciler
@@ -111,7 +112,7 @@ namespace StudentApp.Services
 
                 if (duplicateTCNO != null)
                 {
-                    throw new InvalidOperationException($"Bu TC Kimlik No ({ogrenci.TCNO}) baþka bir öðrenci tarafýndan kullanýlýyor.");
+                    throw new InvalidOperationException($"Bu TC Kimlik No ({ogrenci.TCNO}) baï¿½ka bir ï¿½ï¿½renci tarafï¿½ndan kullanï¿½lï¿½yor.");
                 }
             }
 
@@ -125,7 +126,7 @@ namespace StudentApp.Services
             existingOgrenci.Adres = ogrenci.Adres;
             existingOgrenci.KayitTarihi = ogrenci.KayitTarihi;
             existingOgrenci.DogumTarihi = ogrenci.DogumTarihi;
-            // ÝlkTaksitSonOdemeTarihi güncellenmiyor - Controller'da korunuyor
+            // ï¿½lkTaksitSonOdemeTarihi gï¿½ncellenmiyor - Controller'da korunuyor
             existingOgrenci.CinsiyetId = ogrenci.CinsiyetId;
             existingOgrenci.OdemePlanlariId = ogrenci.OdemePlanlariId;
             existingOgrenci.Aciklama = ogrenci.Aciklama;
@@ -144,11 +145,11 @@ namespace StudentApp.Services
             if (ogrenci == null)
                 return false;
 
-            // Soft delete - IsDeleted'ý true yap
+            // Soft delete - IsDeleted'ï¿½ true yap
             ogrenci.IsDeleted = true;
             ogrenci.Aktif = false;
 
-            // Öðrenciye ait tüm ödeme takvimlerini de soft delete yap
+            // ï¿½ï¿½renciye ait tï¿½m ï¿½deme takvimlerini de soft delete yap
             var odemeTakvimleri = await _context.OgrenciOdemeTakvimi
                 .Where(o => o.OgrenciId == id && !o.IsDeleted)
                 .ToListAsync();
@@ -181,7 +182,7 @@ namespace StudentApp.Services
         }
 
         /// <summary>
-        /// Öðrenci için ödeme planýna göre taksit kayýtlarý oluþturur
+        /// ï¿½ï¿½renci iï¿½in ï¿½deme planï¿½na gï¿½re taksit kayï¿½tlarï¿½ oluï¿½turur
         /// </summary>
         public async Task CreateTaksitlerForOgrenciAsync(long ogrenciId)
         {
@@ -194,30 +195,30 @@ namespace StudentApp.Services
 
             var odemePlani = ogrenci.OdemePlanlari;
 
-            // Taksit sayýsý ve toplam tutar
+            // Taksit sayï¿½sï¿½ ve toplam tutar
             int taksitSayisi = odemePlani.TaksitSayisi;
             decimal toplamTutar = odemePlani.ToplamTutar;
             decimal taksitTutari = odemePlani.TaksitTutari;
 
-            // Vade hesaplama: Vade varsa taksite böl, yoksa varsayýlan 30 gün
+            // Vade hesaplama: Vade varsa taksite bï¿½l, yoksa varsayï¿½lan 30 gï¿½n
             int vadeSuresi = odemePlani.Vade.HasValue ? odemePlani.Vade.Value : (taksitSayisi * 30);
             int taksitBasinaGun = vadeSuresi / taksitSayisi;
 
-            // Ýlk taksit son ödeme tarihi: Kullanýcý girmediyse kayýt tarihi, girdiyse o tarih
+            // ï¿½lk taksit son ï¿½deme tarihi: Kullanï¿½cï¿½ girmediyse kayï¿½t tarihi, girdiyse o tarih
             DateTime ilkTaksitSonOdemeTarihi = ogrenci.IlkTaksitSonOdemeTarihi ?? ogrenci.KayitTarihi;
 
-            // ÝLK TAKSÝTTE KALAN BORÇ = TOPLAM TUTAR
+            // ï¿½LK TAKSï¿½TTE KALAN BORï¿½ = TOPLAM TUTAR
             // Sonraki taksitlerde azalacak
             decimal kalanBorc = toplamTutar;
 
-            // Taksitleri oluþtur
+            // Taksitleri oluï¿½tur
             for (int i = 1; i <= taksitSayisi; i++)
             {
-                // Son taksitte kalan tutarý tam olarak hesapla (yuvarlama farký için)
+                // Son taksitte kalan tutarï¿½ tam olarak hesapla (yuvarlama farkï¿½ iï¿½in)
                 decimal buTaksitTutari = (i == taksitSayisi) ? kalanBorc : taksitTutari;
 
-                // Taksit son ödeme tarihi
-                // Ýlk taksit için kullanýcýnýn girdiði/kayýt tarihi, sonrakiler için hesaplanmýþ tarih
+                // Taksit son ï¿½deme tarihi
+                // ï¿½lk taksit iï¿½in kullanï¿½cï¿½nï¿½n girdiï¿½i/kayï¿½t tarihi, sonrakiler iï¿½in hesaplanmï¿½ï¿½ tarih
                 DateTime sonOdemeTarihi;
                 if (i == 1)
                 {
@@ -233,10 +234,10 @@ namespace StudentApp.Services
                 {
                     OgrenciId = ogrenciId,
                     TaksitNo = i,
-                    TaksitTutari = taksitTutari,  // Bu taksit için ödenecek tutar
+                    TaksitTutari = taksitTutari,  // Bu taksit iï¿½in ï¿½denecek tutar
                     SonOdemeTarihi = sonOdemeTarihi,
-                    OdenenTutar = 0, // Henüz ödenmedi
-                    BorcTutari = kalanBorc, // Bu taksit ÖNCESÝ kalan borç (ilk taksitte ToplamTutar)
+                    OdenenTutar = 0, // Henï¿½z ï¿½denmedi
+                    BorcTutari = kalanBorc, // Bu taksit ï¿½NCESï¿½ kalan borï¿½ (ilk taksitte ToplamTutar)
                     Odendi = false,
                     SmsGittiMi = false,
                     OdemeTarihi = null,
@@ -248,8 +249,8 @@ namespace StudentApp.Services
 
                 _context.OgrenciOdemeTakvimi.Add(taksit);
 
-                // Bir sonraki taksit için kalan borcu güncelle
-                // Bu taksit ödendikten sonraki kalan borç
+                // Bir sonraki taksit iï¿½in kalan borcu gï¿½ncelle
+                // Bu taksit ï¿½dendikten sonraki kalan borï¿½
                 kalanBorc -= taksitTutari;
             }
 
