@@ -210,28 +210,120 @@
          <span class="badge bg-success">
     <i class="fas fa-check me-1"></i>Aktif
        </span>
-                }
-        else
+    }
+      else
          {
       <span class="badge bg-secondary">
-              <i class="fas fa-times me-1"></i>Pasif
-           </span>
+      <i class="fas fa-times me-1"></i>Pasif
+    </span>
       }
    </dd>
      </dl>
-          
+
+   @if (ViewBag.EnvanterSatislari != null && ((IEnumerable<StudentApp.Models.OgrenciEnvanterSatis>)ViewBag.EnvanterSatislari).Any())
+    {
+   <hr class="my-4" />
+        <h5 class="mb-3">
+      <i class="fas fa-boxes me-2"></i>Envanter Satış Geçmişi
+     <span class="badge bg-primary ms-2">@((IEnumerable<StudentApp.Models.OgrenciEnvanterSatis>)ViewBag.EnvanterSatislari).Count()</span>
+       </h5>
+
+            <div class="card bg-light mb-3">
+ <div class="card-body">
+        <div class="row">
+  <div class="col-md-6">
+   <h6 class="text-muted mb-1">Toplam Harcama</h6>
+       <h4 class="mb-0"><span style="font-family: Arial, sans-serif;">&#8378;</span>@((decimal)ViewBag.ToplamEnvanterHarcama).ToString("N2")</h4>
+        </div>
+  <div class="col-md-6 text-end">
+  <h6 class="text-muted mb-1">İşlem Sayısı</h6>
+<h4 class="mb-0">@((IEnumerable<StudentApp.Models.OgrenciEnvanterSatis>)ViewBag.EnvanterSatislari).Count() Adet</h4>
+ </div>
+       </div>
+  </div>
+   </div>
+
+    <div class="table-responsive">
+<table class="table table-hover">
+<thead class="table-light">
+ <tr>
+         <th><i class="fas fa-calendar me-1"></i>Satış Tarihi</th>
+     <th><i class="fas fa-box me-1"></i>Envanter</th>
+            <th class="text-center"><i class="fas fa-sort-numeric-up me-1"></i>Adet</th>
+<th class="text-end"><i class="fas fa-lira-sign me-1"></i>Ödenen Tutar</th>
+     <th><i class="fas fa-comment me-1"></i>Açıklama</th>
+     <th class="text-center"><i class="fas fa-toggle-on me-1"></i>Durum</th>
+        </tr>
+    </thead>
+  <tbody>
+        @foreach (var satis in (IEnumerable<StudentApp.Models.OgrenciEnvanterSatis>)ViewBag.EnvanterSatislari)
+    {
+   <tr>
+   <td>
+ @if (satis.SatisTarihi.HasValue)
+{
+      <i class="fas fa-calendar-alt me-1"></i>@satis.SatisTarihi.Value.ToString("dd.MM.yyyy")
+        }
+else
+  {
+      <span class="text-muted">-</span>
+   }
+ </td>
+   <td>
+   @if (satis.Envanter != null)
+    {
+        <strong>@satis.Envanter.EnvanterAdi</strong>
+  }
+      else
+ {
+    <span class="text-muted">Silinmiş Envanter</span>
+       }
+      </td>
+          <td class="text-center">
+ <span class="badge bg-info fs-6">@satis.SatisAdet</span>
+  </td>
+ <td class="text-end">
+   <span class="badge bg-success fs-6"><span style="font-family: Arial, sans-serif;">&#8378;</span>@satis.OdenenTutar.ToString("N2")</span>
+    </td>
+  <td>
+      @if (!string.IsNullOrWhiteSpace(satis.Aciklama))
+  {
+   <small>@satis.Aciklama</small>
+  }
+   else
+     {
+       <span class="text-muted">-</span>
+       }
+    </td>
+     <td class="text-center">
+       @if (satis.Aktif)
+     {
+ <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Aktif</span>
+  }
+    else
+   {
+  <span class="badge bg-secondary"><i class="fas fa-times-circle me-1"></i>İptal</span>
+   }
+     </td>
+ </tr>
+  }
+    </tbody>
+  </table>
+ </div>
+    }
+    
       <div class="d-flex justify-content-between mt-4">
-              <a asp-action="Index" class="btn btn-secondary">
-           <i class="fas fa-arrow-left me-1"></i>Listeye Dön
+          <a asp-action="Index" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-1"></i>Listeye Dön
        </a>
       <div>
-             <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">
+  <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">
          <i class="fas fa-edit me-1"></i>Düzenle
-         </a>
+   </a>
      <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
     <i class="fas fa-trash me-1"></i>Sil
     </a>
-           </div>
+ </div>
         </div>
         </div>
     </div>
