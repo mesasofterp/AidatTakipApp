@@ -110,7 +110,7 @@
         <div class="col-md-6 mb-3">
           <label asp-for="Kilo" class="form-label"></label>
           <div class="input-group">
-   <input asp-for="Kilo" type="number" step="0.1" class="form-control" placeholder="70.5" min="0" max="500" />
+   <input asp-for="Kilo" type="number" step="0.1" value="@(Model.Kilo.HasValue ? Model.Kilo.Value.ToString("F1", System.Globalization.CultureInfo.InvariantCulture) : "")" class="form-control" placeholder="70.5" min="0" max="500" />
           <span class="input-group-text">kg</span>
           </div>
      <span asp-validation-for="Kilo" class="text-danger"></span>

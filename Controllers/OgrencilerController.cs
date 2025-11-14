@@ -180,35 +180,53 @@ namespace StudentApp.Controllers
                 }
             }
 
-            // EnvanterSatislari için OdenenTutar değerlerini Request.Form'dan al ve InvariantCulture ile parse et
-            if (EnvanterSatislari != null && EnvanterSatislari.Any())
-            {
-                for (int i = 0; i < EnvanterSatislari.Count; i++)
+            // Kilo için InvariantCulture ile parse et
+            if (Request.Form.ContainsKey("Kilo"))
+       {
+    var kiloValue = Request.Form["Kilo"].ToString();
+  if (!string.IsNullOrWhiteSpace(kiloValue))
                 {
-                    var formKey = $"EnvanterSatislari[{i}].OdenenTutar";
-                    if (Request.Form.ContainsKey(formKey))
-                    {
-                        var formValue = Request.Form[formKey].ToString();
-                        if (decimal.TryParse(formValue, System.Globalization.NumberStyles.Number,
-      System.Globalization.CultureInfo.InvariantCulture, out decimal parsedValue))
-                        {
-                            EnvanterSatislari[i].OdenenTutar = parsedValue;
-                        }
-                    }
-                }
-            }
+            if (decimal.TryParse(kiloValue, System.Globalization.NumberStyles.Number,
+        System.Globalization.CultureInfo.InvariantCulture, out decimal parsedKilo))
+          {
+      ogrenci.Kilo = parsedKilo;
+             }
+       }
+           else
+    {
+    ogrenci.Kilo = null;
+           }
+         }
+
+         // EnvanterSatislari için OdenenTutar değerlerini Request.Form'dan al ve InvariantCulture ile parse et
+      if (EnvanterSatislari != null && EnvanterSatislari.Any())
+            {
+    for (int i = 0; i < EnvanterSatislari.Count; i++)
+      {
+   var formKey = $"EnvanterSatislari[{i}].OdenenTutar";
+   if (Request.Form.ContainsKey(formKey))
+      {
+          var formValue = Request.Form[formKey].ToString();
+             if (decimal.TryParse(formValue, System.Globalization.NumberStyles.Number,
+  System.Globalization.CultureInfo.InvariantCulture, out decimal parsedValue))
+           {
+            EnvanterSatislari[i].OdenenTutar = parsedValue;
+       }
+        }
+       }
+  }
 
             if (ModelState.IsValid)
-            {
-                try
-                {
-                    // İlk Taksit Son Ödeme Tarihi girilmemişse, Kayıt Tarihi ile doldur
-                    if (!ogrenci.IlkTaksitSonOdemeTarihi.HasValue)
-                    {
-                        ogrenci.IlkTaksitSonOdemeTarihi = ogrenci.KayitTarihi;
-                    }
+     {
+     try
+   {
+        // İlk Taksit Son Ödeme Tarihi girilmemişse, Kayıt Tarihi ile doldur
+          if (!ogrenci.IlkTaksitSonOdemeTarihi.HasValue)
+         {
+      ogrenci.IlkTaksitSonOdemeTarihi = ogrenci.KayitTarihi;
+         }
 
-                    await _ogrenciService.AddOgrenciAsync(ogrenci);
+        await _ogrenciService.AddOgrenciAsync(ogrenci);
 
                     // OgrenciDetay kaydı oluştur (varsa)
                     if (ogrenciDetay != null && (ogrenciDetay.VeliAdSoyad != null || ogrenciDetay.VeliTelefonNumarasi != null ||
@@ -398,6 +416,24 @@ namespace StudentApp.Controllers
             {
                 ModelState.Remove(nameof(ogrenci.IlkTaksitSonOdemeTarihi));
             }
+
+            // Kilo için InvariantCulture ile parse et
+            if (Request.Form.ContainsKey("Kilo"))
+      {
+        var kiloValue = Request.Form["Kilo"].ToString();
+       if (!string.IsNullOrWhiteSpace(kiloValue))
+        {
+    if (decimal.TryParse(kiloValue, System.Globalization.NumberStyles.Number,
+     System.Globalization.CultureInfo.InvariantCulture, out decimal parsedKilo))
+       {
+       ogrenci.Kilo = parsedKilo;
+      }
+       }
+    else
+      {
+      ogrenci.Kilo = null;
+       }
+           }
 
             // EnvanterSatislari için OdenenTutar değerlerini Request.Form'dan al ve InvariantCulture ile parse et
             if (EnvanterSatislari != null && EnvanterSatislari.Any())
