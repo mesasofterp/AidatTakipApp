@@ -129,6 +129,7 @@ namespace StudentApp.Services
             // �lkTaksitSonOdemeTarihi g�ncellenmiyor - Controller'da korunuyor
             existingOgrenci.CinsiyetId = ogrenci.CinsiyetId;
             existingOgrenci.OdemePlanlariId = ogrenci.OdemePlanlariId;
+            existingOgrenci.Biyografi = ogrenci.Biyografi;
             existingOgrenci.Aciklama = ogrenci.Aciklama;
             existingOgrenci.Version++;
 

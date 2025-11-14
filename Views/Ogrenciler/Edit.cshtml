@@ -97,26 +97,229 @@
              <hr class="my-4" />
          <h5 class="mb-3"><i class="fas fa-heartbeat me-2"></i>Fiziksel Bilgiler</h5>
 
-         <div class="row">
+     <div class="row">
        <div class="col-md-6 mb-3">
      <label asp-for="Boy" class="form-label"></label>
-          <div class="input-group">
-                  <input asp-for="Boy" type="number" class="form-control" placeholder="175" min="0" max="300" />
+        <div class="input-group">
+      <input asp-for="Boy" type="number" class="form-control" placeholder="175" min="0" max="300" />
    <span class="input-group-text">cm</span>
-          </div>
+    </div>
           <span asp-validation-for="Boy" class="text-danger"></span>
          <small class="form-text text-muted">Opsiyonel - Boy bilgisi (cm)</small>
-               </div>
+ </div>
         <div class="col-md-6 mb-3">
           <label asp-for="Kilo" class="form-label"></label>
           <div class="input-group">
-     <input asp-for="Kilo" type="number" step="0.1" class="form-control" placeholder="70.5" min="0" max="500" />
+   <input asp-for="Kilo" type="number" step="0.1" class="form-control" placeholder="70.5" min="0" max="500" />
           <span class="input-group-text">kg</span>
-            </div>
-                  <span asp-validation-for="Kilo" class="text-danger"></span>
-              <small class="form-text text-muted">Opsiyonel - Kilo bilgisi (kg)</small>
+          </div>
+     <span asp-validation-for="Kilo" class="text-danger"></span>
+     <small class="form-text text-muted">Opsiyonel - Kilo bilgisi (kg)</small>
           </div>
      </div>
+
+    <hr class="my-4" />
+    <h5 class="mb-3"><i class="fas fa-users me-2"></i>Veli Bilgileri</h5>
+    
+    <div class="row">
+ <div class="col-md-6 mb-3">
+   <label for="VeliAdSoyad" class="form-label">Veli Ad Soyad</label>
+  <input type="text" id="VeliAdSoyad" name="OgrenciDetay.VeliAdSoyad" value="@(Model.OgrenciDetay?.VeliAdSoyad ?? "")" class="form-control" placeholder="Veli adı ve soyadı" />
+         <small class="form-text text-muted">Opsiyonel</small>
+     </div>
+  <div class="col-md-6 mb-3">
+            <label for="VeliTelefonNumarasi" class="form-label">Veli Telefon Numarası</label>
+            <div class="input-group">
+           <span class="input-group-text"><i class="fas fa-phone"></i></span>
+         <input type="text" id="VeliTelefonNumarasi" name="OgrenciDetay.VeliTelefonNumarasi" value="@(Model.OgrenciDetay?.VeliTelefonNumarasi ?? "")" class="form-control" placeholder="05301234567" maxlength="11" />
+         </div>
+        <small class="form-text text-muted">Opsiyonel - Format: 05301234567</small>
+        </div>
+    </div>
+    @if (Model.OgrenciDetay != null)
+    {
+        <input type="hidden" name="OgrenciDetay.Id" value="@Model.OgrenciDetay.Id" />
+    }
+    <input type="hidden" name="OgrenciDetay.OgrenciId" value="@Model.Id" />
+
+    <hr class="my-4" />
+    <h5 class="mb-3"><i class="fas fa-school me-2"></i>Okul Bilgileri</h5>
+    
+    <div class="row">
+        <div class="col-md-6 mb-3">
+  <label for="OkulAdi" class="form-label">Okul Adı</label>
+    <input type="text" id="OkulAdi" name="OgrenciDetay.OkulAdi" value="@(Model.OgrenciDetay?.OkulAdi ?? "")" class="form-control" placeholder="Okul adı" />
+      <small class="form-text text-muted">Opsiyonel</small>
+      </div>
+        <div class="col-md-6 mb-3">
+   <label for="Sinif" class="form-label">Sınıf</label>
+     <input type="text" id="Sinif" name="OgrenciDetay.Sinif" value="@(Model.OgrenciDetay?.Sinif ?? "")" class="form-control" placeholder="Örn: 5-A, 10/B" />
+        <small class="form-text text-muted">Opsiyonel</small>
+        </div>
+    </div>
+    
+    <div class="mb-3">
+        <label for="OkulAdresi" class="form-label">Okul Adresi</label>
+        <textarea id="OkulAdresi" name="OgrenciDetay.OkulAdresi" class="form-control" rows="2" placeholder="Okul adresi...">@(Model.OgrenciDetay?.OkulAdresi ?? "")</textarea>
+        <small class="form-text text-muted">Opsiyonel</small>
+ </div>
+    
+ <div class="row">
+      <div class="col-md-6 mb-3">
+  <label for="OkulHocasiAdSoyad" class="form-label">Okul Hocası Ad Soyad</label>
+ <input type="text" id="OkulHocasiAdSoyad" name="OgrenciDetay.OkulHocasiAdSoyad" value="@(Model.OgrenciDetay?.OkulHocasiAdSoyad ?? "")" class="form-control" placeholder="Okul hocası adı ve soyadı" />
+       <small class="form-text text-muted">Opsiyonel</small>
+    </div>
+        <div class="col-md-6 mb-3">
+    <label for="OkulHocasiTelefon" class="form-label">Okul Hocası Telefon</label>
+      <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-phone"></i></span>
+      <input type="text" id="OkulHocasiTelefon" name="OgrenciDetay.OkulHocasiTelefon" value="@(Model.OgrenciDetay?.OkulHocasiTelefon ?? "")" class="form-control" placeholder="05301234567" maxlength="11" />
+            </div>
+            <small class="form-text text-muted">Opsiyonel - Format: 05301234567</small>
+        </div>
+    </div>
+
+    <hr class="my-4" />
+    <h5 class="mb-3"><i class="fas fa-trophy me-2"></i>Başarılar</h5>
+    <div class="alert alert-info" role="alert">
+        <i class="fas fa-info-circle me-2"></i>
+        Öğrencinin başarılarını görüntüleyebilir, yeni başarı ekleyebilir veya mevcut başarıları düzenleyebilirsiniz.
+        <a asp-controller="OgrenciBasarilari" asp-action="Index" asp-route-ogrenciId="@Model.Id" class="btn btn-sm btn-outline-primary ms-2">
+      <i class="fas fa-trophy me-1"></i>Başarıları Yönet
+        </a>
+    </div>
+
+    <hr class="my-4" />
+    <h5 class="mb-3"><i class="fas fa-boxes me-2"></i>Envanter Satışları</h5>
+    <div class="alert alert-info" role="alert">
+<i class="fas fa-info-circle me-2"></i>
+      Öğrencinin envanter satışlarını görüntüleyebilir, yeni satış ekleyebilir veya mevcut satışları silebilirsiniz.
+    </div>
+
+<div id="envanterSatisAlani" class="card">
+    <div class="card-body">
+ <div class="table-responsive">
+  <table class="table table-hover" id="envanterTable">
+    <thead class="table-light">
+    <tr>
+   <th style="width: 25%;">
+     <i class="fas fa-box me-1"></i>Envanter
+  </th>
+     <th style="width: 10%;" class="text-center">
+     <i class="fas fa-sort-numeric-up me-1"></i>Adet
+     </th>
+   <th style="width: 15%;">
+      <i class="fas fa-calendar me-1"></i>Satış Tarihi
+         </th>
+     <th style="width: 15%;">
+   <i class="fas fa-lira-sign me-1"></i>Fiyat
+           </th>
+   <th style="width: 25%;">
+        <i class="fas fa-comment me-1"></i>Not
+     </th>
+     <th style="width: 10%;" class="text-center">
+  <i class="fas fa-trash me-1"></i>İşlem
+      </th>
+     </tr>
+      </thead>
+ <tbody id="envanterTbody">
+    @if (ViewBag.MevcutEnvanterSatislari != null)
+ {
+var mevcutSatislar = (List<EnvanterSatisViewModel>)ViewBag.MevcutEnvanterSatislari;
+ for (int i = 0; i < mevcutSatislar.Count; i++)
+  {
+     var satis = mevcutSatislar[i];
+       <tr class="envanter-satir" data-index="@i">
+     <td>
+  <input type="hidden" name="EnvanterSatislari[@i].Id" value="@satis.Id" />
+    <input type="hidden" name="EnvanterSatislari[@i].EnvanterId" value="@satis.EnvanterId" />
+    <input type="hidden" name="EnvanterSatislari[@i].SilinecekMi" value="false" class="silinecek-input" />
+       <strong>@satis.EnvanterAdi</strong>
+  <input type="hidden" class="envanter-adi-hidden" value="@satis.EnvanterAdi" />
+     </td>
+       <td class="text-center">
+     <input type="number" name="EnvanterSatislari[@i].SatisAdet" value="@satis.SatisAdet" 
+      class="form-control form-control-sm text-center" min="1" required />
+  </td>
+   <td>
+  <input type="date" name="EnvanterSatislari[@i].SatisTarihi" 
+   value="@(satis.SatisTarihi?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))" 
+         class="form-control form-control-sm" />
+ </td>
+  <td>
+<div class="input-group input-group-sm">
+        <span class="input-group-text"><span style="font-family: Arial, sans-serif;">&#8378;</span></span>
+     <input type="number" name="EnvanterSatislari[@i].OdenenTutar" value="@satis.OdenenTutar.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)" 
+      class="form-control" step="0.01" min="0" required />
+  </div>
+       </td>
+     <td>
+         <input type="text" name="EnvanterSatislari[@i].Aciklama" value="@satis.Aciklama" 
+      class="form-control form-control-sm" placeholder="Not..." />
+      </td>
+  <td class="text-center">
+      <button type="button" class="btn btn-sm btn-danger sil-btn" title="Sil">
+     <i class="fas fa-trash"></i>
+       </button>
+    </td>
+  </tr>
+  }
+       }
+   </tbody>
+ </table>
+        </div>
+        
+        <button type="button" id="yeniSatirEkleBtn" class="btn btn-success btn-sm mt-2">
+            <i class="fas fa-plus me-1"></i>Yeni Envanter Satışı Ekle
+ </button>
+    </div>
+</div>
+
+<!-- Yeni Satır Template -->
+<template id="yeniSatirTemplate">
+    <tr class="envanter-satir yeni-satir">
+     <td>
+            <input type="hidden" name="EnvanterSatislari[{INDEX}].Id" value="0" />
+<input type="hidden" name="EnvanterSatislari[{INDEX}].SilinecekMi" value="false" class="silinecek-input" />
+  <select name="EnvanterSatislari[{INDEX}].EnvanterId" class="form-select form-select-sm envanter-select" required>
+   <option value="">-- Envanter Seçiniz --</option>
+   @if (ViewBag.Envanterler != null)
+                {
+  foreach (var item in (IEnumerable<SelectListItem>)ViewBag.Envanterler)
+      {
+            <option value="@item.Value">@item.Text</option>
+   }
+      }
+      </select>
+   </td>
+    <td class="text-center">
+      <input type="number" name="EnvanterSatislari[{INDEX}].SatisAdet" value="1" 
+   class="form-control form-control-sm text-center" min="1" required />
+    </td>
+     <td>
+            <input type="date" name="EnvanterSatislari[{INDEX}].SatisTarihi" 
+   value="@DateTime.Now.ToString("yyyy-MM-dd")" 
+         class="form-control form-control-sm" />
+     </td>
+      <td>
+      <div class="input-group input-group-sm">
+       <span class="input-group-text"><span style="font-family: Arial, sans-serif;">&#8378;</span></span>
+       <input type="number" name="EnvanterSatislari[{INDEX}].OdenenTutar" value="0" 
+        class="form-control" step="0.01" min="0" required />
+        </div>
+        </td>
+    <td>
+        <input type="text" name="EnvanterSatislari[{INDEX}].Aciklama" 
+ class="form-control form-control-sm" placeholder="Not..." />
+        </td>
+        <td class="text-center">
+     <button type="button" class="btn btn-sm btn-danger yeni-sil-btn" title="Satırı Kaldır">
+       <i class="fas fa-times"></i>
+ </button>
+    </td>
+    </tr>
+</template>
 
       <hr class="my-4" />
        <h5 class="mb-3"><i class="fas fa-credit-card me-2"></i>Ödeme Bilgileri</h5>
@@ -134,25 +337,25 @@
        <input asp-for="IlkTaksitSonOdemeTarihi" type="date" class="form-control" disabled />
      <input asp-for="IlkTaksitSonOdemeTarihi" type="hidden" />
     <small class="form-text text-muted">
-      <i class="fas fa-lock me-1 text-warning"></i>
-        Bu alan sadece öğrenci kaydı sırasında belirlenir ve sonradan değiştirilemez.
-            @if (Model.IlkTaksitSonOdemeTarihi.HasValue)
+   <i class="fas fa-lock me-1 text-warning"></i>
+    Bu alan sadece öğrenci kaydı sırasında belirlenir ve sonradan değiştirilemez.
+    @if (Model.IlkTaksitSonOdemeTarihi.HasValue)
  {
          <span class="text-info">Mevcut değer: @Model.IlkTaksitSonOdemeTarihi.Value.ToString("dd.MM.yyyy")</span>
  }
          else
  {
      <span class="text-muted">(Kayıt tarihi kullanılmış)</span>
-      }
+ }
        </small>
  </div>
 
         <div class="mb-3">
-            <label asp-for="Biyografi" class="form-label"></label>
-            <textarea asp-for="Biyografi" class="form-control" rows="5" placeholder="Öğrencinin biyografisi..."></textarea>
-            <span asp-validation-for="Biyografi" class="text-danger"></span>
-            <small class="form-text text-muted">Opsiyonel - Öğrencinin biyografisi</small>
-        </div>
+     <label asp-for="Biyografi" class="form-label"></label>
+        <textarea asp-for="Biyografi" class="form-control" rows="5" placeholder="Öğrencinin biyografisi..."></textarea>
+    <span asp-validation-for="Biyografi" class="text-danger"></span>
+ <small class="form-text text-muted">Opsiyonel - Öğrencinin biyografisi</small>
+      </div>
 
         <div class="mb-3">
    <label asp-for="Aciklama" class="form-label">Notlar / Açıklama</label>
@@ -161,218 +364,16 @@
    <small class="form-text text-muted">Opsiyonel - Öğrenci hakkında özel notlar</small>
        </div>
    
-    <hr class="my-4" />
-    <h5 class="mb-3"><i class="fas fa-users me-2"></i>Veli Bilgileri</h5>
-    
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <label for="VeliAdSoyad" class="form-label">Veli Ad Soyad</label>
-            <input type="text" id="VeliAdSoyad" name="OgrenciDetay.VeliAdSoyad" value="@(Model.OgrenciDetay?.VeliAdSoyad ?? "")" class="form-control" placeholder="Veli adı ve soyadı" />
-            <small class="form-text text-muted">Opsiyonel</small>
-        </div>
-        <div class="col-md-6 mb-3">
-            <label for="VeliTelefonNumarasi" class="form-label">Veli Telefon Numarası</label>
-            <div class="input-group">
-                <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                <input type="text" id="VeliTelefonNumarasi" name="OgrenciDetay.VeliTelefonNumarasi" value="@(Model.OgrenciDetay?.VeliTelefonNumarasi ?? "")" class="form-control" placeholder="05301234567" maxlength="11" />
-            </div>
-            <small class="form-text text-muted">Opsiyonel - Format: 05301234567</small>
-        </div>
-    </div>
-    @if (Model.OgrenciDetay != null)
-    {
-        <input type="hidden" name="OgrenciDetay.Id" value="@Model.OgrenciDetay.Id" />
-    }
-    <input type="hidden" name="OgrenciDetay.OgrenciId" value="@Model.Id" />
-
-    <hr class="my-4" />
-    <h5 class="mb-3"><i class="fas fa-school me-2"></i>Okul Bilgileri</h5>
-    
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <label for="OkulAdi" class="form-label">Okul Adı</label>
-            <input type="text" id="OkulAdi" name="OgrenciDetay.OkulAdi" value="@(Model.OgrenciDetay?.OkulAdi ?? "")" class="form-control" placeholder="Okul adı" />
-            <small class="form-text text-muted">Opsiyonel</small>
-        </div>
-        <div class="col-md-6 mb-3">
-            <label for="Sinif" class="form-label">Sınıf</label>
-            <input type="text" id="Sinif" name="OgrenciDetay.Sinif" value="@(Model.OgrenciDetay?.Sinif ?? "")" class="form-control" placeholder="Örn: 5-A, 10/B" />
-            <small class="form-text text-muted">Opsiyonel</small>
-        </div>
-    </div>
-    
-    <div class="mb-3">
-        <label for="OkulAdresi" class="form-label">Okul Adresi</label>
-        <textarea id="OkulAdresi" name="OgrenciDetay.OkulAdresi" class="form-control" rows="2" placeholder="Okul adresi...">@(Model.OgrenciDetay?.OkulAdresi ?? "")</textarea>
-        <small class="form-text text-muted">Opsiyonel</small>
-    </div>
-    
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <label for="OkulHocasiAdSoyad" class="form-label">Okul Hocası Ad Soyad</label>
-            <input type="text" id="OkulHocasiAdSoyad" name="OgrenciDetay.OkulHocasiAdSoyad" value="@(Model.OgrenciDetay?.OkulHocasiAdSoyad ?? "")" class="form-control" placeholder="Okul hocası adı ve soyadı" />
-            <small class="form-text text-muted">Opsiyonel</small>
-        </div>
-        <div class="col-md-6 mb-3">
-            <label for="OkulHocasiTelefon" class="form-label">Okul Hocası Telefon</label>
-            <div class="input-group">
-                <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                <input type="text" id="OkulHocasiTelefon" name="OgrenciDetay.OkulHocasiTelefon" value="@(Model.OgrenciDetay?.OkulHocasiTelefon ?? "")" class="form-control" placeholder="05301234567" maxlength="11" />
-            </div>
-            <small class="form-text text-muted">Opsiyonel - Format: 05301234567</small>
-        </div>
-    </div>
-
-    <hr class="my-4" />
-    <h5 class="mb-3"><i class="fas fa-trophy me-2"></i>Başarılar</h5>
-    <div class="alert alert-info" role="alert">
-        <i class="fas fa-info-circle me-2"></i>
-        Öğrencinin başarılarını görüntüleyebilir, yeni başarı ekleyebilir veya mevcut başarıları düzenleyebilirsiniz.
-        <a asp-controller="OgrenciBasarilari" asp-action="Index" asp-route-ogrenciId="@Model.Id" class="btn btn-sm btn-outline-primary ms-2">
-            <i class="fas fa-trophy me-1"></i>Başarıları Yönet
-        </a>
-    </div>
-    <hr class="my-4" />
-    <h5 class="mb-3"><i class="fas fa-boxes me-2"></i>Envanter Satışları</h5>
-    <div class="alert alert-info" role="alert">
-<i class="fas fa-info-circle me-2"></i>
-      Öğrencinin envanter satışlarını görüntüleyebilir, yeni satış ekleyebilir veya mevcut satışları silebilirsiniz.
-    </div>
-
-<div id="envanterSatisAlani" class="card">
-    <div class="card-body">
-    <div class="table-responsive">
-            <table class="table table-hover" id="envanterTable">
-    <thead class="table-light">
-    <tr>
-   <th style="width: 25%;">
-     <i class="fas fa-box me-1"></i>Envanter
-  </th>
-     <th style="width: 10%;" class="text-center">
-     <i class="fas fa-sort-numeric-up me-1"></i>Adet
-     </th>
-   <th style="width: 15%;">
-      <i class="fas fa-calendar me-1"></i>Satış Tarihi
-         </th>
-     <th style="width: 15%;">
-   <i class="fas fa-lira-sign me-1"></i>Fiyat
-           </th>
-         <th style="width: 25%;">
-             <i class="fas fa-comment me-1"></i>Not
-     </th>
-     <th style="width: 10%;" class="text-center">
-     <i class="fas fa-trash me-1"></i>İşlem
-      </th>
-     </tr>
-      </thead>
-     <tbody id="envanterTbody">
-    @if (ViewBag.MevcutEnvanterSatislari != null)
-         {
-var mevcutSatislar = (List<EnvanterSatisViewModel>)ViewBag.MevcutEnvanterSatislari;
- for (int i = 0; i < mevcutSatislar.Count; i++)
-  {
-       var satis = mevcutSatislar[i];
-       <tr class="envanter-satir" data-index="@i">
-     <td>
-  <input type="hidden" name="EnvanterSatislari[@i].Id" value="@satis.Id" />
-       <input type="hidden" name="EnvanterSatislari[@i].EnvanterId" value="@satis.EnvanterId" />
-    <input type="hidden" name="EnvanterSatislari[@i].SilinecekMi" value="false" class="silinecek-input" />
-            <strong>@satis.EnvanterAdi</strong>
-  <input type="hidden" class="envanter-adi-hidden" value="@satis.EnvanterAdi" />
-     </td>
-       <td class="text-center">
-     <input type="number" name="EnvanterSatislari[@i].SatisAdet" value="@satis.SatisAdet" 
-      class="form-control form-control-sm text-center" min="1" required />
-         </td>
-        <td>
-  <input type="date" name="EnvanterSatislari[@i].SatisTarihi" 
-   value="@(satis.SatisTarihi?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))" 
-         class="form-control form-control-sm" />
- </td>
-  <td>
-<div class="input-group input-group-sm">
-        <span class="input-group-text"><span style="font-family: Arial, sans-serif;">&#8378;</span></span>
-     <input type="number" name="EnvanterSatislari[@i].OdenenTutar" value="@satis.OdenenTutar.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)" 
-      class="form-control" step="0.01" min="0" required />
-  </div>
-       </td>
-        <td>
-           <input type="text" name="EnvanterSatislari[@i].Aciklama" value="@satis.Aciklama" 
-      class="form-control form-control-sm" placeholder="Not..." />
-      </td>
-  <td class="text-center">
-      <button type="button" class="btn btn-sm btn-danger sil-btn" title="Sil">
-     <i class="fas fa-trash"></i>
-       </button>
-    </td>
-  </tr>
-  }
-       }
-          </tbody>
-      </table>
-        </div>
-        
-        <button type="button" id="yeniSatirEkleBtn" class="btn btn-success btn-sm mt-2">
-            <i class="fas fa-plus me-1"></i>Yeni Envanter Satışı Ekle
- </button>
-    </div>
-</div>
-
-<!-- Yeni Satır Template -->
-<template id="yeniSatirTemplate">
-    <tr class="envanter-satir yeni-satir">
-        <td>
-            <input type="hidden" name="EnvanterSatislari[{INDEX}].Id" value="0" />
-   <input type="hidden" name="EnvanterSatislari[{INDEX}].SilinecekMi" value="false" class="silinecek-input" />
-  <select name="EnvanterSatislari[{INDEX}].EnvanterId" class="form-select form-select-sm envanter-select" required>
-   <option value="">-- Envanter Seçiniz --</option>
-   @if (ViewBag.Envanterler != null)
-                {
-  foreach (var item in (IEnumerable<SelectListItem>)ViewBag.Envanterler)
-      {
-            <option value="@item.Value">@item.Text</option>
-   }
-      }
-            </select>
-   </td>
-    <td class="text-center">
-      <input type="number" name="EnvanterSatislari[{INDEX}].SatisAdet" value="1" 
-   class="form-control form-control-sm text-center" min="1" required />
-        </td>
-     <td>
-            <input type="date" name="EnvanterSatislari[{INDEX}].SatisTarihi" 
-          value="@DateTime.Now.ToString("yyyy-MM-dd")" 
-         class="form-control form-control-sm" />
-        </td>
-      <td>
-      <div class="input-group input-group-sm">
-            <span class="input-group-text"><span style="font-family: Arial, sans-serif;">&#8378;</span></span>
-                <input type="number" name="EnvanterSatislari[{INDEX}].OdenenTutar" value="0" 
-             class="form-control" step="0.01" min="0" required />
-            </div>
-        </td>
-        <td>
-        <input type="text" name="EnvanterSatislari[{INDEX}].Aciklama" 
- class="form-control form-control-sm" placeholder="Not..." />
-        </td>
-        <td class="text-center">
-     <button type="button" class="btn btn-sm btn-danger yeni-sil-btn" title="Satırı Kaldır">
-       <i class="fas fa-times"></i>
-            </button>
-        </td>
-    </tr>
-</template>
-   
    <div class="d-flex flex-column flex-md-row justify-content-between gap-2 mt-4">
   <a asp-action="Index" class="btn btn-secondary order-2 order-md-1">
        <i class="fas fa-arrow-left me-1"></i><span class="d-none d-sm-inline">Listeye Dön</span><span class="d-sm-none">Geri</span>
      </a>
            <button type="submit" class="btn btn-primary order-1 order-md-2">
-    <i class="fas fa-save me-1"></i><span class="d-none d-sm-inline">Öğrenciyi Güncelle</span><span class="d-sm-none">Kaydet</span>
+  <i class="fas fa-save me-1"></i><span class="d-none d-sm-inline">Öğrenciyi Güncelle</span><span class="d-sm-none">Kaydet</span>
      </button>
-         </div>
+      </div>
 </form>
-            </div>
+  </div>
       </div>
     </div>
 </div>
@@ -390,106 +391,125 @@ var mevcutSatislar = (List<EnvanterSatisViewModel>)ViewBag.MevcutEnvanterSatisla
        if (!input) return;
        input.addEventListener('input', function(e) {
            let value = e.target.value.replace(/\D/g, '');
-           if (value.length > 11) {
-               value = value.substring(0, 11);
-           }
+      if (value.length > 11) {
+         value = value.substring(0, 11);
+       }
            if (value.length > 0 && value.charAt(0) !== '0') {
-               value = '0' + value.substring(0, 10);
-           }
+        value = '0' + value.substring(0, 10);
+     }
            e.target.value = value;
        });
        input.addEventListener('paste', function(e) {
-           setTimeout(function() {
-               let value = input.value.replace(/\D/g, '');
-               if (value.length > 11) {
-                   value = value.substring(0, 11);
-               }
-               if (value.length > 0 && value.charAt(0) !== '0') {
-                   value = '0' + value.substring(0, 10);
-               }
+       setTimeout(function() {
+     let value = input.value.replace(/\D/g, '');
+  if (value.length > 11) {
+         value = value.substring(0, 11);
+   }
+         if (value.length > 0 && value.charAt(0) !== '0') {
+       value = '0' + value.substring(0, 10);
+     }
                input.value = value;
            }, 0);
-       });
+  });
    }
    
    applyPhoneMask(telefonInput);
    applyPhoneMask(veliTelefonInput);
    applyPhoneMask(okulHocasiTelefonInput);
-    }
 
     // Envanter Tablosu İşlemleri
-        const tbody = document.getElementById('envanterTbody');
-  const yeniSatirEkleBtn = document.getElementById('yeniSatirEkleBtn');
-   const yeniSatirTemplate = document.getElementById('yeniSatirTemplate');
-        let yeniSatirIndex = @(ViewBag.MevcutEnvanterSatislari != null ? ((List<EnvanterSatisViewModel>)ViewBag.MevcutEnvanterSatislari).Count : 0);
+    const tbody = document.getElementById('envanterTbody');
+    const yeniSatirEkleBtn = document.getElementById('yeniSatirEkleBtn');
+    const yeniSatirTemplate = document.getElementById('yeniSatirTemplate');
+    let yeniSatirIndex = @(ViewBag.MevcutEnvanterSatislari != null ? ((List<EnvanterSatisViewModel>)ViewBag.MevcutEnvanterSatislari).Count : 0);
 
- // Yeni satır ekle
- if (yeniSatirEkleBtn && yeniSatirTemplate && tbody) {
-   yeniSatirEkleBtn.addEventListener('click', function() {
+   console.log('Edit Envanter Script Yüklendi', {
+      tbody: tbody ? 'OK' : 'NULL',
+       yeniSatirEkleBtn: yeniSatirEkleBtn ? 'OK' : 'NULL',
+      yeniSatirTemplate: yeniSatirTemplate ? 'OK' : 'NULL',
+       yeniSatirIndex: yeniSatirIndex
+   });
+
+    // Yeni satır ekle
+    if (yeniSatirEkleBtn && yeniSatirTemplate && tbody) {
+        yeniSatirEkleBtn.addEventListener('click', function() {
+          console.log('Yeni satır ekleme butonuna tıklandı, Index:', yeniSatirIndex);
+        try {
         const templateContent = yeniSatirTemplate.content.cloneNode(true);
-   const templateHTML = templateContent.querySelector('tr').outerHTML;
-const yeniSatir = templateHTML.replace(/{INDEX}/g, yeniSatirIndex);
-    
-  tbody.insertAdjacentHTML('beforeend', yeniSatir);
-   yeniSatirIndex++;
-    
-   // Yeni eklenen satırın sil butonunu dinle
-    guncelSilButonlari();
-     });
- }
-
- // Mevcut kayıtların sil butonları (soft delete)
- document.querySelectorAll('.sil-btn').forEach(btn => {
-btn.addEventListener('click', function() {
-    if (confirm('Bu envanter satışını silmek istediğinizden emin misiniz? Stok geri eklenecektir.')) {
-  const row = this.closest('tr');
-   const silinecekInput = row.querySelector('.silinecek-input');
-    if (silinecekInput) {
-   silinecekInput.value = 'true';
-          }
+     const templateHTML = templateContent.querySelector('tr').outerHTML;
+        const yeniSatir = templateHTML.replace(/{INDEX}/g, yeniSatirIndex);
+        
+    tbody.insertAdjacentHTML('beforeend', yeniSatir);
+         console.log('Satır eklendi, Yeni Index:', yeniSatirIndex + 1);
+        yeniSatirIndex++;
   
-    // Satırı görsel olarak gizle ve işaretle
-       row.style.opacity = '0.5';
-  row.style.textDecoration = 'line-through';
-   this.disabled = true;
-   this.innerHTML = '<i class="fas fa-check"></i> Silinecek';
- this.classList.remove('btn-danger');
- this.classList.add('btn-secondary');
+        // Yeni eklenen satırın sil butonunu dinle
+     guncelSilButonlari();
+         } catch (error) {
+   console.error('Satır eklenirken hata:', error);
+      alert('Satır eklenirken bir hata oluştu: ' + error.message);
+      }
+       });
+   } else {
+      console.error('Envanter bileşenleri bulunamadı!', {
+      tbody: !!tbody,
+     yeniSatirEkleBtn: !!yeniSatirEkleBtn,
+            yeniSatirTemplate: !!yeniSatirTemplate
+       });
     }
+
+    // Mevcut kayıtların sil butonları (soft delete)
+    document.querySelectorAll('.sil-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+     if (confirm('Bu envanter satışını silmek istediğinizden emin misiniz? Stok geri eklenecektir.')) {
+       const row = this.closest('tr');
+         const silinecekInput = row.querySelector('.silinecek-input');
+      if (silinecekInput) {
+        silinecekInput.value = 'true';
+                }
+  
+          // Satırı görsel olarak gizle ve işaretle
+                row.style.opacity = '0.5';
+    row.style.textDecoration = 'line-through';
+ this.disabled = true;
+         this.innerHTML = '<i class="fas fa-check"></i> Silinecek';
+                this.classList.remove('btn-danger');
+    this.classList.add('btn-secondary');
+          }
         });
  });
 
- // Sil butonlarını güncelle
-  function guncelSilButonlari() {
-   document.querySelectorAll('.yeni-sil-btn').forEach(btn => {
-    btn.removeEventListener('click', yeniSilHandler);
-btn.addEventListener('click', yeniSilHandler);
-});
-  }
-
- function yeniSilHandler(e) {
-     const row = e.target.closest('tr');
-  if (row && confirm('Bu satırı kaldırmak istediğinizden emin misiniz?')) {
-        row.remove();
- // Index'leri yeniden düzenle
-      yenidenIndexle();
-  }
+    // Sil butonlarını güncelle
+    function guncelSilButonlari() {
+        document.querySelectorAll('.yeni-sil-btn').forEach(btn => {
+         btn.removeEventListener('click', yeniSilHandler);
+       btn.addEventListener('click', yeniSilHandler);
+    });
     }
 
- // Satır index'lerini yeniden düzenle
- function yenidenIndexle() {
-   const rows = tbody.querySelectorAll('tr');
- rows.forEach((row, index) => {
-   row.querySelectorAll('[name]').forEach(input => {
-     const name = input.getAttribute('name');
-     if (name) {
-       const newName = name.replace(/\[\d+\]/, `[${index}]`);
-    input.setAttribute('name', newName);
+ function yeniSilHandler(e) {
+   const row = e.target.closest('tr');
+        if (row && confirm('Bu satırı kaldırmak istediğinizden emin misiniz?')) {
+          row.remove();
+         // Index'leri yeniden düzenle
+            yenidenIndexle();
+       }
+    }
+
+    // Satır index'lerini yeniden düzenle
+  function yenidenIndexle() {
+     const rows = tbody.querySelectorAll('tr');
+        rows.forEach((row, index) => {
+    row.querySelectorAll('[name]').forEach(input => {
+      const name = input.getAttribute('name');
+          if (name) {
+        const newName = name.replace(/\[\d+\]/, `[${index}]`);
+       input.setAttribute('name', newName);
  }
- });
- });
-  yeniSatirIndex = rows.length;
-  }
+  });
+    });
+       yeniSatirIndex = rows.length;
+ }
  });
     </script>
 }
