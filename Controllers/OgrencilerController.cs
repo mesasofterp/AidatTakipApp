@@ -42,117 +42,117 @@ namespace StudentApp.Controllers
         }
 
         // GET: Student
-    public async Task<IActionResult> Index(OgrencilerFilterViewModel filter)
-  {
-            IEnumerable<Ogrenciler> ogrenciler;
-            
-      // Eğer hiçbir filtre uygulanmadıysa boş liste göster
-      bool hicbirFiltre = string.IsNullOrWhiteSpace(filter.SearchTerm) &&
-    !filter.CinsiyetId.HasValue &&
-     !filter.OdemePlanlariId.HasValue &&
-        !filter.MinYas.HasValue &&
-           !filter.MaxYas.HasValue &&
-        !filter.BaslangicKayitTarihi.HasValue &&
-               !filter.BitisKayitTarihi.HasValue &&
-     !filter.ShowList;
-
-   if (hicbirFiltre)
-            {
-           // İlk açılışta boş liste göster
-                ogrenciler = Enumerable.Empty<Ogrenciler>();
-  }
-      else
-      {
-      ogrenciler = await _ogrenciService.GetAllOgrenciAsync(filter.ShowPasif);
-  
-     // Filtreleme
-         if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
-    {
-         var searchTerm = filter.SearchTerm.ToLower();
-        ogrenciler = ogrenciler.Where(o =>
-          o.OgrenciAdi.ToLower().Contains(searchTerm) ||
-                o.OgrenciSoyadi.ToLower().Contains(searchTerm) ||
-o.Email.ToLower().Contains(searchTerm)
-         );
-     }
-
-    if (filter.CinsiyetId.HasValue && filter.CinsiyetId.Value > 0)
+        public async Task<IActionResult> Index(OgrencilerFilterViewModel filter)
         {
-  ogrenciler = ogrenciler.Where(o => o.CinsiyetId == filter.CinsiyetId.Value);
-              }
+            IEnumerable<Ogrenciler> ogrenciler;
 
- if (filter.OdemePlanlariId.HasValue && filter.OdemePlanlariId.Value > 0)
-       {
-     ogrenciler = ogrenciler.Where(o => o.OdemePlanlariId == filter.OdemePlanlariId.Value);
-    }
+            // Eğer hiçbir filtre uygulanmadıysa boş liste göster
+            bool hicbirFiltre = string.IsNullOrWhiteSpace(filter.SearchTerm) &&
+          !filter.CinsiyetId.HasValue &&
+           !filter.OdemePlanlariId.HasValue &&
+              !filter.MinYas.HasValue &&
+                 !filter.MaxYas.HasValue &&
+              !filter.BaslangicKayitTarihi.HasValue &&
+                     !filter.BitisKayitTarihi.HasValue &&
+           !filter.ShowList;
 
-     // Yaş filtreleme
+            if (hicbirFiltre)
+            {
+                // İlk açılışta boş liste göster
+                ogrenciler = Enumerable.Empty<Ogrenciler>();
+            }
+            else
+            {
+                ogrenciler = await _ogrenciService.GetAllOgrenciAsync(filter.ShowPasif);
+
+                // Filtreleme
+                if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
+                {
+                    var searchTerm = filter.SearchTerm.ToLower();
+                    ogrenciler = ogrenciler.Where(o =>
+                      o.OgrenciAdi.ToLower().Contains(searchTerm) ||
+                            o.OgrenciSoyadi.ToLower().Contains(searchTerm) ||
+            o.Email.ToLower().Contains(searchTerm)
+                     );
+                }
+
+                if (filter.CinsiyetId.HasValue && filter.CinsiyetId.Value > 0)
+                {
+                    ogrenciler = ogrenciler.Where(o => o.CinsiyetId == filter.CinsiyetId.Value);
+                }
+
+                if (filter.OdemePlanlariId.HasValue && filter.OdemePlanlariId.Value > 0)
+                {
+                    ogrenciler = ogrenciler.Where(o => o.OdemePlanlariId == filter.OdemePlanlariId.Value);
+                }
+
+                // Yaş filtreleme
                 if (filter.MinYas.HasValue || filter.MaxYas.HasValue)
-    {
-var today = DateTime.Now;
-   ogrenciler = ogrenciler.Where(o =>
-    {
-    var yas = today.Year - o.DogumTarihi.Year;
-     if (today.DayOfYear < o.DogumTarihi.DayOfYear) yas--;
-    
-   var minOk = !filter.MinYas.HasValue || yas >= filter.MinYas.Value;
-               var maxOk = !filter.MaxYas.HasValue || yas <= filter.MaxYas.Value;
-          return minOk && maxOk;
-         });
+                {
+                    var today = DateTime.Now;
+                    ogrenciler = ogrenciler.Where(o =>
+                     {
+                         var yas = today.Year - o.DogumTarihi.Year;
+                         if (today.DayOfYear < o.DogumTarihi.DayOfYear) yas--;
+
+                         var minOk = !filter.MinYas.HasValue || yas >= filter.MinYas.Value;
+                         var maxOk = !filter.MaxYas.HasValue || yas <= filter.MaxYas.Value;
+                         return minOk && maxOk;
+                     });
                 }
 
                 // Kayıt Tarihi filtreleme
                 if (filter.BaslangicKayitTarihi.HasValue || filter.BitisKayitTarihi.HasValue)
-      {
-              ogrenciler = ogrenciler.Where(o =>
-       {
-         var baslangicOk = !filter.BaslangicKayitTarihi.HasValue || o.KayitTarihi.Date >= filter.BaslangicKayitTarihi.Value.Date;
-   var bitisOk = !filter.BitisKayitTarihi.HasValue || o.KayitTarihi.Date <= filter.BitisKayitTarihi.Value.Date;
-      return baslangicOk && bitisOk;
-          });
-      }
+                {
+                    ogrenciler = ogrenciler.Where(o =>
+             {
+                 var baslangicOk = !filter.BaslangicKayitTarihi.HasValue || o.KayitTarihi.Date >= filter.BaslangicKayitTarihi.Value.Date;
+                 var bitisOk = !filter.BitisKayitTarihi.HasValue || o.KayitTarihi.Date <= filter.BitisKayitTarihi.Value.Date;
+                 return baslangicOk && bitisOk;
+             });
+                }
 
-     // Sıralama
-    ogrenciler = filter.SortBy?.ToLower() switch
-      {
-   "ogrenciadi" => filter.SortOrder == "desc" 
-      ? ogrenciler.OrderByDescending(o => o.OgrenciAdi)
-  : ogrenciler.OrderBy(o => o.OgrenciAdi),
- "email" => filter.SortOrder == "desc"
-        ? ogrenciler.OrderByDescending(o => o.Email)
-              : ogrenciler.OrderBy(o => o.Email),
-    "dogumtarihi" => filter.SortOrder == "desc"
-     ? ogrenciler.OrderByDescending(o => o.DogumTarihi)
-        : ogrenciler.OrderBy(o => o.DogumTarihi),
-         "kayittarihi" => filter.SortOrder == "desc"
-             ? ogrenciler.OrderByDescending(o => o.KayitTarihi)
-          : ogrenciler.OrderBy(o => o.KayitTarihi),
-          _ => filter.SortOrder == "desc"
- ? ogrenciler.OrderByDescending(o => o.OgrenciSoyadi)
-      : ogrenciler.OrderBy(o => o.OgrenciSoyadi)
-              };
+                // Sıralama
+                ogrenciler = filter.SortBy?.ToLower() switch
+                {
+                    "ogrenciadi" => filter.SortOrder == "desc"
+                       ? ogrenciler.OrderByDescending(o => o.OgrenciAdi)
+                   : ogrenciler.OrderBy(o => o.OgrenciAdi),
+                    "email" => filter.SortOrder == "desc"
+                           ? ogrenciler.OrderByDescending(o => o.Email)
+                                 : ogrenciler.OrderBy(o => o.Email),
+                    "dogumtarihi" => filter.SortOrder == "desc"
+                     ? ogrenciler.OrderByDescending(o => o.DogumTarihi)
+                        : ogrenciler.OrderBy(o => o.DogumTarihi),
+                    "kayittarihi" => filter.SortOrder == "desc"
+                        ? ogrenciler.OrderByDescending(o => o.KayitTarihi)
+                     : ogrenciler.OrderBy(o => o.KayitTarihi),
+                    _ => filter.SortOrder == "desc"
+           ? ogrenciler.OrderByDescending(o => o.OgrenciSoyadi)
+                : ogrenciler.OrderBy(o => o.OgrenciSoyadi)
+                };
             }
 
-      var viewModel = new OgrencilerFilterViewModel
- {
-    Ogrenciler = ogrenciler.ToList(),
-   SearchTerm = filter.SearchTerm,
-    CinsiyetId = filter.CinsiyetId,
-  OdemePlanlariId = filter.OdemePlanlariId,
-  MinYas = filter.MinYas,
- MaxYas = filter.MaxYas,
-      BaslangicKayitTarihi = filter.BaslangicKayitTarihi,
-       BitisKayitTarihi = filter.BitisKayitTarihi,
-        ShowPasif = filter.ShowPasif,
+            var viewModel = new OgrencilerFilterViewModel
+            {
+                Ogrenciler = ogrenciler.ToList(),
+                SearchTerm = filter.SearchTerm,
+                CinsiyetId = filter.CinsiyetId,
+                OdemePlanlariId = filter.OdemePlanlariId,
+                MinYas = filter.MinYas,
+                MaxYas = filter.MaxYas,
+                BaslangicKayitTarihi = filter.BaslangicKayitTarihi,
+                BitisKayitTarihi = filter.BitisKayitTarihi,
+                ShowPasif = filter.ShowPasif,
                 ShowList = filter.ShowList,
-   SortBy = filter.SortBy ?? "OgrenciSoyadi",
- SortOrder = filter.SortOrder ?? "asc",
-     Cinsiyetler = await _cinsiyetlerService.GetAllCinsiyetlerAsync(),
-  OdemePlanlari = await _odemePlanlariService.GetAllOdemePlanlariAsync()
-  };
+                SortBy = filter.SortBy ?? "OgrenciSoyadi",
+                SortOrder = filter.SortOrder ?? "asc",
+                Cinsiyetler = await _cinsiyetlerService.GetAllCinsiyetlerAsync(),
+                OdemePlanlari = await _odemePlanlariService.GetAllOdemePlanlariAsync()
+            };
 
-  return View(viewModel);
-}
+            return View(viewModel);
+        }
 
         // GET: Student/Create
         public async Task<IActionResult> Create()
@@ -164,125 +164,143 @@ var today = DateTime.Now;
         // POST: Student/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-  public async Task<IActionResult> Create(Ogrenciler ogrenci, OgrenciDetay? ogrenciDetay, List<EnvanterSatisViewModel>? EnvanterSatislari)
-    {
-       // Model State'deki tarih hatalarını temizle (culture sorunu için)
-      if (ModelState.ContainsKey(nameof(ogrenci.IlkTaksitSonOdemeTarihi)))
-   {
-           var ilkTaksitError = ModelState[nameof(ogrenci.IlkTaksitSonOdemeTarihi)];
-      if (ilkTaksitError?.Errors.Any() == true)
-         {
-         // Eğer sadece format hatası varsa temizle
-  if (ilkTaksitError.Errors.All(e => e.ErrorMessage.Contains("not valid") || e.ErrorMessage.Contains("geçerli değil")))
-   {
-      ModelState.Remove(nameof(ogrenci.IlkTaksitSonOdemeTarihi));
-   }
-   }
-  }
+        public async Task<IActionResult> Create(Ogrenciler ogrenci, OgrenciDetay? ogrenciDetay, List<EnvanterSatisViewModel>? EnvanterSatislari)
+        {
+            // Model State'deki tarih hatalarını temizle (culture sorunu için)
+            if (ModelState.ContainsKey(nameof(ogrenci.IlkTaksitSonOdemeTarihi)))
+            {
+                var ilkTaksitError = ModelState[nameof(ogrenci.IlkTaksitSonOdemeTarihi)];
+                if (ilkTaksitError?.Errors.Any() == true)
+                {
+                    // Eğer sadece format hatası varsa temizle
+                    if (ilkTaksitError.Errors.All(e => e.ErrorMessage.Contains("not valid") || e.ErrorMessage.Contains("geçerli değil")))
+                    {
+                        ModelState.Remove(nameof(ogrenci.IlkTaksitSonOdemeTarihi));
+                    }
+                }
+            }
 
-       if (ModelState.IsValid)
-  {
-try
-    {
-    // İlk Taksit Son Ödeme Tarihi girilmemişse, Kayıt Tarihi ile doldur
-     if (!ogrenci.IlkTaksitSonOdemeTarihi.HasValue)
-    {
-   ogrenci.IlkTaksitSonOdemeTarihi = ogrenci.KayitTarihi;
-   }
+            // EnvanterSatislari için OdenenTutar değerlerini Request.Form'dan al ve InvariantCulture ile parse et
+            if (EnvanterSatislari != null && EnvanterSatislari.Any())
+            {
+                for (int i = 0; i < EnvanterSatislari.Count; i++)
+                {
+                    var formKey = $"EnvanterSatislari[{i}].OdenenTutar";
+                    if (Request.Form.ContainsKey(formKey))
+                    {
+                        var formValue = Request.Form[formKey].ToString();
+                        if (decimal.TryParse(formValue, System.Globalization.NumberStyles.Number,
+      System.Globalization.CultureInfo.InvariantCulture, out decimal parsedValue))
+                        {
+                            EnvanterSatislari[i].OdenenTutar = parsedValue;
+                        }
+                    }
+                }
+            }
 
-  await _ogrenciService.AddOgrenciAsync(ogrenci);
-       
-       // OgrenciDetay kaydı oluştur (varsa)
-       if (ogrenciDetay != null && (ogrenciDetay.VeliAdSoyad != null || ogrenciDetay.VeliTelefonNumarasi != null || 
-           ogrenciDetay.OkulAdi != null || ogrenciDetay.OkulAdresi != null || ogrenciDetay.Sinif != null ||
-           ogrenciDetay.OkulHocasiAdSoyad != null || ogrenciDetay.OkulHocasiTelefon != null))
-       {
-           ogrenciDetay.OgrenciId = ogrenci.Id;
-           ogrenciDetay.Aktif = true;
-           ogrenciDetay.IsDeleted = false;
-           ogrenciDetay.Version = 0;
-           await _context.OgrenciDetay.AddAsync(ogrenciDetay);
-           await _context.SaveChangesAsync();
-       }
-       
-       // Envanter satışları varsa işle
-if (EnvanterSatislari != null && EnvanterSatislari.Any())
-     {
-  foreach (var satisViewModel in EnvanterSatislari)
-     {
-     // Boş kayıtları atla
-      if (satisViewModel.EnvanterId <= 0)
-       continue;
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // İlk Taksit Son Ödeme Tarihi girilmemişse, Kayıt Tarihi ile doldur
+                    if (!ogrenci.IlkTaksitSonOdemeTarihi.HasValue)
+                    {
+                        ogrenci.IlkTaksitSonOdemeTarihi = ogrenci.KayitTarihi;
+                    }
 
- var satisAdedi = satisViewModel.SatisAdet > 0 ? satisViewModel.SatisAdet : 1;
-   
-// Envanter stok kontrolü
-var envanter = await _context.Envanterler.FindAsync(satisViewModel.EnvanterId);
-   if (envanter == null)
-   {
-ModelState.AddModelError("", $"Seçilen envanter (ID: {satisViewModel.EnvanterId}) bulunamadı.");
-      continue;
-   }
+                    await _ogrenciService.AddOgrenciAsync(ogrenci);
 
- if (envanter.Adet < satisAdedi)
-      {
-   ModelState.AddModelError("", $"{envanter.EnvanterAdi}: Yetersiz stok! Mevcut: {envanter.Adet}, İstenen: {satisAdedi}");
-continue;
- }
+                    // OgrenciDetay kaydı oluştur (varsa)
+                    if (ogrenciDetay != null && (ogrenciDetay.VeliAdSoyad != null || ogrenciDetay.VeliTelefonNumarasi != null ||
+                        ogrenciDetay.OkulAdi != null || ogrenciDetay.OkulAdresi != null || ogrenciDetay.Sinif != null ||
+                        ogrenciDetay.OkulHocasiAdSoyad != null || ogrenciDetay.OkulHocasiTelefon != null))
+                    {
+                        ogrenciDetay.OgrenciId = ogrenci.Id;
+                        ogrenciDetay.Aktif = true;
+                        ogrenciDetay.IsDeleted = false;
+                        ogrenciDetay.Version = 0;
+                        await _context.OgrenciDetay.AddAsync(ogrenciDetay);
+                        await _context.SaveChangesAsync();
+                    }
 
-       // Envanter satış kaydı oluştur
- var envanterSatis = new OgrenciEnvanterSatis
-      {
-OgrenciId = ogrenci.Id,
-       EnvanterId = satisViewModel.EnvanterId,
- SatisTarihi = satisViewModel.SatisTarihi ?? DateTime.Now,
-   OdenenTutar = satisViewModel.OdenenTutar,
-    SatisAdet = satisAdedi,
-   Aciklama = satisViewModel.Aciklama,
-Aktif = true,
-      IsDeleted = false
- };
+                    // Envanter satışları varsa işle
+                    if (EnvanterSatislari != null && EnvanterSatislari.Any())
+                    {
+                        foreach (var satisViewModel in EnvanterSatislari)
+                        {
+                            // Boş kayıtları atla
+                            if (satisViewModel.EnvanterId <= 0)
+                                continue;
 
-await _context.OgrenciEnvanterSatis.AddAsync(envanterSatis);
-    
-   // Envanter stoğunu güncelle
-   envanter.Adet -= satisAdedi;
-      _context.Envanterler.Update(envanter);
- }
-    
-      await _context.SaveChangesAsync();
-}
+                            var satisAdedi = satisViewModel.SatisAdet > 0 ? satisViewModel.SatisAdet : 1;
 
-    TempData["SuccessMessage"] = "Öğrenci başarıyla eklendi!";
-   return RedirectToAction(nameof(Index));
-     }
-  catch (Exception ex)
-  {
-    // Inner exception'ı da kontrol et
-var innerMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-    var fullMessage = $"Öğrenci eklenirken bir hata oluştu: {innerMessage}";
- 
-   // Daha detaylı log
-    Console.WriteLine($"Hata: {ex.Message}");
-  Console.WriteLine($"Inner Exception: {ex.InnerException?.Message}");
- Console.WriteLine($"Stack Trace: {ex.StackTrace}");
-        
-        ModelState.AddModelError("", fullMessage);
-    }
-      }
-   else
-  {
-   // ModelState hatalarını logla
-     var errors = ModelState.Values.SelectMany(v => v.Errors);
-  foreach (var error in errors)
-     {
-Console.WriteLine($"Model Error: {error.ErrorMessage}");
-   }
-   }
+                            // Envanter stok kontrolü
+                            var envanter = await _context.Envanterler.FindAsync(satisViewModel.EnvanterId);
+                            if (envanter == null)
+                            {
+                                ModelState.AddModelError("", $"Seçilen envanter (ID: {satisViewModel.EnvanterId}) bulunamadı.");
+                                continue;
+                            }
 
-  await LoadDropdownsAsync();
-        return View(ogrenci);
- }
+                            if (envanter.Adet < satisAdedi)
+                            {
+                                ModelState.AddModelError("", $"{envanter.EnvanterAdi}: Yetersiz stok! Mevcut: {envanter.Adet}, İstenen: {satisAdedi}");
+                                continue;
+                            }
+
+                            // Envanter satış kaydı oluştur
+                            var envanterSatis = new OgrenciEnvanterSatis
+                            {
+                                OgrenciId = ogrenci.Id,
+                                EnvanterId = satisViewModel.EnvanterId,
+                                SatisTarihi = satisViewModel.SatisTarihi ?? DateTime.Now,
+                                OdenenTutar = satisViewModel.OdenenTutar,
+                                SatisAdet = satisAdedi,
+                                Aciklama = satisViewModel.Aciklama,
+                                Aktif = true,
+                                IsDeleted = false
+                            };
+
+                            await _context.OgrenciEnvanterSatis.AddAsync(envanterSatis);
+
+                            // Envanter stoğunu güncelle
+                            envanter.Adet -= satisAdedi;
+                            _context.Envanterler.Update(envanter);
+                        }
+
+                        await _context.SaveChangesAsync();
+                    }
+
+                    TempData["SuccessMessage"] = "Öğrenci başarıyla eklendi!";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    // Inner exception'ı da kontrol et
+                    var innerMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                    var fullMessage = $"Öğrenci eklenirken bir hata oluştu: {innerMessage}";
+
+                    // Daha detaylı log
+                    Console.WriteLine($"Hata: {ex.Message}");
+                    Console.WriteLine($"Inner Exception: {ex.InnerException?.Message}");
+                    Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+
+                    ModelState.AddModelError("", fullMessage);
+                }
+            }
+            else
+            {
+                // ModelState hatalarını logla
+                var errors = ModelState.Values.SelectMany(v => v.Errors);
+                foreach (var error in errors)
+                {
+                    Console.WriteLine($"Model Error: {error.ErrorMessage}");
+                }
+            }
+
+            await LoadDropdownsAsync();
+            return View(ogrenci);
+        }
         // GET: Student/Details/5
         public async Task<IActionResult> Details(long id)
         {
@@ -292,7 +310,7 @@ Console.WriteLine($"Model Error: {error.ErrorMessage}");
                 .Include(s => s.OgrenciDetay)
                 .Where(s => !s.IsDeleted && s.Id == id)
                 .FirstOrDefaultAsync();
-            
+
             if (ogrenci == null)
             {
                 return NotFound();
@@ -329,33 +347,33 @@ Console.WriteLine($"Model Error: {error.ErrorMessage}");
                 .Include(s => s.OgrenciDetay)
                 .Where(s => !s.IsDeleted && s.Id == id)
                 .FirstOrDefaultAsync();
-            
+
             if (ogrenci == null)
-         {
+            {
                 return NotFound();
             }
 
-   // Mevcut envanter satışlarını yükle
+            // Mevcut envanter satışlarını yükle
             var mevcutSatislar = await _context.OgrenciEnvanterSatis
     .Include(e => e.Envanter)
             .Where(e => e.OgrenciId == id && !e.IsDeleted && e.Aktif)
     .OrderByDescending(e => e.SatisTarihi)
            .Select(e => new EnvanterSatisViewModel
-    {
-      Id = e.Id,
-         EnvanterId = e.EnvanterId,
-       EnvanterAdi = e.Envanter.EnvanterAdi,
-         SatisTarihi = e.SatisTarihi,
-         SatisAdet = e.SatisAdet,
-   OdenenTutar = e.OdenenTutar,
-             Aciklama = e.Aciklama
-                })
+           {
+               Id = e.Id,
+               EnvanterId = e.EnvanterId,
+               EnvanterAdi = e.Envanter.EnvanterAdi,
+               SatisTarihi = e.SatisTarihi,
+               SatisAdet = e.SatisAdet,
+               OdenenTutar = e.OdenenTutar,
+               Aciklama = e.Aciklama
+           })
                 .ToListAsync();
 
-     ViewBag.MevcutEnvanterSatislari = mevcutSatislar;
+            ViewBag.MevcutEnvanterSatislari = mevcutSatislar;
 
-      await LoadDropdownsAsync();
-        return View(ogrenci);
+            await LoadDropdownsAsync();
+            return View(ogrenci);
         }
 
         // POST: Student/Edit/5
@@ -368,234 +386,252 @@ Console.WriteLine($"Model Error: {error.ErrorMessage}");
                 return NotFound();
             }
 
- // İlk Taksit Son Ödeme Tarihini koru (değiştirilemez)
-          var mevcutOgrenci = await _ogrenciService.GetOgrenciByIdAsync(id);
-   if (mevcutOgrenci != null)
- {
-     ogrenci.IlkTaksitSonOdemeTarihi = mevcutOgrenci.IlkTaksitSonOdemeTarihi;
-      }
+            // İlk Taksit Son Ödeme Tarihini koru (değiştirilemez)
+            var mevcutOgrenci = await _ogrenciService.GetOgrenciByIdAsync(id);
+            if (mevcutOgrenci != null)
+            {
+                ogrenci.IlkTaksitSonOdemeTarihi = mevcutOgrenci.IlkTaksitSonOdemeTarihi;
+            }
 
-  // Model State'deki IlkTaksitSonOdemeTarihi hatalarını temizle (form'da yok artık)
-      if (ModelState.ContainsKey(nameof(ogrenci.IlkTaksitSonOdemeTarihi)))
-   {
-      ModelState.Remove(nameof(ogrenci.IlkTaksitSonOdemeTarihi));
-  }
+            // Model State'deki IlkTaksitSonOdemeTarihi hatalarını temizle (form'da yok artık)
+            if (ModelState.ContainsKey(nameof(ogrenci.IlkTaksitSonOdemeTarihi)))
+            {
+                ModelState.Remove(nameof(ogrenci.IlkTaksitSonOdemeTarihi));
+            }
 
-   if (ModelState.IsValid)
-   {
-  try
-     {
-       var updatedOgrenci = await _ogrenciService.UpdateOgrenciAsync(ogrenci);
- if (updatedOgrenci == null)
-     {
-     return NotFound();
-  }
+            // EnvanterSatislari için OdenenTutar değerlerini Request.Form'dan al ve InvariantCulture ile parse et
+            if (EnvanterSatislari != null && EnvanterSatislari.Any())
+            {
+                for (int i = 0; i < EnvanterSatislari.Count; i++)
+                {
+                    var formKey = $"EnvanterSatislari[{i}].OdenenTutar";
+                    if (Request.Form.ContainsKey(formKey))
+                    {
+                        var formValue = Request.Form[formKey].ToString();
+                        if (decimal.TryParse(formValue, System.Globalization.NumberStyles.Number,
+      System.Globalization.CultureInfo.InvariantCulture, out decimal parsedValue))
+                        {
+                            EnvanterSatislari[i].OdenenTutar = parsedValue;
+                        }
+                    }
+                }
+            }
 
-          // OgrenciDetay kaydını güncelle veya oluştur
-          // Form'dan gelen verileri oku (önce model binding, sonra Request.Form)
-          string? GetFormValue(string key, string? modelValue)
-          {
-              // Önce model binding'den gelen değeri kontrol et
-              if (!string.IsNullOrWhiteSpace(modelValue))
-                  return modelValue;
-              
-              // Model binding'den değer yoksa Request.Form'dan oku
-              var formValue = Request.Form[$"OgrenciDetay.{key}"].ToString();
-              return !string.IsNullOrWhiteSpace(formValue) ? formValue : null;
-          }
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var updatedOgrenci = await _ogrenciService.UpdateOgrenciAsync(ogrenci);
+                    if (updatedOgrenci == null)
+                    {
+                        return NotFound();
+                    }
 
-          var veliAdSoyad = GetFormValue("VeliAdSoyad", ogrenciDetay?.VeliAdSoyad);
-          var veliTelefon = GetFormValue("VeliTelefonNumarasi", ogrenciDetay?.VeliTelefonNumarasi);
-          var okulAdi = GetFormValue("OkulAdi", ogrenciDetay?.OkulAdi);
-          var okulAdresi = GetFormValue("OkulAdresi", ogrenciDetay?.OkulAdresi);
-          var sinif = GetFormValue("Sinif", ogrenciDetay?.Sinif);
-          var okulHocasiAdSoyad = GetFormValue("OkulHocasiAdSoyad", ogrenciDetay?.OkulHocasiAdSoyad);
-          var okulHocasiTelefon = GetFormValue("OkulHocasiTelefon", ogrenciDetay?.OkulHocasiTelefon);
+                    // OgrenciDetay kaydını güncelle veya oluştur
+                    // Form'dan gelen verileri oku (önce model binding, sonra Request.Form)
+                    string? GetFormValue(string key, string? modelValue)
+                    {
+                        // Önce model binding'den gelen değeri kontrol et
+                        if (!string.IsNullOrWhiteSpace(modelValue))
+                            return modelValue;
 
-          // En az bir alan dolu mu kontrol et
-          bool enAzBirAlanDolu = veliAdSoyad != null || veliTelefon != null || okulAdi != null || 
-                                  okulAdresi != null || sinif != null || okulHocasiAdSoyad != null || okulHocasiTelefon != null;
+                        // Model binding'den değer yoksa Request.Form'dan oku
+                        var formValue = Request.Form[$"OgrenciDetay.{key}"].ToString();
+                        return !string.IsNullOrWhiteSpace(formValue) ? formValue : null;
+                    }
 
-          var mevcutDetay = await _context.OgrenciDetay
-              .FirstOrDefaultAsync(d => d.OgrenciId == ogrenci.Id && !d.IsDeleted);
-          
-          if (mevcutDetay != null)
-          {
-              // Güncelle
-              mevcutDetay.VeliAdSoyad = veliAdSoyad;
-              mevcutDetay.VeliTelefonNumarasi = veliTelefon;
-              mevcutDetay.OkulAdi = okulAdi;
-              mevcutDetay.OkulAdresi = okulAdresi;
-              mevcutDetay.Sinif = sinif;
-              mevcutDetay.OkulHocasiAdSoyad = okulHocasiAdSoyad;
-              mevcutDetay.OkulHocasiTelefon = okulHocasiTelefon;
-              mevcutDetay.Version++;
-              _context.OgrenciDetay.Update(mevcutDetay);
-          }
-          else if (enAzBirAlanDolu)
-          {
-              // Yeni kayıt oluştur
-              var yeniDetay = new OgrenciDetay
-              {
-                  OgrenciId = ogrenci.Id,
-                  VeliAdSoyad = veliAdSoyad,
-                  VeliTelefonNumarasi = veliTelefon,
-                  OkulAdi = okulAdi,
-                  OkulAdresi = okulAdresi,
-                  Sinif = sinif,
-                  OkulHocasiAdSoyad = okulHocasiAdSoyad,
-                  OkulHocasiTelefon = okulHocasiTelefon,
-                  Aktif = true,
-                  IsDeleted = false,
-                  Version = 0
-              };
-              await _context.OgrenciDetay.AddAsync(yeniDetay);
-          }
+                    var veliAdSoyad = GetFormValue("VeliAdSoyad", ogrenciDetay?.VeliAdSoyad);
+                    var veliTelefon = GetFormValue("VeliTelefonNumarasi", ogrenciDetay?.VeliTelefonNumarasi);
+                    var okulAdi = GetFormValue("OkulAdi", ogrenciDetay?.OkulAdi);
+                    var okulAdresi = GetFormValue("OkulAdresi", ogrenciDetay?.OkulAdresi);
+                    var sinif = GetFormValue("Sinif", ogrenciDetay?.Sinif);
+                    var okulHocasiAdSoyad = GetFormValue("OkulHocasiAdSoyad", ogrenciDetay?.OkulHocasiAdSoyad);
+                    var okulHocasiTelefon = GetFormValue("OkulHocasiTelefon", ogrenciDetay?.OkulHocasiTelefon);
 
-   // Envanter satışları varsa işle
-if (EnvanterSatislari != null && EnvanterSatislari.Any())
-   {
- foreach (var satisViewModel in EnvanterSatislari)
+                    // En az bir alan dolu mu kontrol et
+                    bool enAzBirAlanDolu = veliAdSoyad != null || veliTelefon != null || okulAdi != null ||
+                                            okulAdresi != null || sinif != null || okulHocasiAdSoyad != null || okulHocasiTelefon != null;
+
+                    var mevcutDetay = await _context.OgrenciDetay
+                        .FirstOrDefaultAsync(d => d.OgrenciId == ogrenci.Id && !d.IsDeleted);
+
+                    if (mevcutDetay != null)
+                    {
+                        // Güncelle
+                        mevcutDetay.VeliAdSoyad = veliAdSoyad;
+                        mevcutDetay.VeliTelefonNumarasi = veliTelefon;
+                        mevcutDetay.OkulAdi = okulAdi;
+                        mevcutDetay.OkulAdresi = okulAdresi;
+                        mevcutDetay.Sinif = sinif;
+                        mevcutDetay.OkulHocasiAdSoyad = okulHocasiAdSoyad;
+                        mevcutDetay.OkulHocasiTelefon = okulHocasiTelefon;
+                        mevcutDetay.Version++;
+                        _context.OgrenciDetay.Update(mevcutDetay);
+                    }
+                    else if (enAzBirAlanDolu)
+                    {
+                        // Yeni kayıt oluştur
+                        var yeniDetay = new OgrenciDetay
+                        {
+                            OgrenciId = ogrenci.Id,
+                            VeliAdSoyad = veliAdSoyad,
+                            VeliTelefonNumarasi = veliTelefon,
+                            OkulAdi = okulAdi,
+                            OkulAdresi = okulAdresi,
+                            Sinif = sinif,
+                            OkulHocasiAdSoyad = okulHocasiAdSoyad,
+                            OkulHocasiTelefon = okulHocasiTelefon,
+                            Aktif = true,
+                            IsDeleted = false,
+                            Version = 0
+                        };
+                        await _context.OgrenciDetay.AddAsync(yeniDetay);
+                    }
+
+                    // Envanter satışları varsa işle
+                    if (EnvanterSatislari != null && EnvanterSatislari.Any())
+                    {
+                        foreach (var satisViewModel in EnvanterSatislari)
+                        {
+                            // Silinecek kayıtları işle
+                            if (satisViewModel.SilinecekMi && satisViewModel.Id > 0)
+                            {
+                                var silinecekSatis = await _context.OgrenciEnvanterSatis.FindAsync(satisViewModel.Id);
+                                if (silinecekSatis != null)
+                                {
+                                    // Envanter stoğunu geri ekle
+                                    var envanter = await _context.Envanterler.FindAsync(silinecekSatis.EnvanterId);
+                                    if (envanter != null)
+                                    {
+                                        envanter.Adet += silinecekSatis.SatisAdet;
+                                        _context.Envanterler.Update(envanter);
+                                    }
+
+                                    // Soft delete
+                                    silinecekSatis.IsDeleted = true;
+                                    silinecekSatis.Aktif = false;
+                                    _context.OgrenciEnvanterSatis.Update(silinecekSatis);
+                                }
+                                continue;
+                            }
+
+                            // Güncelleme işlemi (Id > 0 ve değişiklik varsa)
+                            if (satisViewModel.Id > 0)
+                            {
+                                var mevcutSatis = await _context.OgrenciEnvanterSatis.FindAsync(satisViewModel.Id);
+                                if (mevcutSatis != null)
+                                {
+                                    // Adet değiştiyse stok güncelle
+                                    if (mevcutSatis.SatisAdet != satisViewModel.SatisAdet)
+                                    {
+                                        var envanter = await _context.Envanterler.FindAsync(mevcutSatis.EnvanterId);
+                                        if (envanter != null)
+                                        {
+                                            int fark = satisViewModel.SatisAdet - mevcutSatis.SatisAdet;
+                                            if (envanter.Adet < fark)
+                                            {
+                                                ModelState.AddModelError("", $"{envanter.EnvanterAdi}: Yetersiz stok! Mevcut: {envanter.Adet}, Gerekli: {fark}");
+                                                continue;
+                                            }
+                                            envanter.Adet -= fark;
+                                            _context.Envanterler.Update(envanter);
+                                        }
+                                    }
+
+                                    // Diğer alanları güncelle
+                                    mevcutSatis.SatisTarihi = satisViewModel.SatisTarihi ?? DateTime.Now;
+                                    mevcutSatis.OdenenTutar = satisViewModel.OdenenTutar;
+                                    mevcutSatis.SatisAdet = satisViewModel.SatisAdet;
+                                    mevcutSatis.Aciklama = satisViewModel.Aciklama;
+                                    _context.OgrenciEnvanterSatis.Update(mevcutSatis);
+                                }
+                                continue;
+                            }
+
+                            // Yeni kayıt ekleme (Id == 0)
+                            // Boş kayıtları atla
+                            if (satisViewModel.EnvanterId <= 0)
+                                continue;
+
+                            var satisAdedi = satisViewModel.SatisAdet > 0 ? satisViewModel.SatisAdet : 1;
+
+                            // Envanter stok kontrolü
+                            var yeniEnvanter = await _context.Envanterler.FindAsync(satisViewModel.EnvanterId);
+                            if (yeniEnvanter == null)
+                            {
+                                ModelState.AddModelError("", $"Seçilen envanter (ID: {satisViewModel.EnvanterId}) bulunamadı.");
+                                continue;
+                            }
+
+                            if (yeniEnvanter.Adet < satisAdedi)
+                            {
+                                ModelState.AddModelError("", $"{yeniEnvanter.EnvanterAdi}: Yetersiz stok! Mevcut: {yeniEnvanter.Adet}, İstenen: {satisAdedi}");
+                                continue;
+                            }
+
+                            // Envanter satış kaydı oluştur
+                            var envanterSatis = new OgrenciEnvanterSatis
+                            {
+                                OgrenciId = ogrenci.Id,
+                                EnvanterId = satisViewModel.EnvanterId,
+                                SatisTarihi = satisViewModel.SatisTarihi ?? DateTime.Now,
+                                OdenenTutar = satisViewModel.OdenenTutar,
+                                SatisAdet = satisAdedi,
+                                Aciklama = satisViewModel.Aciklama,
+                                Aktif = true,
+                                IsDeleted = false
+                            };
+
+                            await _context.OgrenciEnvanterSatis.AddAsync(envanterSatis);
+
+                            // Envanter stoğunu güncelle
+                            yeniEnvanter.Adet -= satisAdedi;
+                            _context.Envanterler.Update(yeniEnvanter);
+                        }
+
+                        await _context.SaveChangesAsync();
+                    }
+
+                    TempData["SuccessMessage"] = "Öğrenci başarıyla güncellendi!";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", $"Öğrenci güncellenirken bir hata oluştu: {ex.Message}");
+                }
+            }
+            else
+            {
+                // ModelState hatalarını logla
+                var errors = ModelState.Values.SelectMany(v => v.Errors);
+                foreach (var error in errors)
+                {
+                    Console.WriteLine($"Model Error: {error.ErrorMessage}");
+                }
+            }
+
+            // Hata durumunda mevcut satışları tekrar yükle
+            var mevcutSatislar = await _context.OgrenciEnvanterSatis
+          .Include(e => e.Envanter)
+               .Where(e => e.OgrenciId == id && !e.IsDeleted && e.Aktif)
+         .OrderByDescending(e => e.SatisTarihi)
+        .Select(e => new EnvanterSatisViewModel
         {
-   // Silinecek kayıtları işle
-         if (satisViewModel.SilinecekMi && satisViewModel.Id > 0)
-   {
-    var silinecekSatis = await _context.OgrenciEnvanterSatis.FindAsync(satisViewModel.Id);
- if (silinecekSatis != null)
- {
- // Envanter stoğunu geri ekle
-     var envanter = await _context.Envanterler.FindAsync(silinecekSatis.EnvanterId);
-    if (envanter != null)
-   {
-  envanter.Adet += silinecekSatis.SatisAdet;
-     _context.Envanterler.Update(envanter);
-     }
+            Id = e.Id,
+            EnvanterId = e.EnvanterId,
+            EnvanterAdi = e.Envanter.EnvanterAdi,
+            SatisTarihi = e.SatisTarihi,
+            SatisAdet = e.SatisAdet,
+            OdenenTutar = e.OdenenTutar,
+            Aciklama = e.Aciklama
+        })
+              .ToListAsync();
 
-    // Soft delete
-  silinecekSatis.IsDeleted = true;
-       silinecekSatis.Aktif = false;
-   _context.OgrenciEnvanterSatis.Update(silinecekSatis);
-         }
-     continue;
-       }
+            ViewBag.MevcutEnvanterSatislari = mevcutSatislar;
 
-         // Güncelleme işlemi (Id > 0 ve değişiklik varsa)
-     if (satisViewModel.Id > 0)
- {
-   var mevcutSatis = await _context.OgrenciEnvanterSatis.FindAsync(satisViewModel.Id);
-      if (mevcutSatis != null)
-       {
-      // Adet değiştiyse stok güncelle
-     if (mevcutSatis.SatisAdet != satisViewModel.SatisAdet)
-    {
-       var envanter = await _context.Envanterler.FindAsync(mevcutSatis.EnvanterId);
-   if (envanter != null)
-   {
-   int fark = satisViewModel.SatisAdet - mevcutSatis.SatisAdet;
-       if (envanter.Adet < fark)
-         {
-         ModelState.AddModelError("", $"{envanter.EnvanterAdi}: Yetersiz stok! Mevcut: {envanter.Adet}, Gerekli: {fark}");
-  continue;
+            await LoadDropdownsAsync();
+            return View(ogrenci);
         }
-     envanter.Adet -= fark;
-        _context.Envanterler.Update(envanter);
-  }
-    }
-
-     // Diğer alanları güncelle
-    mevcutSatis.SatisTarihi = satisViewModel.SatisTarihi ?? DateTime.Now;
-         mevcutSatis.OdenenTutar = satisViewModel.OdenenTutar;
-    mevcutSatis.SatisAdet = satisViewModel.SatisAdet;
-         mevcutSatis.Aciklama = satisViewModel.Aciklama;
-   _context.OgrenciEnvanterSatis.Update(mevcutSatis);
-   }
-   continue;
-   }
-
-     // Yeni kayıt ekleme (Id == 0)
-  // Boş kayıtları atla
-        if (satisViewModel.EnvanterId <= 0)
- continue;
-
-    var satisAdedi = satisViewModel.SatisAdet > 0 ? satisViewModel.SatisAdet : 1;
- 
-  // Envanter stok kontrolü
-      var yeniEnvanter = await _context.Envanterler.FindAsync(satisViewModel.EnvanterId);
-    if (yeniEnvanter == null)
-      {
-      ModelState.AddModelError("", $"Seçilen envanter (ID: {satisViewModel.EnvanterId}) bulunamadı.");
-continue;
- }
-
-   if (yeniEnvanter.Adet < satisAdedi)
-    {
-     ModelState.AddModelError("", $"{yeniEnvanter.EnvanterAdi}: Yetersiz stok! Mevcut: {yeniEnvanter.Adet}, İstenen: {satisAdedi}");
-  continue;
- }
-
- // Envanter satış kaydı oluştur
-   var envanterSatis = new OgrenciEnvanterSatis
-   {
-OgrenciId = ogrenci.Id,
-   EnvanterId = satisViewModel.EnvanterId,
-  SatisTarihi = satisViewModel.SatisTarihi ?? DateTime.Now,
-         OdenenTutar = satisViewModel.OdenenTutar,
-  SatisAdet = satisAdedi,
-    Aciklama = satisViewModel.Aciklama,
-  Aktif = true,
- IsDeleted = false
-    };
-
-    await _context.OgrenciEnvanterSatis.AddAsync(envanterSatis);
-  
- // Envanter stoğunu güncelle
-yeniEnvanter.Adet -= satisAdedi;
-       _context.Envanterler.Update(yeniEnvanter);
-     }
- 
-     await _context.SaveChangesAsync();
-      }
-
- TempData["SuccessMessage"] = "Öğrenci başarıyla güncellendi!";
-   return RedirectToAction(nameof(Index));
- }
-   catch (Exception ex)
-        {
-     ModelState.AddModelError("", $"Öğrenci güncellenirken bir hata oluştu: {ex.Message}");
-      }
- }
-   else
-    {
- // ModelState hatalarını logla
-     var errors = ModelState.Values.SelectMany(v => v.Errors);
-    foreach (var error in errors)
-     {
-      Console.WriteLine($"Model Error: {error.ErrorMessage}");
- }
-  }
-
- // Hata durumunda mevcut satışları tekrar yükle
-      var mevcutSatislar = await _context.OgrenciEnvanterSatis
-    .Include(e => e.Envanter)
-         .Where(e => e.OgrenciId == id && !e.IsDeleted && e.Aktif)
-   .OrderByDescending(e => e.SatisTarihi)
-  .Select(e => new EnvanterSatisViewModel
-    {
-  Id = e.Id,
-  EnvanterId = e.EnvanterId,
-    EnvanterAdi = e.Envanter.EnvanterAdi,
-         SatisTarihi = e.SatisTarihi,
- SatisAdet = e.SatisAdet,
-   OdenenTutar = e.OdenenTutar,
- Aciklama = e.Aciklama
-  })
-        .ToListAsync();
-
-     ViewBag.MevcutEnvanterSatislari = mevcutSatislar;
-
-  await LoadDropdownsAsync();
-   return View(ogrenci);
- }
         // GET: Student/Delete/5
         public async Task<IActionResult> Delete(long id)
         {
@@ -616,21 +652,21 @@ yeniEnvanter.Adet -= satisAdedi;
             try
             {
                 var result = await _ogrenciService.DeleteOgrenciAsync(id);
-   if (result)
-     {
-     TempData["SuccessMessage"] = "Öğrenci başarıyla silindi!";
-    }
-  else
- {
-            TempData["ErrorMessage"] = "Öğrenci bulunamadı.";
-   }
-    }
-    catch (Exception ex)
-    {
- TempData["ErrorMessage"] = "Öğrenci silinirken bir hata oluştu.";
-    }
+                if (result)
+                {
+                    TempData["SuccessMessage"] = "Öğrenci başarıyla silindi!";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Öğrenci bulunamadı.";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Öğrenci silinirken bir hata oluştu.";
+            }
 
-    return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index));
         }
 
         // POST: Student/ToggleAktif/5
@@ -638,38 +674,38 @@ yeniEnvanter.Adet -= satisAdedi;
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ToggleAktif(long id, bool aktif)
         {
-  try
- {
-        var result = await _ogrenciService.ToggleAktifAsync(id, aktif);
-   if (result)
-   {
-        TempData["SuccessMessage"] = aktif 
-   ? "Öğrenci başarıyla aktif hale getirildi!" 
-     : "Öğrenci başarıyla pasif hale getirildi!";
+            try
+            {
+                var result = await _ogrenciService.ToggleAktifAsync(id, aktif);
+                if (result)
+                {
+                    TempData["SuccessMessage"] = aktif
+               ? "Öğrenci başarıyla aktif hale getirildi!"
+                 : "Öğrenci başarıyla pasif hale getirildi!";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Öğrenci bulunamadı.";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Durum güncellenirken bir hata oluştu.";
+            }
+
+            return RedirectToAction(nameof(Index));
         }
-    else
-  {
-TempData["ErrorMessage"] = "Öğrenci bulunamadı.";
-}
-    }
-    catch (Exception ex)
-{
-  TempData["ErrorMessage"] = "Durum güncellenirken bir hata oluştu.";
-    }
 
-    return RedirectToAction(nameof(Index));
-}
+        private async Task LoadDropdownsAsync()
+        {
+            var odemePlanlari = await _odemePlanlariService.GetAllOdemePlanlariAsync();
+            ViewBag.OdemePlanlari = new SelectList(odemePlanlari, "Id", "KursProgrami");
 
-private async Task LoadDropdownsAsync()
-{
-    var odemePlanlari = await _odemePlanlariService.GetAllOdemePlanlariAsync();
-    ViewBag.OdemePlanlari = new SelectList(odemePlanlari, "Id", "KursProgrami");
-
-  var cinsiyetler = await _cinsiyetlerService.GetAllCinsiyetlerAsync();
-   ViewBag.Cinsiyetler = new SelectList(cinsiyetler, "Id", "Cinsiyet");
+            var cinsiyetler = await _cinsiyetlerService.GetAllCinsiyetlerAsync();
+            ViewBag.Cinsiyetler = new SelectList(cinsiyetler, "Id", "Cinsiyet");
 
             var envanterler = await _envanterlerService.GetActiveAsync();
- ViewBag.Envanterler = new SelectList(envanterler, "Id", "EnvanterAdi");
+            ViewBag.Envanterler = new SelectList(envanterler, "Id", "EnvanterAdi");
         }
 
         // POST: Ogrenciler/SendSmsSelected
@@ -767,95 +803,95 @@ private async Task LoadDropdownsAsync()
      .Where(s => selectedIds.Contains(s.Id))
      .Select(s => new
      {
-    s.OgrenciAdi,
-     s.OgrenciSoyadi,
-     s.TCNO,
- s.Telefon,
-   s.Email,
-        s.DogumTarihi,
-     CinsiyetAdi = s.Cinsiyet != null ? s.Cinsiyet.Cinsiyet : "",
-     s.Adres,
- s.KayitTarihi,
-    OdemePlani = s.OdemePlanlari != null ? s.OdemePlanlari.KursProgrami : "",
-        ToplamTutar = s.OdemePlanlari != null ? s.OdemePlanlari.ToplamTutar : 0,
-    TaksitSayisi = s.OdemePlanlari != null ? s.OdemePlanlari.TaksitSayisi : 0,
-       s.SonSmsTarihi,
-            s.Aktif
+         s.OgrenciAdi,
+         s.OgrenciSoyadi,
+         s.TCNO,
+         s.Telefon,
+         s.Email,
+         s.DogumTarihi,
+         CinsiyetAdi = s.Cinsiyet != null ? s.Cinsiyet.Cinsiyet : "",
+         s.Adres,
+         s.KayitTarihi,
+         OdemePlani = s.OdemePlanlari != null ? s.OdemePlanlari.KursProgrami : "",
+         ToplamTutar = s.OdemePlanlari != null ? s.OdemePlanlari.ToplamTutar : 0,
+         TaksitSayisi = s.OdemePlanlari != null ? s.OdemePlanlari.TaksitSayisi : 0,
+         s.SonSmsTarihi,
+         s.Aktif
      })
          .ToListAsync();
 
-       using var wb = new XLWorkbook();
-    var ws = wb.AddWorksheet("Ogrenciler");
+            using var wb = new XLWorkbook();
+            var ws = wb.AddWorksheet("Ogrenciler");
 
             // Başlık satırı
             int c = 1;
-   ws.Cell(1, c++).Value = "Ad";
-    ws.Cell(1, c++).Value = "Soyad";
-    ws.Cell(1, c++).Value = "TC Kimlik No";
-  ws.Cell(1, c++).Value = "Telefon";
-      ws.Cell(1, c++).Value = "Email";
- ws.Cell(1, c++).Value = "Doğum Tarihi";
-   ws.Cell(1, c++).Value = "Yaş";
- ws.Cell(1, c++).Value = "Cinsiyet";
- ws.Cell(1, c++).Value = "Adres";
-     ws.Cell(1, c++).Value = "Kayıt Tarihi";
-ws.Cell(1, c++).Value = "Ödeme Planı";
-ws.Cell(1, c++).Value = "Toplam Tutar";
-  ws.Cell(1, c++).Value = "Taksit Sayısı";
-    ws.Cell(1, c++).Value = "Son SMS Tarihi";
-  ws.Cell(1, c++).Value = "Durum";
+            ws.Cell(1, c++).Value = "Ad";
+            ws.Cell(1, c++).Value = "Soyad";
+            ws.Cell(1, c++).Value = "TC Kimlik No";
+            ws.Cell(1, c++).Value = "Telefon";
+            ws.Cell(1, c++).Value = "Email";
+            ws.Cell(1, c++).Value = "Doğum Tarihi";
+            ws.Cell(1, c++).Value = "Yaş";
+            ws.Cell(1, c++).Value = "Cinsiyet";
+            ws.Cell(1, c++).Value = "Adres";
+            ws.Cell(1, c++).Value = "Kayıt Tarihi";
+            ws.Cell(1, c++).Value = "Ödeme Planı";
+            ws.Cell(1, c++).Value = "Toplam Tutar";
+            ws.Cell(1, c++).Value = "Taksit Sayısı";
+            ws.Cell(1, c++).Value = "Son SMS Tarihi";
+            ws.Cell(1, c++).Value = "Durum";
 
             // Başlık satırını stillendir
- var headerRow = ws.Row(1);
-   headerRow.Style.Font.Bold = true;
+            var headerRow = ws.Row(1);
+            headerRow.Style.Font.Bold = true;
             headerRow.Style.Fill.BackgroundColor = XLColor.LightBlue;
-    headerRow.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            headerRow.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
-       // Veri satırları
- int r = 2;
+            // Veri satırları
+            int r = 2;
             var today = DateTime.Today;
- foreach (var x in rows.OrderBy(o => o.OgrenciSoyadi).ThenBy(o => o.OgrenciAdi))
-         {
-     int col = 1;
-     var yas = today.Year - x.DogumTarihi.Year;
-   if (today.DayOfYear < x.DogumTarihi.DayOfYear) yas--;
+            foreach (var x in rows.OrderBy(o => o.OgrenciSoyadi).ThenBy(o => o.OgrenciAdi))
+            {
+                int col = 1;
+                var yas = today.Year - x.DogumTarihi.Year;
+                if (today.DayOfYear < x.DogumTarihi.DayOfYear) yas--;
 
-         ws.Cell(r, col++).Value = x.OgrenciAdi;
-      ws.Cell(r, col++).Value = x.OgrenciSoyadi;
-     ws.Cell(r, col++).Value = x.TCNO ?? "-";
- ws.Cell(r, col++).Value = x.Telefon ?? "-";
-      ws.Cell(r, col++).Value = x.Email;
-      ws.Cell(r, col++).Value = x.DogumTarihi.ToString("dd.MM.yyyy");
-     ws.Cell(r, col++).Value = yas;
-    ws.Cell(r, col++).Value = x.CinsiyetAdi;
-       ws.Cell(r, col++).Value = x.Adres ?? "-";
- ws.Cell(r, col++).Value = x.KayitTarihi.ToString("dd.MM.yyyy");
-   ws.Cell(r, col++).Value = x.OdemePlani;
-            ws.Cell(r, col++).Value = x.ToplamTutar;
-      ws.Cell(r, col++).Value = x.TaksitSayisi;
-  ws.Cell(r, col++).Value = x.SonSmsTarihi?.ToString("dd.MM.yyyy") ?? "-";
-        ws.Cell(r, col++).Value = x.Aktif ? "Aktif" : "Pasif";
+                ws.Cell(r, col++).Value = x.OgrenciAdi;
+                ws.Cell(r, col++).Value = x.OgrenciSoyadi;
+                ws.Cell(r, col++).Value = x.TCNO ?? "-";
+                ws.Cell(r, col++).Value = x.Telefon ?? "-";
+                ws.Cell(r, col++).Value = x.Email;
+                ws.Cell(r, col++).Value = x.DogumTarihi.ToString("dd.MM.yyyy");
+                ws.Cell(r, col++).Value = yas;
+                ws.Cell(r, col++).Value = x.CinsiyetAdi;
+                ws.Cell(r, col++).Value = x.Adres ?? "-";
+                ws.Cell(r, col++).Value = x.KayitTarihi.ToString("dd.MM.yyyy");
+                ws.Cell(r, col++).Value = x.OdemePlani;
+                ws.Cell(r, col++).Value = x.ToplamTutar;
+                ws.Cell(r, col++).Value = x.TaksitSayisi;
+                ws.Cell(r, col++).Value = x.SonSmsTarihi?.ToString("dd.MM.yyyy") ?? "-";
+                ws.Cell(r, col++).Value = x.Aktif ? "Aktif" : "Pasif";
 
-// Pasif öğrencileri vurgula
-        if (!x.Aktif)
-     {
-ws.Row(r).Style.Fill.BackgroundColor = XLColor.LightGray;
-    }
+                // Pasif öğrencileri vurgula
+                if (!x.Aktif)
+                {
+                    ws.Row(r).Style.Fill.BackgroundColor = XLColor.LightGray;
+                }
 
-     r++;
-  }
+                r++;
+            }
 
-      // Para formatı uygula (Toplam Tutar kolonu)
-     ws.Column(12).Style.NumberFormat.Format = "#,##0.00 ₺";
+            // Para formatı uygula (Toplam Tutar kolonu)
+            ws.Column(12).Style.NumberFormat.Format = "#,##0.00 ₺";
 
-     ws.Columns().AdjustToContents();
+            ws.Columns().AdjustToContents();
 
             using var ms = new MemoryStream();
-   wb.SaveAs(ms);
-       ms.Position = 0;
-     var bytes = ms.ToArray();
-       return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"ogrenciler_{DateTime.Now:yyyyMMdd_HHmm}.xlsx");
-     }
+            wb.SaveAs(ms);
+            ms.Position = 0;
+            var bytes = ms.ToArray();
+            return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"ogrenciler_{DateTime.Now:yyyyMMdd_HHmm}.xlsx");
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -870,92 +906,92 @@ ws.Row(r).Style.Fill.BackgroundColor = XLColor.LightGray;
 .Where(s => selectedIds.Contains(s.Id))
    .Select(s => new
    {
-    s.OgrenciAdi,
-     s.OgrenciSoyadi,
+       s.OgrenciAdi,
+       s.OgrenciSoyadi,
        s.Telefon,
-   s.Email,
-      s.DogumTarihi,
-     CinsiyetAdi = s.Cinsiyet != null ? s.Cinsiyet.Cinsiyet : "",
- s.KayitTarihi,
-      OdemePlani = s.OdemePlanlari != null ? s.OdemePlanlari.KursProgrami : "",
-  ToplamTutar = s.OdemePlanlari != null ? s.OdemePlanlari.ToplamTutar : 0,
-  TaksitSayisi = s.OdemePlanlari != null ? s.OdemePlanlari.TaksitSayisi : 0,
-     s.SonSmsTarihi,
-    s.Aktif
-  })
+       s.Email,
+       s.DogumTarihi,
+       CinsiyetAdi = s.Cinsiyet != null ? s.Cinsiyet.Cinsiyet : "",
+       s.KayitTarihi,
+       OdemePlani = s.OdemePlanlari != null ? s.OdemePlanlari.KursProgrami : "",
+       ToplamTutar = s.OdemePlanlari != null ? s.OdemePlanlari.ToplamTutar : 0,
+       TaksitSayisi = s.OdemePlanlari != null ? s.OdemePlanlari.TaksitSayisi : 0,
+       s.SonSmsTarihi,
+       s.Aktif
+   })
  .ToListAsync();
 
             QuestPDF.Settings.License = LicenseType.Community;
 
-    var doc = Document.Create(container =>
-      {
-     container.Page(page =>
-          {
-      page.Margin(20);
-     page.Header().Text("Öğrenci Listesi").SemiBold().FontSize(16);
-     page.Content().Table(table =>
-  {
-     table.ColumnsDefinition(columns =>
-{
-  columns.RelativeColumn(2); // Ad Soyad
-   columns.RelativeColumn(1.5f); // Telefon
-     columns.RelativeColumn(2.5f); // Email
-      columns.RelativeColumn(1.5f); // Doğum Tarihi
-        columns.RelativeColumn(1); // Yaş
-     columns.RelativeColumn(1); // Cinsiyet
-   columns.RelativeColumn(2); // Ödeme Planı
-  columns.RelativeColumn(1.5f); // ToplamTutar
-       columns.RelativeColumn(1); // Taksit Sayısı
-    columns.RelativeColumn(1); // Durum
-     });
+            var doc = Document.Create(container =>
+              {
+                  container.Page(page =>
+               {
+                      page.Margin(20);
+                      page.Header().Text("Öğrenci Listesi").SemiBold().FontSize(16);
+                      page.Content().Table(table =>
+           {
+              table.ColumnsDefinition(columns =>
+ {
+            columns.RelativeColumn(2); // Ad Soyad
+            columns.RelativeColumn(1.5f); // Telefon
+            columns.RelativeColumn(2.5f); // Email
+            columns.RelativeColumn(1.5f); // Doğum Tarihi
+            columns.RelativeColumn(1); // Yaş
+            columns.RelativeColumn(1); // Cinsiyet
+            columns.RelativeColumn(2); // Ödeme Planı
+            columns.RelativeColumn(1.5f); // ToplamTutar
+            columns.RelativeColumn(1); // Taksit Sayısı
+            columns.RelativeColumn(1); // Durum
+        });
 
-     table.Header(header =>
-  {
-       header.Cell().Element(CellStyle).Text("Ad Soyad").FontSize(9);
-       header.Cell().Element(CellStyle).Text("Telefon").FontSize(9);
-     header.Cell().Element(CellStyle).Text("Email").FontSize(9);
-     header.Cell().Element(CellStyle).Text("Doğum").FontSize(9);
-header.Cell().Element(CellStyle).Text("Yaş").FontSize(9);
-    header.Cell().Element(CellStyle).Text("Cinsiyet").FontSize(9);
-     header.Cell().Element(CellStyle).Text("Ödeme Planı").FontSize(9);
-   header.Cell().Element(CellStyle).Text("ToplamTutar").FontSize(9);
-           header.Cell().Element(CellStyle).Text("Taksit Sayısı").FontSize(9);
-    header.Cell().Element(CellStyle).Text("Durum").FontSize(9);
+              table.Header(header =>
+   {
+              header.Cell().Element(CellStyle).Text("Ad Soyad").FontSize(9);
+              header.Cell().Element(CellStyle).Text("Telefon").FontSize(9);
+              header.Cell().Element(CellStyle).Text("Email").FontSize(9);
+              header.Cell().Element(CellStyle).Text("Doğum").FontSize(9);
+              header.Cell().Element(CellStyle).Text("Yaş").FontSize(9);
+              header.Cell().Element(CellStyle).Text("Cinsiyet").FontSize(9);
+              header.Cell().Element(CellStyle).Text("Ödeme Planı").FontSize(9);
+              header.Cell().Element(CellStyle).Text("ToplamTutar").FontSize(9);
+              header.Cell().Element(CellStyle).Text("Taksit Sayısı").FontSize(9);
+              header.Cell().Element(CellStyle).Text("Durum").FontSize(9);
 
-    static IContainer CellStyle(IContainer container)
-       {
-       return container.BorderBottom(1).BorderColor(QuestPDF.Helpers.Colors.Grey.Lighten2).Padding(5);
-    }
-       });
+              static IContainer CellStyle(IContainer container)
+              {
+                  return container.BorderBottom(1).BorderColor(QuestPDF.Helpers.Colors.Grey.Lighten2).Padding(5);
+              }
+          });
 
-  var today = DateTime.Today;
-     foreach (var x in rows.OrderBy(o => o.OgrenciSoyadi).ThenBy(o => o.OgrenciAdi))
-        {
-  var yas = today.Year - x.DogumTarihi.Year;
-  if (today.DayOfYear < x.DogumTarihi.DayOfYear) yas--;
+              var today = DateTime.Today;
+              foreach (var x in rows.OrderBy(o => o.OgrenciSoyadi).ThenBy(o => o.OgrenciAdi))
+              {
+                  var yas = today.Year - x.DogumTarihi.Year;
+                  if (today.DayOfYear < x.DogumTarihi.DayOfYear) yas--;
 
-    table.Cell().Text($"{x.OgrenciAdi} {x.OgrenciSoyadi}").FontSize(8);
-    table.Cell().Text(x.Telefon ?? "-").FontSize(8);
-         table.Cell().Text(x.Email ?? "-").FontSize(7);
-     table.Cell().Text(x.DogumTarihi.ToString("dd.MM.yyyy")).FontSize(8);
-       table.Cell().Text(yas.ToString()).FontSize(8);
-    table.Cell().Text(x.CinsiyetAdi).FontSize(8);
- table.Cell().Text(x.OdemePlani).FontSize(7);
-         table.Cell().Text(x.ToplamTutar.ToString("N0") + " ₺").FontSize(8);
-  table.Cell().Text(x.TaksitSayisi.ToString()).FontSize(8);
-    table.Cell().Text(x.Aktif ? "✓ Aktif" : "○ Pasif")
-   .FontSize(8)
-.FontColor(x.Aktif ? QuestPDF.Helpers.Colors.Green.Darken2 : QuestPDF.Helpers.Colors.Grey.Darken1);
- }
-      });
-    page.Footer().AlignRight().Text($"Oluşturma: {DateTime.Now:dd.MM.yyyy HH:mm}").FontSize(8);
-   });
-      });
+                  table.Cell().Text($"{x.OgrenciAdi} {x.OgrenciSoyadi}").FontSize(8);
+                  table.Cell().Text(x.Telefon ?? "-").FontSize(8);
+                  table.Cell().Text(x.Email ?? "-").FontSize(7);
+                  table.Cell().Text(x.DogumTarihi.ToString("dd.MM.yyyy")).FontSize(8);
+                  table.Cell().Text(yas.ToString()).FontSize(8);
+                  table.Cell().Text(x.CinsiyetAdi).FontSize(8);
+                  table.Cell().Text(x.OdemePlani).FontSize(7);
+                  table.Cell().Text(x.ToplamTutar.ToString("N0") + " ₺").FontSize(8);
+                  table.Cell().Text(x.TaksitSayisi.ToString()).FontSize(8);
+                  table.Cell().Text(x.Aktif ? "✓ Aktif" : "○ Pasif")
+         .FontSize(8)
+      .FontColor(x.Aktif ? QuestPDF.Helpers.Colors.Green.Darken2 : QuestPDF.Helpers.Colors.Grey.Darken1);
+              }
+          });
+                      page.Footer().AlignRight().Text($"Oluşturma: {DateTime.Now:dd.MM.yyyy HH:mm}").FontSize(8);
+                  });
+              });
 
-   using var ms = new MemoryStream();
+            using var ms = new MemoryStream();
             doc.GeneratePdf(ms);
- ms.Position = 0;
-   return File(ms.ToArray(), "application/pdf", $"ogrenciler_{DateTime.Now:yyyyMMdd_HHmm}.pdf");
+            ms.Position = 0;
+            return File(ms.ToArray(), "application/pdf", $"ogrenciler_{DateTime.Now:yyyyMMdd_HHmm}.pdf");
         }
     }
 }
