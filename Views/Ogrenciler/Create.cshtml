@@ -310,7 +310,7 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
-    // Telefon numarası input mask
+  // Telefon numarası input mask
     document.addEventListener('DOMContentLoaded', function() {
    const telefonInput = document.getElementById('telefonInput');
    const veliTelefonInput = document.getElementById('VeliTelefonNumarasi');
@@ -319,33 +319,32 @@
    function applyPhoneMask(input) {
        if (!input) return;
        input.addEventListener('input', function(e) {
-           let value = e.target.value.replace(/\D/g, '');
-           if (value.length > 11) {
-               value = value.substring(0, 11);
-           }
-           if (value.length > 0 && value.charAt(0) !== '0') {
-               value = '0' + value.substring(0, 10);
-           }
+        let value = e.target.value.replace(/\D/g, '');
+     if (value.length > 11) {
+   value = value.substring(0, 11);
+         }
+ if (value.length > 0 && value.charAt(0) !== '0') {
+value = '0' + value.substring(0, 10);
+      }
            e.target.value = value;
-       });
+     });
        input.addEventListener('paste', function(e) {
-           setTimeout(function() {
-               let value = input.value.replace(/\D/g, '');
-               if (value.length > 11) {
-                   value = value.substring(0, 11);
-               }
-               if (value.length > 0 && value.charAt(0) !== '0') {
-                   value = '0' + value.substring(0, 10);
-               }
-               input.value = value;
-           }, 0);
+       setTimeout(function() {
+    let value = input.value.replace(/\D/g, '');
+    if (value.length > 11) {
+           value = value.substring(0, 11);
+    }
+         if (value.length > 0 && value.charAt(0) !== '0') {
+       value = '0' + value.substring(0, 10);
+  }
+      input.value = value;
+     }, 0);
        });
    }
    
    applyPhoneMask(telefonInput);
    applyPhoneMask(veliTelefonInput);
    applyPhoneMask(okulHocasiTelefonInput);
-      }
 
    // Envanter Tablosu İşlemleri
         const tbody = document.getElementById('envanterTbody');
@@ -353,18 +352,40 @@
    const envanterSatirTemplate = document.getElementById('envanterSatirTemplate');
    let envanterIndex = 0;
 
+   console.log('Create Envanter Script Yüklendi', {
+      tbody: tbody ? 'OK' : 'NULL',
+   envanterEkleBtn: envanterEkleBtn ? 'OK' : 'NULL',
+      envanterSatirTemplate: envanterSatirTemplate ? 'OK' : 'NULL',
+     envanterIndex: envanterIndex
+   });
+
  // Envanter satırı ekle
+   if (envanterEkleBtn && envanterSatirTemplate && tbody) {
  envanterEkleBtn.addEventListener('click', function() {
+        console.log('Envanter ekleme butonuna tıklandı, Index:', envanterIndex);
+        try {
      const templateContent = envanterSatirTemplate.content.cloneNode(true);
    const templateHTML = templateContent.querySelector('tr').outerHTML;
 const yeniSatir = templateHTML.replace(/{INDEX}/g, envanterIndex);
     
   tbody.insertAdjacentHTML('beforeend', yeniSatir);
+         console.log('Satır eklendi, Yeni Index:', envanterIndex + 1);
    envanterIndex++;
     
    // Yeni eklenen satırın sil butonunu dinle
     guncelSilButonlari();
+  } catch (error) {
+   console.error('Satır eklenirken hata:', error);
+      alert('Satır eklenirken bir hata oluştu: ' + error.message);
+      }
  });
+   } else {
+      console.error('Envanter bileşenleri bulunamadı!', {
+      tbody: !!tbody,
+     envanterEkleBtn: !!envanterEkleBtn,
+            envanterSatirTemplate: !!envanterSatirTemplate
+       });
+    }
 
  // Sil butonlarını güncelle
   function guncelSilButonlari() {
@@ -378,7 +399,7 @@ btn.addEventListener('click', silHandler);
         const row = e.target.closest('tr');
   if (row && confirm('Bu satırı kaldırmak istediğinizden emin misiniz?')) {
         row.remove();
-          // Index'leri yeniden düzenle
+   // Index'leri yeniden düzenle
       yenidenIndexle();
   }
 }
@@ -397,6 +418,6 @@ btn.addEventListener('click', silHandler);
  });
   envanterIndex = rows.length;
   }
-    });
+ });
     </script>
 }
