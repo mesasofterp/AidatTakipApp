@@ -20,26 +20,53 @@ namespace StudentApp.Controllers
         }
 
         // GET: Envanterler
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchTerm, string stokDurumu)
         {
             try
             {
                 var envanterler = await _envanterlerService.GetAllAsync();
-                var toplamDeger = await _envanterlerService.GetToplamDegerAsync();
 
-                ViewBag.ToplamDeger = toplamDeger;
-                ViewBag.ToplamKalem = envanterler.Count();
-                ViewBag.ToplamAdet = envanterler.Sum(e => e.Adet);
+                // Arama filtresi
+                if (!string.IsNullOrWhiteSpace(searchTerm))
+                {
+                    var searchLower = searchTerm.ToLower().Trim();
+                    envanterler = envanterler.Where(e =>
+                          e.EnvanterAdi.ToLower().Contains(searchLower) ||
+                 (e.Aciklama != null && e.Aciklama.ToLower().Contains(searchLower)) ||
+               e.AlisFiyat.ToString().Contains(searchLower) ||
+                e.SatisFiyat.ToString().Contains(searchLower)
+                 ).ToList();
+                    ViewBag.SearchTerm = searchTerm;
+                }
 
-                return View(envanterler);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Envanterler listesi yüklenirken hata oluþtu");
+                // Stok durumu filtresi
+                 if (!string.IsNullOrWhiteSpace(stokDurumu))
+       {
+                envanterler = stokDurumu switch
+             {
+             "stokta" => envanterler.Where(e => e.Adet > 0).ToList(),
+                      "tukendi" => envanterler.Where(e => e.Adet == 0).ToList(),
+                  "azaldi" => envanterler.Where(e => e.Adet > 0 && e.Adet <= 5).ToList(),
+             _ => envanterler
+               };
+                ViewBag.StokDurumu = stokDurumu;
+                        }
+
+               var toplamDeger = envanterler.Sum(e => e.Adet * e.AlisFiyat);
+
+                 ViewBag.ToplamDeger = toplamDeger;
+             ViewBag.ToplamKalem = envanterler.Count();
+           ViewBag.ToplamAdet = envanterler.Sum(e => e.Adet);
+
+            return View(envanterler);
+       }
+         catch (Exception ex)
+              {
+         _logger.LogError(ex, "Envanterler listesi yüklenirken hata oluþtu");
                 TempData["ErrorMessage"] = "Envanterler yüklenirken bir hata oluþtu.";
-                return View(new List<Envanterler>());
+          return View(new List<Envanterler>());
+                }
             }
-        }
 
         // GET: Envanterler/Details/5
         public async Task<IActionResult> Details(long? id)

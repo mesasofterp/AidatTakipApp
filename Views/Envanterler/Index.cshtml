@@ -30,6 +30,44 @@
     </div>
 }
 
+<!-- Arama ve Filtre -->
+<div class="card mb-4">
+<div class="card-body">
+        <form asp-action="Index" method="get" class="row g-3 align-items-end">
+       <div class="col-md-8">
+       <label for="searchTerm" class="form-label">
+              <i class="fas fa-search me-1"></i>Envanter Ara
+    </label>
+        <input type="text" name="searchTerm" id="searchTerm" class="form-control" 
+placeholder="Envanter adý, açýklama veya fiyat aralýðý..." 
+     value="@ViewBag.SearchTerm" />
+  </div>
+       <div class="col-md-2">
+    <label for="stokDurumu" class="form-label">
+  <i class="fas fa-filter me-1"></i>Stok Durumu
+                </label>
+      <select name="stokDurumu" id="stokDurumu" class="form-select">
+       <option value="">Tümü</option>
+          <option value="stokta" selected="@(ViewBag.StokDurumu == "stokta" ? "selected" : null)">Stokta Var</option>
+      <option value="tukendi" selected="@(ViewBag.StokDurumu == "tukendi" ? "selected" : null)">Tükendi</option>
+      <option value="azaldi" selected="@(ViewBag.StokDurumu == "azaldi" ? "selected" : null)">Stok Azaldý (?5)</option>
+  </select>
+            </div>
+    <div class="col-md-2 d-flex gap-2">
+          <button type="submit" class="btn btn-primary flex-grow-1">
+      <i class="fas fa-search me-1"></i>Ara
+              </button>
+      @if (!string.IsNullOrEmpty(ViewBag.SearchTerm as string) || !string.IsNullOrEmpty(ViewBag.StokDurumu as string))
+        {
+              <a asp-action="Index" class="btn btn-outline-secondary" title="Filtreyi Temizle">
+            <i class="fas fa-times"></i>
+         </a>
+          }
+    </div>
+        </form>
+    </div>
+</div>
+
 <!-- Ýstatistik Kartlarý -->
 <div class="row mb-4">
     <div class="col-md-4">
