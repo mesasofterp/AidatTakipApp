@@ -215,36 +215,36 @@
 <div id="envanterSatisAlani" class="card">
     <div class="card-body">
      <div class="table-responsive">
-          <table class="table table-hover" id="envanterTable">
-         <thead class="table-light">
-     <tr>
-     <th style="width: 25%;">
+          <table class="table table-hover table-sm" id="envanterTable">
+    <thead class="table-light">
+<tr>
+     <th style="min-width: 180px;">
        <i class="fas fa-box me-1"></i>Envanter
      </th>
-         <th style="width: 10%;" class="text-center">
+         <th style="min-width: 80px;" class="text-center">
        <i class="fas fa-sort-numeric-up me-1"></i>Adet
-            </th>
-            <th style="width: 15%;">
+     </th>
+ <th style="min-width: 150px;">
           <i class="fas fa-calendar me-1"></i>Satış Tarihi
-                  </th>
-     <th style="width: 15%;" class="text-center">
+     </th>
+     <th style="min-width: 120px;">
        <i class="fa-solid fa-turkish-lira-sign me-1"></i>Fiyat
-        </th>
-            <th style="width: 25%;">
+     </th>
+         <th style="min-width: 150px;">
          <i class="fas fa-comment me-1"></i>Not
             </th>
-         <th style="width: 10%;" class="text-center">
-           <i class="fas fa-trash me-1"></i>İşlem
-           </th>
+   <th style="min-width: 80px;" class="text-center">
+  <i class="fas fa-trash me-1"></i>İşlem
+         </th>
           </tr>
     </thead>
-              <tbody id="envanterTbody">
-              <!-- Envanter satırları buraya eklenecek -->
+<tbody id="envanterTbody">
+     <!-- Envanter satırları buraya eklenecek -->
        </tbody>
-            </table>
+          </table>
         </div>
         
-        <button type="button" id="envanterEkleBtn" class="btn btn-success btn-sm mt-2">
+ <button type="button" id="envanterEkleBtn" class="btn btn-success btn-sm mt-2">
       <i class="fas fa-plus me-1"></i>Envanter Ekle
         </button>
     </div>
@@ -253,42 +253,42 @@
 <!-- Envanter Satır Template -->
 <template id="envanterSatirTemplate">
     <tr class="envanter-satir">
-        <td>
-       <select name="EnvanterSatislari[{INDEX}].EnvanterId" class="form-select form-select-sm envanter-select" required>
+      <td>
+       <select name="EnvanterSatislari[{INDEX}].EnvanterId" class="form-select form-select-sm envanter-select" required style="min-width: 150px;">
      <option value="">-- Envanter Seçiniz --</option>
-          @if (ViewBag.Envanterler != null)
+ @if (ViewBag.Envanterler != null)
       {
         foreach (var item in (IEnumerable<SelectListItem>)ViewBag.Envanterler)
         {
       <option value="@item.Value">@item.Text</option>
          }
   }
-            </select>
+      </select>
         </td>
      <td class="text-center">
      <input type="number" name="EnvanterSatislari[{INDEX}].SatisAdet" value="1" 
-  class="form-control form-control-sm text-center" min="1" required />
+  class="form-control form-control-sm text-center" min="1" required style="min-width: 60px;" />
         </td>
         <td>
-            <input type="date" name="EnvanterSatislari[{INDEX}].SatisTarihi" 
+  <input type="date" name="EnvanterSatislari[{INDEX}].SatisTarihi" 
       value="@DateTime.Now.ToString("yyyy-MM-dd")" 
-       class="form-control form-control-sm" />
+       class="form-control form-control-sm" style="min-width: 130px;" />
         </td>
         <td>
           <div class="input-group input-group-sm">
          <span class="input-group-text"><span style="font-family: Arial, sans-serif;">&#8378;</span></span>
           <input type="number" name="EnvanterSatislari[{INDEX}].OdenenTutar" value="0" 
-    class="form-control" step="0.01" min="0" required />
-            </div>
-        </td>
-        <td>
+    class="form-control" step="0.01" min="0" required style="min-width: 80px;" />
+  </div>
+   </td>
+    <td>
      <input type="text" name="EnvanterSatislari[{INDEX}].Aciklama" 
-             class="form-control form-control-sm" placeholder="Not..." />
+    class="form-control form-control-sm" placeholder="Not..." style="min-width: 100px;" />
         </td>
         <td class="text-center">
         <button type="button" class="btn btn-sm btn-danger sil-btn" title="Satırı Kaldır">
       <i class="fas fa-times"></i>
-         </button>
+   </button>
         </td>
     </tr>
 </template>
@@ -414,7 +414,6 @@ btn.addEventListener('click', silHandler);
        const newName = name.replace(/\[\d+\]/, `[${index}]`);
     input.setAttribute('name', newName);
      }
- });
  });
   envanterIndex = rows.length;
   }
