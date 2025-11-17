@@ -290,29 +290,40 @@
     <i class="fas fa-calendar-check me-1"></i>@Model.IlkTaksitSonOdemeTarihi.Value.ToString("dd.MM.yyyy")
   </dd>
             }
-      
-     @if (!string.IsNullOrWhiteSpace(Model.Aciklama))
+
+     @if (Model.SonSmsTarihi.HasValue)
         {
-   <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Aciklama)</dt>
-      <dd class="col-sm-8">@Html.DisplayFor(model => model.Aciklama)</dd>
+   <dt class="col-sm-4">Son SMS Tarihi</dt>
+    <dd class="col-sm-8">
+    <i class="fas fa-sms me-1"></i>@Model.SonSmsTarihi.Value.ToString("dd.MM.yyyy")
+  </dd>
      }
 
-               <dt class="col-sm-4">Durum</dt>
+      <dt class="col-sm-4">Durum</dt>
           <dd class="col-sm-8">
    @if (Model.Aktif)
       {
-         <span class="badge bg-success">
-    <i class="fas fa-check me-1"></i>Aktif
+      <span class="badge bg-success">
+ <i class="fas fa-check me-1"></i>Aktif
        </span>
     }
       else
          {
-      <span class="badge bg-secondary">
+    <span class="badge bg-secondary">
       <i class="fas fa-times me-1"></i>Pasif
     </span>
       }
    </dd>
      </dl>
+
+   @if (!string.IsNullOrWhiteSpace(Model.Aciklama))
+  {
+   <hr class="my-4" />
+   <h5 class="mb-3"><i class="fas fa-sticky-note me-2"></i>Notlar / Açıklama</h5>
+   <div class="alert alert-light border">
+       <p class="mb-0" style="white-space: pre-wrap;">@Model.Aciklama</p>
+    </div>
+    }
 
    @if (envanterSatislari.Any())
     {
