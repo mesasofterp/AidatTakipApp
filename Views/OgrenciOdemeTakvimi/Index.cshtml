@@ -45,11 +45,26 @@
 <div class="card mb-4">
     <div class="card-body">
       <div class="row g-2 align-items-end">
-            <div class="col-md-6">
+    <div class="col-md-4">
+   <form asp-action="Index" method="get" class="d-flex align-items-end gap-2" id="filterForm">
+      <div class="flex-grow-1">
+ <label class="form-label">Öğrenci Ara</label>
+            <input type="text" name="searchTerm" id="searchInput" class="form-control" 
+     placeholder="Ad, soyad veya TC..." 
+      value="@ViewBag.SearchTerm" />
+     </div>
+ <div>
+    <button type="submit" class="btn btn-outline-primary">
+    <i class="fas fa-search me-1"></i>Ara
+   </button>
+   </div>
+    </form>
+</div>
+      <div class="col-md-3">
      <form asp-action="Index" method="get" class="d-flex align-items-end gap-2">
-         <div class="flex-grow-1">
-    <label class="form-label">Öğrenciye göre filtrele</label>
-                <select name="ogrenciId" class="form-select" id="ogrenciFilter">
+      <div class="flex-grow-1">
+<label class="form-label">Öğrenciye göre filtrele</label>
+    <select name="ogrenciId" class="form-select" id="ogrenciFilter">
   <option value="">Tümü</option>
       @if (ViewBag.OgrenciList != null)
       {
@@ -57,25 +72,31 @@
         {
  <option value="@opt.Value" selected="@(opt.Selected ? "selected" : null)">@opt.Text</option>
        }
-              }
+        }
       </select>
-        </div>
-         <div>
+     </div>
+  <div>
     <button type="submit" class="btn btn-outline-primary"><i class="fas fa-filter me-1"></i>Filtrele</button>
-                 </div>
-    </form>
             </div>
-  <div class="col-md-6 text-md-end">
+    </form>
+</div>
+  <div class="col-md-5 text-md-end">
+     @if (!string.IsNullOrEmpty(ViewBag.SearchTerm as string) || ogrenciId.HasValue)
+ {
+  <a asp-action="Index" class="btn btn-outline-secondary me-2">
+     <i class="fas fa-times me-1"></i>Filtreyi Temizle
+ </a>
+        }
         <form asp-action="ExportToExcel" method="post" class="d-inline me-2">
         @Html.AntiForgeryToken()
     <input type="hidden" name="ogrenciId" id="exportExcelOgrenciId" value="@(ogrenciId.HasValue ? ogrenciId.ToString() : "")" />
     <button type="submit" class="btn btn-success"><i class="fas fa-file-excel me-1"></i>Excel'e Aktar</button>
           </form>
         <form asp-action="ExportToPdf" method="post" class="d-inline">
-      @Html.AntiForgeryToken()
-            <input type="hidden" name="ogrenciId" id="exportPdfOgrenciId" value="@(ogrenciId.HasValue ? ogrenciId.ToString() : "")" />
+ @Html.AntiForgeryToken()
+          <input type="hidden" name="ogrenciId" id="exportPdfOgrenciId" value="@(ogrenciId.HasValue ? ogrenciId.ToString() : "")" />
           <button type="submit" class="btn btn-danger"><i class="fas fa-file-pdf me-1"></i>PDF'e Aktar</button>
-     </form>
+  </form>
         </div>
         </div>
     </div>
