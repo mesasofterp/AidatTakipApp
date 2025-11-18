@@ -17,18 +17,19 @@
             width: 0;
             position: fixed;
             z-index: 1030;
-            top: 85px;
+            top: 80px;
             left: 0;
-            overflow-x: hidden;
-            overflow-y: auto;
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.35s ease;
             display: flex;
             flex-direction: column;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .sidebar.open {
             width: 280px;
             z-index: 1040;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
         }
 
         /* Sidebar overlay mobil için */
@@ -39,14 +40,16 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.6);
             z-index: 1035;
-            backdrop-filter: blur(2px);
-            transition: opacity 0.3s ease;
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            transition: opacity 0.3s ease, backdrop-filter 0.3s ease;
         }
 
         .sidebar-overlay.active {
             display: block;
+            opacity: 1;
         }
 
         .navbar .btn i {
@@ -68,6 +71,24 @@
                 display: none;
             }
         }
+
+        /* Sidebar scrollbar özelleştirme */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
     </style>
 
     @await RenderSectionAsync("Styles", required: false)
@@ -84,6 +105,7 @@
     {
         <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleNav()"></div>
         <div id="mySidebar" class="sidebar">
+            <div class="sidebar-content">
             @* <a href="javascript:void(0)" class="closebtn" onclick="toggleNav()">&times;</a> *@
 
             @{
@@ -157,17 +179,20 @@
                         <i class="fas fa-clock me-2"></i>SMS Zamanlayıcı
                     </a>
                 </div>
-
-                <div style="margin-top: auto; padding-top: 1.5rem;">
-                    <hr>
+            }
+            </div>
+            
+            <div class="sidebar-footer">
+                @if (User?.Identity?.IsAuthenticated == true)
+                {
                     <form asp-controller="Account" asp-action="Logout" method="post">
                         @Html.AntiForgeryToken()
-                        <button type="submit" class="nav-link" style="width: 100%; color: rgba(255, 255, 255, 0.9); padding: 0.875rem 1.5rem; border: none; background: transparent; text-align: left; cursor: pointer; font-weight: 500;">
+                        <button type="submit" class="sidebar-logout-btn">
                             <i class="fas fa-sign-out-alt me-2"></i>Çıkış Yap
                         </button>
                     </form>
-                </div>
-            }
+                }
+            </div>
         </div>
     }
 
@@ -293,6 +318,16 @@
         document.addEventListener('DOMContentLoaded', function() {
             const accordions = document.querySelectorAll(".sidebar .accordion");
             
+            // Panel yüksekliğini hesaplayan fonksiyon
+            function setPanelHeight(panel) {
+                if (panel.classList.contains('active')) {
+                    // Panel'i geçici olarak görünür yap ve yüksekliğini ölç
+                    panel.style.maxHeight = 'none';
+                    const height = panel.scrollHeight;
+                    panel.style.maxHeight = height + 'px';
+                }
+            }
+            
             // Tüm panel'leri başlangıçta kapalı yap (aktif sayfa içerenler hariç)
             accordions.forEach(acc => {
                 const panel = acc.nextElementSibling;
@@ -300,13 +335,13 @@
                     const hasActiveLink = panel.querySelector('a.active');
                     if (hasActiveLink) {
                         // Aktif sayfa içeren accordion'u açık tut
-                        panel.style.display = 'block';
                         panel.classList.add('active');
                         acc.classList.add('active');
                         const toggleIcon = acc.querySelector('.toggle-icon');
                         if (toggleIcon) toggleIcon.classList.add('fa-rotate-180');
+                        // Yüksekliği ayarla
+                        setTimeout(() => setPanelHeight(panel), 10);
                     } else {
-                        panel.style.display = 'none';
                         panel.classList.remove('active');
                     }
                 }
@@ -324,44 +359,33 @@
                         return;
                     }
 
-                    // Diğer accordion'ları kapat (opsiyonel - tek seferde bir açık olsun isterseniz)
-                    // accordions.forEach(otherAcc => {
-                    //     if (otherAcc !== this) {
-                    //         const otherPanel = otherAcc.nextElementSibling;
-                    //         const otherIcon = otherAcc.querySelector(".toggle-icon");
-                    //         if (otherPanel && otherPanel.classList.contains('panel')) {
-                    //             otherPanel.style.display = 'none';
-                    //             otherPanel.classList.remove('active');
-                    //             otherAcc.classList.remove('active');
-                    //             if (otherIcon) otherIcon.classList.remove("fa-rotate-180");
-                    //         }
-                    //     }
-                    // });
-
-                    // Eğer aktif sayfa bu accordion içindeyse, accordion'u açık tut
-                    const hasActiveLink = panel.querySelector('a.active');
-                    if (hasActiveLink && (panel.style.display === "none" || !panel.classList.contains('active'))) {
-                        panel.style.display = "block";
-                        panel.classList.add('active');
-                        this.classList.add("active");
-                        if (toggleIcon) toggleIcon.classList.add("fa-rotate-180");
-                        return;
-                    }
-
                     // Mevcut accordion'u toggle et
-                    if (panel.style.display === "none" || !panel.classList.contains('active')) {
-                        panel.style.display = "block";
+                    if (!panel.classList.contains('active')) {
+                        // Aç
                         panel.classList.add('active');
                         this.classList.add("active");
                         if (toggleIcon) toggleIcon.classList.add("fa-rotate-180");
+                        // Yüksekliği dinamik olarak ayarla
+                        setTimeout(() => setPanelHeight(panel), 10);
                     } else {
-                        panel.style.display = "none";
+                        // Kapat
+                        panel.style.maxHeight = panel.scrollHeight + 'px';
+                        // Reflow tetikle
+                        panel.offsetHeight;
+                        panel.style.maxHeight = '0';
                         panel.classList.remove('active');
                         this.classList.remove("active");
                         if (toggleIcon) toggleIcon.classList.remove("fa-rotate-180");
                     }
                 });
             });
+            
+            // Tüm açık panel'lerin yüksekliğini ayarla
+            setTimeout(() => {
+                document.querySelectorAll('.sidebar .panel.active').forEach(panel => {
+                    setPanelHeight(panel);
+                });
+            }, 100);
         });
     </script>
     <script>

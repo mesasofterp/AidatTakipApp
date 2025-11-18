@@ -176,66 +176,30 @@ p {
 }
 
 /* ============================================
-   Sidebar - Modern Professional Design
+   Sidebar - Clean Modern Design
    ============================================ */
 
 .sidebar {
     background: linear-gradient(180deg, var(--primary-700) 0%, var(--primary-800) 100%);
     box-shadow: var(--shadow-xl);
     backdrop-filter: blur(10px);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
     padding: 1.5rem 0;
 }
 
-.sidebar a,
-.sidebar button {
-    color: rgba(255, 255, 255, 0.95);
-    padding: 0.875rem 1.5rem;
-    transition: var(--transition-base);
-    font-weight: 500;
-    font-size: 0.95rem;
-    display: flex;
-    align-items: center;
-    width: 100%;
-    border: none;
-    background: transparent;
-    text-align: left;
-    cursor: pointer;
-    position: relative;
-}
-
-.sidebar a:hover,
-.sidebar button:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    padding-left: 2rem;
-}
-
-.sidebar a:hover::before,
-.sidebar button:hover::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: white;
-    border-radius: 0 2px 2px 0;
-}
-
-.sidebar .menu-group {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    font-weight: 700;
-    text-transform: uppercase;
-    padding: 1.5rem 1.5rem 0.75rem 1.5rem;
-    margin-bottom: 0.5rem;
-}
-
+/* Accordion Button Styles */
 .sidebar .accordion {
     background: transparent;
     color: rgba(255, 255, 255, 0.95);
-    padding: 0.875rem 1.5rem;
+    padding: 1rem 1.5rem;
     margin: 0;
     font-weight: 600;
     font-size: 0.95rem;
@@ -247,115 +211,38 @@ p {
     text-align: left;
     cursor: pointer;
     position: relative;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sidebar .accordion:first-child {
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .sidebar .accordion:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
     color: white;
-    padding-left: 2rem;
-}
-
-.sidebar .accordion:hover::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: white;
-    border-radius: 0 2px 2px 0;
 }
 
 .sidebar .accordion.active {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.12);
     color: white;
+    border-bottom-color: rgba(255, 255, 255, 0.1);
 }
 
-.sidebar .accordion.active::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: white;
-    border-radius: 0 2px 2px 0;
-}
-
-.sidebar .panel {
-    display: none !important;
-    background: rgba(0, 0, 0, 0.15);
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease;
-    padding: 0;
-    margin: 0;
-}
-
-.sidebar .panel.active {
-    display: block !important;
-    max-height: 500px;
-    padding: 0.5rem 0;
-}
-
-.sidebar .panel a {
-    padding: 0.75rem 1.5rem 0.75rem 3rem;
-    font-size: 0.9rem;
-    font-weight: 400;
-    color: rgba(255, 255, 255, 0.85);
-    position: relative;
-}
-
-.sidebar .panel a:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    padding-left: 3.5rem;
-}
-
-.sidebar .panel a:hover::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: 0 2px 2px 0;
-}
-
-.sidebar .panel a.active {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    font-weight: 600;
-    padding-left: 3.5rem;
-}
-
-.sidebar .panel a.active::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: white;
-    border-radius: 0 2px 2px 0;
-}
-
-.sidebar .panel a.active i {
-    opacity: 1;
-}
-
-.sidebar .panel a i {
-    width: 20px;
+.sidebar .accordion i:first-child {
+    width: 24px;
     text-align: center;
-    margin-right: 0.75rem;
-    opacity: 0.8;
+    margin-right: 0.875rem;
+    font-size: 1.05rem;
+    opacity: 0.9;
 }
 
-.sidebar .toggle-icon {
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    font-size: 0.75rem;
-    opacity: 0.7;
+.sidebar .accordion .toggle-icon {
+    transition: transform 0.3s ease;
+    font-size: 0.7rem;
+    opacity: 0.6;
+    margin-left: auto;
 }
 
 .sidebar .accordion.active .toggle-icon {
@@ -363,17 +250,115 @@ p {
     opacity: 1;
 }
 
-.sidebar hr {
-    border: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
-    margin: 1.5rem 1.5rem;
+/* Panel Container */
+.sidebar .panel {
+    display: block !important;
+    background: rgba(0, 0, 0, 0.15);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    visibility: hidden;
 }
 
-.sidebar .accordion i:first-child {
+.sidebar .panel.active {
+    max-height: 2000px;
+    padding: 0.5rem 0;
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Panel Links */
+.sidebar .panel a {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem 0.75rem 3.5rem;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+    border-left: 3px solid transparent;
+}
+
+.sidebar .panel a:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    border-left-color: rgba(255, 255, 255, 0.5);
+    padding-left: 3.75rem;
+}
+
+.sidebar .panel a.active {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    font-weight: 600;
+    border-left-color: white;
+    padding-left: 3.75rem;
+}
+
+.sidebar .panel a i {
     width: 20px;
     text-align: center;
     margin-right: 0.75rem;
-    font-size: 1rem;
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.sidebar .panel a:hover i,
+.sidebar .panel a.active i {
+    opacity: 1;
+}
+
+/* Sidebar Footer */
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+}
+
+.sidebar-footer hr {
+    display: none;
+}
+
+.sidebar-logout-btn {
+    width: 100%;
+    color: rgba(255, 255, 255, 0.9);
+    padding: 1rem 1.5rem;
+    border: none;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease;
+    position: relative;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-logout-btn:hover {
+    background: rgba(220, 38, 38, 0.15);
+    color: white;
+    border-left: 3px solid rgba(239, 68, 68, 0.8);
+    padding-left: 1.75rem;
+}
+
+.sidebar-logout-btn i {
+    width: 24px;
+    text-align: center;
+    margin-right: 0.875rem;
+    font-size: 1.05rem;
+    opacity: 0.9;
+}
+
+.sidebar-logout-btn:hover i {
+    opacity: 1;
 }
 
 /* ============================================
@@ -811,12 +796,13 @@ p {
         height: calc(100vh - 70px);
         width: 0;
         z-index: 1050;
+        border-right: none;
     }
 
     .sidebar.open {
         width: 100%;
         max-width: 320px;
-        box-shadow: var(--shadow-xl);
+        box-shadow: 4px 0 30px rgba(0, 0, 0, 0.3);
     }
 
     /* Sidebar overlay backdrop */
@@ -827,16 +813,32 @@ p {
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, 0.65);
         z-index: 1040;
-        backdrop-filter: blur(2px);
+        backdrop-filter: blur(6px);
         opacity: 0;
-        transition: opacity 0.3s ease;
+        transition: opacity 0.3s ease, backdrop-filter 0.3s ease;
     }
 
     .sidebar-overlay.active {
         display: block;
         opacity: 1;
+    }
+
+    /* Mobil sidebar içerik düzenlemeleri */
+    .sidebar .accordion {
+        padding: 0.875rem 1.25rem;
+        font-size: 0.9rem;
+    }
+
+    .sidebar .panel a {
+        padding: 0.7rem 1.25rem 0.7rem 3rem;
+        font-size: 0.85rem;
+    }
+
+    .sidebar-logout-btn {
+        padding: 0.875rem 1.25rem;
+        font-size: 0.9rem;
     }
 
     /* Card'lar */
@@ -934,26 +936,39 @@ p {
     .sidebar {
         top: 65px;
         height: calc(100vh - 65px);
+        border-right: none;
     }
 
     .sidebar.open {
         width: 85%;
         max-width: 300px;
+        box-shadow: 4px 0 30px rgba(0, 0, 0, 0.35);
     }
 
     .sidebar-overlay {
         top: 65px;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(8px);
     }
 
-    .sidebar a,
-    .sidebar button {
-        padding: 0.75rem 1.25rem;
-        font-size: 0.9rem;
+    .sidebar .accordion {
+        padding: 0.875rem 1.125rem;
+        font-size: 0.875rem;
+    }
+
+    .sidebar .accordion i:first-child {
+        width: 22px;
+        font-size: 0.95rem;
     }
 
     .sidebar .panel a {
-        padding: 0.625rem 1.25rem 0.625rem 2.5rem;
-        font-size: 0.85rem;
+        padding: 0.7rem 1.125rem 0.7rem 3rem;
+        font-size: 0.8rem;
+    }
+
+    .sidebar-logout-btn {
+        padding: 0.875rem 1.125rem;
+        font-size: 0.875rem;
     }
 
     /* Card'lar */

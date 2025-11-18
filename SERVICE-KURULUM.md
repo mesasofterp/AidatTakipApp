@@ -128,3 +128,4 @@ Servis çalıştıktan sonra uygulamaya şu adresten erişebilirsiniz:
 - `http://[SERVER_IP]:2961`
 - `http://[SERVER_NAME]:2961`
 
+
