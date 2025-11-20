@@ -50,7 +50,7 @@
                     <option value="">Tümü</option>
                     <option value="stokta" selected="@(ViewBag.StokDurumu == "stokta" ? "selected" : null)">Stokta Var</option>
                     <option value="tukendi" selected="@(ViewBag.StokDurumu == "tukendi" ? "selected" : null)">Tükendi</option>
-                    <option value="azaldi" selected="@(ViewBag.StokDurumu == "azaldi" ? "selected" : null)">Stok Azaldý (?5)</option>
+                    <option value="azaldi" selected="@(ViewBag.StokDurumu == "azaldi" ? "selected" : null)">Stok Azaldý (<5)</option>
                 </select>
             </div>
             <div class="col-md-2 d-flex gap-2">
@@ -209,7 +209,7 @@ else
 {
     <div class="alert alert-info" role="alert">
         <i class="fas fa-info-circle me-2"></i>
-        Henï¿½z envanter kaydï¿½ bulunmamaktadï¿½r. Yeni envanter eklemek iï¿½in yukarï¿½daki butonu kullanabilirsiniz.
+        Henüz envanter kaydý bulunmamaktadýr. Yeni envanter eklemek için yukarýdaki butonu kullanabilirsiniz.
     </div>
 }
 
