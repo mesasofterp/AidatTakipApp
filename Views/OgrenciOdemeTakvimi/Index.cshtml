@@ -120,8 +120,13 @@
 {
 var toplamOdenen = Model.Sum(o => o.OdenenTutar);
     var sonBorc = ogrenciId.HasValue 
-     ? Model.Where(o => !o.Odendi).FirstOrDefault()?.BorcTutari ?? 0//Model.OrderByDescending(o => o.OdemeTarihi).FirstOrDefault()?.BorcTutari ?? 0
+     ? Model.Where(o => !o.Odendi).FirstOrDefault()?.BorcTutari ?? 0
      : (ViewBag.ToplamKalanBorc as decimal? ?? 0);
+    
+    // Envanter satışları için değişkenler
+    var envanterSatislari = ViewBag.EnvanterSatislari as List<StudentApp.Models.OgrenciEnvanterSatis> ?? new List<StudentApp.Models.OgrenciEnvanterSatis>();
+    var toplamEnvanterHarcama = ViewBag.ToplamEnvanterHarcama as decimal? ?? 0m;
+    var toplamEnvanterKalanTutar = ViewBag.ToplamEnvanterKalanTutar as decimal? ?? 0m;
 
     <div class="row mb-4">
   <div class="col-md-6">
@@ -499,6 +504,127 @@ class="btn btn-sm btn-outline-danger" title="Sil">
  </tbody>
     </table>
         </div>
+
+        @* Envanter Satış Bilgileri *@
+        @if (envanterSatislari.Any())
+        {
+       <div class="mt-5">
+             <hr class="my-4" />
+  <h5 class="mb-3">
+   <i class="fas fa-boxes me-2"></i>Envanter Satış Geçmişi
+        <span class="badge bg-primary ms-2">@envanterSatislari.Count</span>
+         </h5>
+
+            <div class="card bg-light mb-3">
+    <div class="card-body">
+   <div class="row">
+       <div class="col-md-4">
+               <h6 class="text-muted mb-1">Toplam Ödenen</h6>
+     <h4 class="mb-0 text-success"><span style="font-family: Arial, sans-serif;">&#8378;</span> @toplamEnvanterHarcama.ToString("N2")</h4>
+      </div>
+            <div class="col-md-4">
+        <h6 class="text-muted mb-1">Toplam Kalan Tutar</h6>
+                <h4 class="mb-0 text-danger"><span style="font-family: Arial, sans-serif;">&#8378;</span> @toplamEnvanterKalanTutar.ToString("N2")</h4>
+     </div>
+      <div class="col-md-4 text-end">
+     <h6 class="text-muted mb-1">İşlem Sayısı</h6>
+        <h4 class="mb-0">@envanterSatislari.Count Adet</h4>
+ </div>
+          </div>
+                </div>
+                </div>
+
+ <div class="table-responsive">
+    <table class="table table-hover">
+  <thead class="table-light">
+        <tr>
+              <th><i class="fas fa-calendar me-1"></i>Satış Tarihi</th>
+     <th><i class="fas fa-box me-1"></i>Envanter</th>
+<th class="text-center"><i class="fas fa-sort-numeric-up me-1"></i>Adet</th>
+              <th class="text-end"><i class="fa-solid fa-turkish-lira-sign me-1"></i>Ödenen Tutar</th>
+           <th class="text-end"><i class="fa-solid fa-turkish-lira-sign me-1"></i>Kalan Tutar</th>
+         <th><i class="fas fa-calendar-check me-1"></i>Kalan Tutar Tahsil Tarihi</th>
+         <th><i class="fas fa-comment me-1"></i>Açıklama</th>
+             <th class="text-center"><i class="fas fa-toggle-on me-1"></i>Durum</th>
+     </tr>
+ </thead>
+   <tbody>
+            @foreach (var satis in envanterSatislari)
+     {
+      <tr class="@(satis.KalanTutar > 0 ? "table-warning" : "")">
+ <td>
+           @if (satis.SatisTarihi.HasValue)
+      {
+            <i class="fas fa-calendar-alt me-1"></i>@satis.SatisTarihi.Value.ToString("dd.MM.yyyy")
+     }
+          else
+    {
+      <span class="text-muted">-</span>
+   }
+             </td>
+           <td>
+        @if (satis.Envanter != null)
+     {
+ <strong>@satis.Envanter.EnvanterAdi</strong>
+    }
+            else
+    {
+       <span class="text-muted">Silinmiş Envanter</span>
+          }
+      </td>
+       <td class="text-center">
+      <span class="badge bg-info fs-6">@satis.SatisAdet</span>
+              </td>
+       <td class="text-end">
+ <span class="badge bg-success fs-6"><span style="font-family: Arial, sans-serif;">&#8378;</span> @satis.OdenenTutar.ToString("N2")</span>
+         </td>
+          <td class="text-end">
+   @if (satis.KalanTutar > 0)
+     {
+             <span class="badge bg-danger fs-6"><span style="font-family: Arial, sans-serif;">&#8378;</span> @satis.KalanTutar.ToString("N2")</span>
+  }
+           else
+              {
+   <span class="badge bg-secondary fs-6"><span style="font-family: Arial, sans-serif;">&#8378;</span> 0.00</span>
+     }
+         </td>
+       <td>
+     @if (satis.KalanTutarTahsilTarihi.HasValue)
+    {
+         <i class="fas fa-calendar-check me-1"></i>@satis.KalanTutarTahsilTarihi.Value.ToString("dd.MM.yyyy")
+        }
+        else
+    {
+      <span class="text-muted">-</span>
+ }
+  </td>
+     <td>
+      @if (!string.IsNullOrWhiteSpace(satis.Aciklama))
+        {
+     <small>@satis.Aciklama</small>
+          }
+   else
+    {
+     <span class="text-muted">-</span>
+    }
+           </td>
+   <td class="text-center">
+    @if (satis.Aktif)
+  {
+       <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Aktif</span>
+           }
+        else
+               {
+          <span class="badge bg-secondary"><i class="fas fa-times-circle me-1"></i>İptal</span>
+  }
+      </td>
+      </tr>
+      }
+              </tbody>
+ </table>
+  </div>
+        </div>
+        }
     }
 }
 

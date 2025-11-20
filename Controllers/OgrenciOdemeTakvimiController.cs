@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using ClosedXML.Excel;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -15,13 +16,16 @@ namespace StudentApp.Controllers
     {
         private readonly IOgrenciOdemeTakvimiService _odemeService;
    private readonly IOgrencilerService _ogrenciService;
+   private readonly StudentApp.Data.AppDbContext _context;
 
         public OgrenciOdemeTakvimiController(
             IOgrenciOdemeTakvimiService odemeService,
-    IOgrencilerService ogrencilerService)
+    IOgrencilerService ogrencilerService,
+    StudentApp.Data.AppDbContext context)
 {
             _odemeService = odemeService;
        _ogrenciService = ogrencilerService;
+       _context = context;
         }
 
         // GET: OgrenciOdemeTakvimi
@@ -34,41 +38,52 @@ namespace StudentApp.Controllers
    odemeler = await _odemeService.GetOdemelerByOgrenciIdAsync(ogrenciId.Value);
       var ogrenci = await _ogrenciService.GetOgrenciByIdAsync(ogrenciId.Value);
            ViewBag.OgrenciAdi = ogrenci != null ? $"{ogrenci.OgrenciAdi} {ogrenci.OgrenciSoyadi}" : "";
-        ViewBag.OgrenciId = ogrenciId.Value;
-            }
-     else
-  {
+   ViewBag.OgrenciId = ogrenciId.Value;
+        
+        // Öğrencinin envanter satışlarını getir
+        var envanterSatislari = await _context.OgrenciEnvanterSatis
+     .Include(e => e.Envanter)
+.Where(e => e.OgrenciId == ogrenciId.Value && !e.IsDeleted)
+            .OrderByDescending(e => e.SatisTarihi)
+            .ToListAsync();
+        
+     ViewBag.EnvanterSatislari = envanterSatislari;
+        ViewBag.ToplamEnvanterHarcama = envanterSatislari.Sum(e => e.OdenenTutar);
+    ViewBag.ToplamEnvanterKalanTutar = envanterSatislari.Sum(e => e.KalanTutar);
+    }
+    else
+    {
         odemeler = await _odemeService.GetAllOdemelerAsync();
  
-       // Arama filtresi uygula
-          if (!string.IsNullOrWhiteSpace(searchTerm))
-            {
-     var searchLower = searchTerm.ToLower().Trim();
-                odemeler = odemeler.Where(o => 
-          o.Ogrenci != null && (
-  o.Ogrenci.OgrenciAdi.ToLower().Contains(searchLower) ||
-      o.Ogrenci.OgrenciSoyadi.ToLower().Contains(searchLower) ||
-          (o.Ogrenci.TCNO != null && o.Ogrenci.TCNO.Contains(searchLower)) ||
-               $"{o.Ogrenci.OgrenciAdi} {o.Ogrenci.OgrenciSoyadi}".ToLower().Contains(searchLower)
-             )
-          );
-           ViewBag.SearchTerm = searchTerm;
-   }
+        // Arama filtresi uygula
+  if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+  var searchLower = searchTerm.ToLower().Trim();
+    odemeler = odemeler.Where(o => 
+  o.Ogrenci != null && (
+          o.Ogrenci.OgrenciAdi.ToLower().Contains(searchLower) ||
+           o.Ogrenci.OgrenciSoyadi.ToLower().Contains(searchLower) ||
+         (o.Ogrenci.TCNO != null && o.Ogrenci.TCNO.Contains(searchLower)) ||
+         $"{o.Ogrenci.OgrenciAdi} {o.Ogrenci.OgrenciSoyadi}".ToLower().Contains(searchLower)
+ )
+            );
+            ViewBag.SearchTerm = searchTerm;
+ }
    
-            // Tüm öğrenciler için toplam kalan borç
-       ViewBag.ToplamKalanBorc = await _odemeService.GetToplamKalanBorcAsync();
-       }
+        // Tüm öğrenciler için toplam kalan borç
+        ViewBag.ToplamKalanBorc = await _odemeService.GetToplamKalanBorcAsync();
+    }
 
             // Filtre dropdown için öğrenci listesi (yalnızca aktifler)
           var ogrenciler = await _ogrenciService.GetAllOgrenciAsync(false);
             ViewBag.OgrenciList = new SelectList(
-   ogrenciler.Select(o => new { Id = o.Id, AdSoyad = ($"{o.OgrenciAdi} {o.OgrenciSoyadi}") }),
-     "Id",
-"AdSoyad",
-       ogrenciId
-            );
+        ogrenciler.Select(o => new { Id = o.Id, AdSoyad = ($"{o.OgrenciAdi} {o.OgrenciSoyadi}") }),
+        "Id",
+        "AdSoyad",
+    ogrenciId
+    );
 
-return View(odemeler);
+    return View(odemeler);
    }
 
         // GET: OgrenciOdemeTakvimi/Create
