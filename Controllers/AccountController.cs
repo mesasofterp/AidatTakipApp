@@ -28,7 +28,7 @@ namespace StudentApp.Controllers
                 if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
                     return Redirect(returnUrl);
 
-                return RedirectToAction("Index", "Ogrenciler");
+                return RedirectToAction("Index", "Home");
             }
 
             var model = new LoginViewModel { ReturnUrl = returnUrl };
@@ -82,7 +82,7 @@ namespace StudentApp.Controllers
                 if (!string.IsNullOrWhiteSpace(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
                     return Redirect(model.ReturnUrl);
 
-                return RedirectToAction("Index", "Ogrenciler");
+                return RedirectToAction("Index", "Home");
             }
 
             if (result.IsLockedOut)

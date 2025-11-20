@@ -1,14 +1,14 @@
 @model IEnumerable<StudentApp.Models.Envanterler>
 
 @{
-    ViewData["Title"] = "Envanter Yönetimi";
+    ViewData["Title"] = "Envanter Yï¿½netimi";
     var toplamDeger = ViewBag.ToplamDeger as decimal? ?? 0;
     var toplamKalem = ViewBag.ToplamKalem as int? ?? 0;
     var toplamAdet = ViewBag.ToplamAdet as int? ?? 0;
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="fas fa-boxes me-2"></i>Envanter Yönetimi</h2>
+    <h2><i class="fas fa-boxes me-2"></i>Envanter Yï¿½netimi</h2>
     <a asp-action="Create" class="btn btn-success">
     <i class="fas fa-plus me-1"></i>Yeni Envanter Ekle
     </a>
@@ -39,7 +39,7 @@
               <i class="fas fa-search me-1"></i>Envanter Ara
     </label>
         <input type="text" name="searchTerm" id="searchTerm" class="form-control" 
-placeholder="Envanter adý, açýklama veya fiyat aralýðý..." 
+placeholder="Envanter adï¿½, aï¿½ï¿½klama veya fiyat aralï¿½ï¿½ï¿½..." 
      value="@ViewBag.SearchTerm" />
   </div>
        <div class="col-md-2">
@@ -47,10 +47,10 @@ placeholder="Envanter adý, açýklama veya fiyat aralýðý..."
   <i class="fas fa-filter me-1"></i>Stok Durumu
                 </label>
       <select name="stokDurumu" id="stokDurumu" class="form-select">
-       <option value="">Tümü</option>
+       <option value="">Tï¿½mï¿½</option>
           <option value="stokta" selected="@(ViewBag.StokDurumu == "stokta" ? "selected" : null)">Stokta Var</option>
-      <option value="tukendi" selected="@(ViewBag.StokDurumu == "tukendi" ? "selected" : null)">Tükendi</option>
-      <option value="azaldi" selected="@(ViewBag.StokDurumu == "azaldi" ? "selected" : null)">Stok Azaldý (?5)</option>
+      <option value="tukendi" selected="@(ViewBag.StokDurumu == "tukendi" ? "selected" : null)">Tï¿½kendi</option>
+      <option value="azaldi" selected="@(ViewBag.StokDurumu == "azaldi" ? "selected" : null)">Stok Azaldï¿½ (?5)</option>
   </select>
             </div>
     <div class="col-md-2 d-flex gap-2">
@@ -68,7 +68,7 @@ placeholder="Envanter adý, açýklama veya fiyat aralýðý..."
     </div>
 </div>
 
-<!-- Ýstatistik Kartlarý -->
+<!-- ï¿½statistik Kartlarï¿½ -->
 <div class="row mb-4">
     <div class="col-md-4">
         <div class="card bg-primary text-white">
@@ -77,7 +77,7 @@ placeholder="Envanter adý, açýklama veya fiyat aralýðý..."
          <i class="fas fa-list me-2"></i>Toplam Kalem
       </h5>
           <h3 class="mb-0">@toplamKalem</h3>
-                <small>Farklý envanter kalemi</small>
+                <small>Farklï¿½ envanter kalemi</small>
          </div>
         </div>
     </div>
@@ -88,7 +88,7 @@ placeholder="Envanter adý, açýklama veya fiyat aralýðý..."
    <i class="fas fa-cubes me-2"></i>Toplam Adet
               </h5>
         <h3 class="mb-0">@toplamAdet</h3>
-   <small>Toplam ürün adedi</small>
+   <small>Toplam ï¿½rï¿½n adedi</small>
      </div>
       </div>
     </div>
@@ -96,10 +96,10 @@ placeholder="Envanter adý, açýklama veya fiyat aralýðý..."
       <div class="card bg-success text-white">
         <div class="card-body">
     <h5 class="card-title">
-       <span style="font-family: Arial, sans-serif;">&#8378;</span> Toplam Alýþ Deðer
+       <span style="font-family: Arial, sans-serif;">&#8378;</span> Toplam Alï¿½ï¿½ Deï¿½er
    </h5>
        <h3 class="mb-0"><span style="font-family: Arial, sans-serif;">&#8378;</span> @toplamDeger.ToString("N2")</h3>
-   <small>Envanter toplam alýþ deðeri</small>
+   <small>Envanter toplam alï¿½ï¿½ deï¿½eri</small>
      </div>
      </div>
     </div>
@@ -114,27 +114,27 @@ placeholder="Envanter adý, açýklama veya fiyat aralýðý..."
           <thead>
       <tr>
        <th>
-          <i class="fas fa-box me-1"></i>Envanter Adý
+          <i class="fas fa-box me-1"></i>Envanter Adï¿½
          </th>
     <th class="text-center">
    <i class="fas fa-sort-numeric-up me-1"></i>Adet
        </th>
        <th class="text-end">
-      <i class="fas fa-shopping-cart me-1"></i>Alýþ Fiyatý
+      <i class="fas fa-shopping-cart me-1"></i>Alï¿½ï¿½ Fiyatï¿½
    </th>
   <th class="text-end">
-    <i class="fas fa-tag me-1"></i>Satýþ Fiyatý
+    <i class="fas fa-tag me-1"></i>Satï¿½ï¿½ Fiyatï¿½
      </th>
      <th class="text-end">
-    <i class="fas fa-calculator me-1"></i>Toplam Alýþ Deðeri
+    <i class="fas fa-calculator me-1"></i>Toplam Alï¿½ï¿½ Deï¿½eri
   </th>
        <th class="text-center">
     <i class="fas fa-toggle-on me-1"></i>Durum
 </th>
       <th>
-    <i class="fas fa-comment me-1"></i>Açýklama
+    <i class="fas fa-comment me-1"></i>Aï¿½ï¿½klama
     </th>
-       <th class="text-center">Ýþlemler</th>
+       <th class="text-center">ï¿½ï¿½lemler</th>
   </tr>
             </thead>
         <tbody>
@@ -184,11 +184,11 @@ placeholder="Envanter adý, açýklama veya fiyat aralýðý..."
      <td class="text-center">
       <div class="btn-group" role="group">
        <a asp-action="Details" asp-route-id="@item.Id"
-    class="btn btn-sm btn-outline-info" title="Detaylarý Görüntüle">
+    class="btn btn-sm btn-outline-info" title="Detaylarï¿½ Gï¿½rï¿½ntï¿½le">
    <i class="fas fa-eye"></i>
    </a>
          <a asp-action="Edit" asp-route-id="@item.Id"
-        class="btn btn-sm btn-outline-warning" title="Düzenle">
+        class="btn btn-sm btn-outline-warning" title="Dï¿½zenle">
   <i class="fas fa-edit"></i>
  </a>
       <a asp-action="Delete" asp-route-id="@item.Id"
@@ -209,7 +209,7 @@ else
 {
     <div class="alert alert-info" role="alert">
         <i class="fas fa-info-circle me-2"></i>
-        Henüz envanter kaydý bulunmamaktadýr. Yeni envanter eklemek için yukarýdaki butonu kullanabilirsiniz.
+        Henï¿½z envanter kaydï¿½ bulunmamaktadï¿½r. Yeni envanter eklemek iï¿½in yukarï¿½daki butonu kullanabilirsiniz.
     </div>
 }
 
