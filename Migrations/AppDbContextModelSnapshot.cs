@@ -443,6 +443,12 @@ namespace StudentApp.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<decimal>("KalanTutar")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("KalanTutarTahsilTarihi")
+                        .HasColumnType("datetime2");
+
                     b.Property<decimal>("OdenenTutar")
                         .HasColumnType("decimal(18,2)");
 
