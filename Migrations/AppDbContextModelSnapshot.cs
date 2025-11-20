@@ -392,6 +392,12 @@ namespace StudentApp.Migrations
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
 
+                    b.Property<TimeSpan?>("OkulCikisSaati")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan?>("OkulGirisSaati")
+                        .HasColumnType("time");
+
                     b.Property<string>("OkulHocasiAdSoyad")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");

@@ -180,6 +180,23 @@
                         </div>
                     </div>
 
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulGirisSaati" class="form-label"><i class="fas fa-clock me-1"></i>Okul Giriş Saati</label>
+                            <input type="time" id="OkulGirisSaati" name="OgrenciDetay.OkulGirisSaati" 
+      value="@(Model.OgrenciDetay?.OkulGirisSaati?.ToString(@"hh\:mm") ?? "")" 
+               class="form-control" />
+     <small class="form-text text-muted">Opsiyonel - Öğrencinin okula giriş saati</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulCikisSaati" class="form-label"><i class="fas fa-clock me-1"></i>Okul Çıkış Saati</label>
+           <input type="time" id="OkulCikisSaati" name="OgrenciDetay.OkulCikisSaati" 
+ value="@(Model.OgrenciDetay?.OkulCikisSaati?.ToString(@"hh\:mm") ?? "")" 
+         class="form-control" />
+     <small class="form-text text-muted">Opsiyonel - Öğrencinin okuldan çıkış saati</small>
+         </div>
+        </div>
+
                     <hr class="my-4" />
                     <h5 class="mb-3"><i class="fas fa-trophy me-2"></i>Başarılar</h5>
                     <div class="alert alert-info" role="alert">
