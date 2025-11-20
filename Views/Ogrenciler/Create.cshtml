@@ -342,179 +342,179 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
-          // Telefon numarası input mask
-document.addEventListener('DOMContentLoaded', function() {
-           const telefonInput = document.getElementById('telefonInput');
-       const veliTelefonInput = document.getElementById('VeliTelefonNumarasi');
-           const okulHocasiTelefonInput = document.getElementById('OkulHocasiTelefon');
+                  // Telefon numarası input mask
+        document.addEventListener('DOMContentLoaded', function() {
+                   const telefonInput = document.getElementById('telefonInput');
+               const veliTelefonInput = document.getElementById('VeliTelefonNumarasi');
+                   const okulHocasiTelefonInput = document.getElementById('OkulHocasiTelefon');
 
-           function applyPhoneMask(input) {
-             if (!input) return;
-  input.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\D/g, '');
-         if (value.length > 11) {
-           value = value.substring(0, 11);
-          }
-       if (value.length > 0 && value.charAt(0) !== '0') {
-        value = '0' + value.substring(0, 10);
-   }
-          e.target.value = value;
-       });
-       input.addEventListener('paste', function(e) {
-             setTimeout(function() {
-            let value = input.value.replace(/\D/g, '');
-   if (value.length > 11) {
-  value = value.substring(0, 11);
-   }
-    if (value.length > 0 && value.charAt(0) !== '0') {
-       value = '0' + value.substring(0, 10);
-          }
-input.value = value;
-         }, 0);
-       });
+                   function applyPhoneMask(input) {
+                     if (!input) return;
+          input.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                 if (value.length > 11) {
+                   value = value.substring(0, 11);
+                  }
+               if (value.length > 0 && value.charAt(0) !== '0') {
+                value = '0' + value.substring(0, 10);
            }
+                  e.target.value = value;
+               });
+               input.addEventListener('paste', function(e) {
+                     setTimeout(function() {
+                    let value = input.value.replace(/\D/g, '');
+           if (value.length > 11) {
+          value = value.substring(0, 11);
+           }
+            if (value.length > 0 && value.charAt(0) !== '0') {
+               value = '0' + value.substring(0, 10);
+                  }
+        input.value = value;
+                 }, 0);
+               });
+                   }
 
-      applyPhoneMask(telefonInput);
-           applyPhoneMask(veliTelefonInput);
-         applyPhoneMask(okulHocasiTelefonInput);
+              applyPhoneMask(telefonInput);
+                   applyPhoneMask(veliTelefonInput);
+                 applyPhoneMask(okulHocasiTelefonInput);
 
-           // Envanter Tablosu İşlemleri
-       const tbody = document.getElementById('envanterTbody');
-    const envanterEkleBtn = document.getElementById('envanterEkleBtn');
-        const envanterSatirTemplate = document.getElementById('envanterSatirTemplate');
-    let envanterIndex = 0;
+                   // Envanter Tablosu İşlemleri
+               const tbody = document.getElementById('envanterTbody');
+            const envanterEkleBtn = document.getElementById('envanterEkleBtn');
+                const envanterSatirTemplate = document.getElementById('envanterSatirTemplate');
+            let envanterIndex = 0;
 
-           console.log('Create Envanter Script Yüklendi', {
-    tbody: tbody ? 'OK' : 'NULL',
-    envanterEkleBtn: envanterEkleBtn ? 'OK' : 'NULL',
-         envanterSatirTemplate: envanterSatirTemplate ? 'OK' : 'NULL',
-        envanterIndex: envanterIndex
-   });
-
-         // Envanter satırı ekle
-           if (envanterEkleBtn && envanterSatirTemplate && tbody) {
-         envanterEkleBtn.addEventListener('click', function() {
-         console.log('Envanter ekleme butonuna tıklandı, Index:', envanterIndex);
-    try {
-    const templateContent = envanterSatirTemplate.content.cloneNode(true);
-           const templateHTML = templateContent.querySelector('tr').outerHTML;
-        const yeniSatir = templateHTML.replace(/{INDEX}/g, envanterIndex);
-
-      tbody.insertAdjacentHTML('beforeend', yeniSatir);
-  console.log('Satır eklendi, Yeni Index:', envanterIndex + 1);
-
-  // Yeni eklenen satıra event listener'ları ekle
-      const yeniRow = tbody.lastElementChild;
-      setupEnvanterListeners(yeniRow, envanterIndex);
-       
-      envanterIndex++;
-
-         // Yeni eklenen satırın sil butonunu dinle
-      guncelSilButonlari();
-          } catch (error) {
-      console.error('Satır eklenirken hata:', error);
- alert('Satır eklenirken bir hata oluştu: ' + error.message);
-              }
-     });
-      } else {
-   console.error('Envanter bileşenleri bulunamadı!', {
-       tbody: !!tbody,
-   envanterEkleBtn: !!envanterEkleBtn,
- envanterSatirTemplate: !!envanterSatirTemplate
+                   console.log('Create Envanter Script Yüklendi', {
+            tbody: tbody ? 'OK' : 'NULL',
+            envanterEkleBtn: envanterEkleBtn ? 'OK' : 'NULL',
+                 envanterSatirTemplate: envanterSatirTemplate ? 'OK' : 'NULL',
+                envanterIndex: envanterIndex
            });
-}
 
-        // Envanter seçimi ve ödenen tutar değişimlerini dinle
-       function setupEnvanterListeners(row, index) {
-       const envanterSelect = row.querySelector('.envanter-select');
-      const odenenTutarInput = row.querySelector('.odenen-tutar-input');
-          const kalanTutarInput = row.querySelector('.kalan-tutar-input');
-     const kalanTutarTarihInput = row.querySelector('.kalan-tutar-tarih-input');
+                 // Envanter satırı ekle
+                   if (envanterEkleBtn && envanterSatirTemplate && tbody) {
+                 envanterEkleBtn.addEventListener('click', function() {
+                 console.log('Envanter ekleme butonuna tıklandı, Index:', envanterIndex);
+            try {
+            const templateContent = envanterSatirTemplate.content.cloneNode(true);
+                   const templateHTML = templateContent.querySelector('tr').outerHTML;
+                const yeniSatir = templateHTML.replace(/{INDEX}/g, envanterIndex);
 
-        if (envanterSelect) {
- envanterSelect.addEventListener('change', function() {
-         const selectedOption = this.options[this.selectedIndex];
-         const satisFiyat = parseFloat(selectedOption.getAttribute('data-satis-fiyat')) || 0;
-        
-            // Otomatik olarak satış fiyatını ödenen tutar alanına yerleştir
-if (odenenTutarInput) {
- odenenTutarInput.value = satisFiyat.toFixed(2);
-       hesaplaKalanTutar(row);
-}
-        });
+              tbody.insertAdjacentHTML('beforeend', yeniSatir);
+          console.log('Satır eklendi, Yeni Index:', envanterIndex + 1);
+
+          // Yeni eklenen satıra event listener'ları ekle
+              const yeniRow = tbody.lastElementChild;
+              setupEnvanterListeners(yeniRow, envanterIndex);
+
+              envanterIndex++;
+
+                 // Yeni eklenen satırın sil butonunu dinle
+              guncelSilButonlari();
+                  } catch (error) {
+              console.error('Satır eklenirken hata:', error);
+         alert('Satır eklenirken bir hata oluştu: ' + error.message);
+                      }
+             });
+              } else {
+           console.error('Envanter bileşenleri bulunamadı!', {
+               tbody: !!tbody,
+           envanterEkleBtn: !!envanterEkleBtn,
+         envanterSatirTemplate: !!envanterSatirTemplate
+                   });
         }
 
+                // Envanter seçimi ve ödenen tutar değişimlerini dinle
+               function setupEnvanterListeners(row, index) {
+               const envanterSelect = row.querySelector('.envanter-select');
+              const odenenTutarInput = row.querySelector('.odenen-tutar-input');
+                  const kalanTutarInput = row.querySelector('.kalan-tutar-input');
+             const kalanTutarTarihInput = row.querySelector('.kalan-tutar-tarih-input');
+
+                if (envanterSelect) {
+         envanterSelect.addEventListener('change', function() {
+                 const selectedOption = this.options[this.selectedIndex];
+                 const satisFiyat = parseFloat(selectedOption.getAttribute('data-satis-fiyat')) || 0;
+
+                    // Otomatik olarak satış fiyatını ödenen tutar alanına yerleştir
         if (odenenTutarInput) {
-    odenenTutarInput.addEventListener('input', function() {
-             hesaplaKalanTutar(row);
-       });
-          }
-}
+         odenenTutarInput.value = satisFiyat.toFixed(2);
+               hesaplaKalanTutar(row);
+        }
+                });
+                }
 
-        // Kalan tutarı hesapla
-      function hesaplaKalanTutar(row) {
-   const envanterSelect = row.querySelector('.envanter-select');
-      const odenenTutarInput = row.querySelector('.odenen-tutar-input');
-     const kalanTutarInput = row.querySelector('.kalan-tutar-input');
-    const kalanTutarTarihInput = row.querySelector('.kalan-tutar-tarih-input');
+                if (odenenTutarInput) {
+            odenenTutarInput.addEventListener('input', function() {
+                     hesaplaKalanTutar(row);
+               });
+                  }
+        }
 
-      if (!envanterSelect || !odenenTutarInput || !kalanTutarInput) return;
+                // Kalan tutarı hesapla
+              function hesaplaKalanTutar(row) {
+           const envanterSelect = row.querySelector('.envanter-select');
+              const odenenTutarInput = row.querySelector('.odenen-tutar-input');
+             const kalanTutarInput = row.querySelector('.kalan-tutar-input');
+            const kalanTutarTarihInput = row.querySelector('.kalan-tutar-tarih-input');
 
-       const selectedOption = envanterSelect.options[envanterSelect.selectedIndex];
-           const satisFiyat = parseFloat(selectedOption.getAttribute('data-satis-fiyat')) || 0;
-  const odenenTutar = parseFloat(odenenTutarInput.value) || 0;
+              if (!envanterSelect || !odenenTutarInput || !kalanTutarInput) return;
 
-         const kalanTutar = Math.max(0, satisFiyat - odenenTutar);
-           kalanTutarInput.value = kalanTutar.toFixed(2);
+               const selectedOption = envanterSelect.options[envanterSelect.selectedIndex];
+                   const satisFiyat = parseFloat(selectedOption.getAttribute('data-satis-fiyat')) || 0;
+          const odenenTutar = parseFloat(odenenTutarInput.value) || 0;
 
-     // Kalan tutar varsa tarihi aktif et, yoksa temizle
-   if (kalanTutarTarihInput) {
-      if (kalanTutar > 0) {
-           kalanTutarTarihInput.removeAttribute('disabled');
-            kalanTutarTarihInput.style.backgroundColor = '';
-            } else {
-  kalanTutarTarihInput.value = '';
-      kalanTutarTarihInput.setAttribute('disabled', 'disabled');
-     kalanTutarTarihInput.style.backgroundColor = '#e9ecef';
-     }
+                 const kalanTutar = Math.max(0, satisFiyat - odenenTutar);
+                   kalanTutarInput.value = kalanTutar.toFixed(2);
+
+             // Kalan tutar varsa tarihi aktif et, yoksa temizle
+           if (kalanTutarTarihInput) {
+              if (kalanTutar > 0) {
+                   kalanTutarTarihInput.removeAttribute('disabled');
+                    kalanTutarTarihInput.style.backgroundColor = '';
+                    } else {
+          kalanTutarTarihInput.value = '';
+              kalanTutarTarihInput.setAttribute('disabled', 'disabled');
+             kalanTutarTarihInput.style.backgroundColor = '#e9ecef';
+             }
+                 }
+                    }
+
+                 // Sil butonlarını güncelle
+                  function guncelSilButonlari() {
+                   document.querySelectorAll('.sil-btn').forEach(btn => {
+                btn.removeEventListener('click', silHandler);
+                btn.addEventListener('click', silHandler);
+                });
+               }
+
+                 function silHandler(e) {
+                        const row = e.target.closest('tr');
+               if (row && confirm('Bu satırı kaldırmak istediğinizden emin misiniz?')) {
+            row.remove();
+         // Index'leri yeniden düzenle
+             yenidenIndexle();
+                  }
          }
-            }
 
-         // Sil butonlarını güncelle
-          function guncelSilButonlari() {
-           document.querySelectorAll('.sil-btn').forEach(btn => {
-        btn.removeEventListener('click', silHandler);
-        btn.addEventListener('click', silHandler);
-        });
-       }
-
-         function silHandler(e) {
-                const row = e.target.closest('tr');
-       if (row && confirm('Bu satırı kaldırmak istediğinizden emin misiniz?')) {
-    row.remove();
- // Index'leri yeniden düzenle
-     yenidenIndexle();
-          }
- }
-
-       // Satır index'lerini yeniden düzenle
-         function yenidenIndexle() {
- const rows = tbody.querySelectorAll('tr');
-     rows.forEach((row, index) => {
-row.querySelectorAll('[name]').forEach(input => {
-    const name = input.getAttribute('name');
-   if (name) {
-       const newName = name.replace(/\[\d+\]/, `[${index}]`);
-    input.setAttribute('name', newName);
-           }
-   });
-             // data-index özelliğini güncelle
-       row.querySelectorAll('[data-index]').forEach(element => {
-           element.setAttribute('data-index', index);
-   });
-         });
-          envanterIndex = rows.length;
-          }
-   });
+               // Satır index'lerini yeniden düzenle
+                 function yenidenIndexle() {
+         const rows = tbody.querySelectorAll('tr');
+             rows.forEach((row, index) => {
+        row.querySelectorAll('[name]').forEach(input => {
+            const name = input.getAttribute('name');
+           if (name) {
+               const newName = name.replace(/\[\d+\]/, `[${index}]`);
+            input.setAttribute('name', newName);
+                   }
+           });
+                     // data-index özelliğini güncelle
+               row.querySelectorAll('[data-index]').forEach(element => {
+                   element.setAttribute('data-index', index);
+           });
+                 });
+                  envanterIndex = rows.length;
+                  }
+           });
     </script>
 }

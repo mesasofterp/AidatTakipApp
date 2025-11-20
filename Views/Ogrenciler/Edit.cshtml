@@ -183,19 +183,19 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="OkulGirisSaati" class="form-label"><i class="fas fa-clock me-1"></i>Okul Giriş Saati</label>
-                            <input type="time" id="OkulGirisSaati" name="OgrenciDetay.OkulGirisSaati" 
-      value="@(Model.OgrenciDetay?.OkulGirisSaati?.ToString(@"hh\:mm") ?? "")" 
-               class="form-control" />
-     <small class="form-text text-muted">Opsiyonel - Öğrencinin okula giriş saati</small>
+                            <input type="time" id="OkulGirisSaati" name="OgrenciDetay.OkulGirisSaati"
+                                   value="@(Model.OgrenciDetay?.OkulGirisSaati?.ToString(@"hh\:mm") ?? "")"
+                                   class="form-control" />
+                            <small class="form-text text-muted">Opsiyonel - Öğrencinin okula giriş saati</small>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="OkulCikisSaati" class="form-label"><i class="fas fa-clock me-1"></i>Okul Çıkış Saati</label>
-           <input type="time" id="OkulCikisSaati" name="OgrenciDetay.OkulCikisSaati" 
- value="@(Model.OgrenciDetay?.OkulCikisSaati?.ToString(@"hh\:mm") ?? "")" 
-         class="form-control" />
-     <small class="form-text text-muted">Opsiyonel - Öğrencinin okuldan çıkış saati</small>
-         </div>
-        </div>
+                            <input type="time" id="OkulCikisSaati" name="OgrenciDetay.OkulCikisSaati"
+                                   value="@(Model.OgrenciDetay?.OkulCikisSaati?.ToString(@"hh\:mm") ?? "")"
+                                   class="form-control" />
+                            <small class="form-text text-muted">Opsiyonel - Öğrencinin okuldan çıkış saati</small>
+                        </div>
+                    </div>
 
                     <hr class="my-4" />
                     <h5 class="mb-3"><i class="fas fa-trophy me-2"></i>Başarılar</h5>
@@ -236,7 +236,7 @@
                                                 <i class="fa-solid fa-turkish-lira-sign me-1"></i>Kalan Tutar
                                             </th>
                                             <th style="min-width: 150px;">
-                                                    <i class="fas fa-calendar-check me-1"></i>Kalan Tutar Tahsil Tarihi
+                                                <i class="fas fa-calendar-check me-1"></i>Kalan Tutar Tahsil Tarihi
                                             </th>
                                             <th style="min-width: 150px;">
                                                 <i class="fas fa-comment me-1"></i>Not
@@ -273,11 +273,11 @@
                                                     </td>
                                                     <td>
                                                         <input type="number" name="EnvanterSatislari[@i].OdenenTutar" value="@satis.OdenenTutar.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)"
-                                                                   class="form-control form-control-sm odenen-tutar-input" step="0.01" min="0" required style="min-width: 80px;" data-index="@i" />
+                                                               class="form-control form-control-sm odenen-tutar-input" step="0.01" min="0" required style="min-width: 80px;" data-index="@i" />
                                                     </td>
                                                     <td>
-                                                         <input type="number" name="EnvanterSatislari[@i].KalanTutar" value="@satis.KalanTutar.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)"
-                                                                   class="form-control form-control-sm kalan-tutar-input" step="0.01" min="0" readonly style="min-width: 80px; background-color: #e9ecef;" />
+                                                        <input type="number" name="EnvanterSatislari[@i].KalanTutar" value="@satis.KalanTutar.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)"
+                                                               class="form-control form-control-sm kalan-tutar-input" step="0.01" min="0" readonly style="min-width: 80px; background-color: #e9ecef;" />
                                                     </td>
                                                     <td>
                                                         <input type="date" name="EnvanterSatislari[@i].KalanTutarTahsilTarihi"
@@ -308,53 +308,53 @@
 
                     <!-- Yeni Satır Template -->
                     <template id="yeniSatirTemplate">
-    <tr class="envanter-satir yeni-satir">
-      <td>
-           <input type="hidden" name="EnvanterSatislari[{INDEX}].Id" value="0" />
-          <input type="hidden" name="EnvanterSatislari[{INDEX}].SilinecekMi" value="false" class="silinecek-input" />
-         <select name="EnvanterSatislari[{INDEX}].EnvanterId" class="form-select form-select-sm envanter-select" required style="min-width: 150px;" data-index="{INDEX}">
-  <option value="">-- Envanter Seçiniz --</option>
-     @if (ViewBag.Envanterler != null)
-          {
-     foreach (var item in (IEnumerable<SelectListItem>)ViewBag.Envanterler)
-      {
-        <option value="@item.Value" data-satis-fiyat="@(ViewBag.EnvanterFiyatlari != null && ViewBag.EnvanterFiyatlari.ContainsKey(long.Parse(item.Value)) ? ViewBag.EnvanterFiyatlari[long.Parse(item.Value)].ToString("F2", System.Globalization.CultureInfo.InvariantCulture) : "0")">@item.Text</option>
-         }
-      }
-         </select>
-           </td>
-      <td class="text-center">
-       <input type="number" name="EnvanterSatislari[{INDEX}].SatisAdet" value="1"
-           class="form-control form-control-sm text-center" min="1" required style="min-width: 60px;" />
-    </td>
-       <td>
- <input type="date" name="EnvanterSatislari[{INDEX}].SatisTarihi"
-       value="@DateTime.Now.ToString("yyyy-MM-dd")"
-class="form-control form-control-sm" style="min-width: 130px;" />
-   </td>
-    <td>
-       <input type="number" name="EnvanterSatislari[{INDEX}].OdenenTutar" value="0"
-     class="form-control form-control-sm odenen-tutar-input" step="0.01" min="0" required style="min-width: 80px;" data-index="{INDEX}" />
-   </td>
-   <td>
-       <input type="number" name="EnvanterSatislari[{INDEX}].KalanTutar" value="0"
-       class="form-control form-control-sm kalan-tutar-input" step="0.01" min="0" readonly style="min-width: 80px; background-color: #e9ecef;" />
-  </td>
-     <td>
-      <input type="date" name="EnvanterSatislari[{INDEX}].KalanTutarTahsilTarihi"
-     class="form-control form-control-sm kalan-tutar-tarih-input" style="min-width: 130px;" />
-           </td>
-<td>
-              <input type="text" name="EnvanterSatislari[{INDEX}].Aciklama"
-        class="form-control form-control-sm" placeholder="Not..." style="min-width: 100px;" />
-  </td>
-     <td class="text-center">
-     <button type="button" class="btn btn-sm btn-danger yeni-sil-btn" title="Satırı Kaldır">
-         <i class="fas fa-times"></i>
-          </button>
-    </td>
-         </tr>
-     </template>
+                        <tr class="envanter-satir yeni-satir">
+                            <td>
+                                <input type="hidden" name="EnvanterSatislari[{INDEX}].Id" value="0" />
+                                <input type="hidden" name="EnvanterSatislari[{INDEX}].SilinecekMi" value="false" class="silinecek-input" />
+                                <select name="EnvanterSatislari[{INDEX}].EnvanterId" class="form-select form-select-sm envanter-select" required style="min-width: 150px;" data-index="{INDEX}">
+                                    <option value="">-- Envanter Seçiniz --</option>
+                                    @if (ViewBag.Envanterler != null)
+                                    {
+                                        foreach (var item in (IEnumerable<SelectListItem>)ViewBag.Envanterler)
+                                        {
+                                            <option value="@item.Value" data-satis-fiyat="@(ViewBag.EnvanterFiyatlari != null && ViewBag.EnvanterFiyatlari.ContainsKey(long.Parse(item.Value)) ? ViewBag.EnvanterFiyatlari[long.Parse(item.Value)].ToString("F2", System.Globalization.CultureInfo.InvariantCulture) : "0")">@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                            <td class="text-center">
+                                <input type="number" name="EnvanterSatislari[{INDEX}].SatisAdet" value="1"
+                                       class="form-control form-control-sm text-center" min="1" required style="min-width: 60px;" />
+                            </td>
+                            <td>
+                                <input type="date" name="EnvanterSatislari[{INDEX}].SatisTarihi"
+                                       value="@DateTime.Now.ToString("yyyy-MM-dd")"
+                                       class="form-control form-control-sm" style="min-width: 130px;" />
+                            </td>
+                            <td>
+                                <input type="number" name="EnvanterSatislari[{INDEX}].OdenenTutar" value="0"
+                                       class="form-control form-control-sm odenen-tutar-input" step="0.01" min="0" required style="min-width: 80px;" data-index="{INDEX}" />
+                            </td>
+                            <td>
+                                <input type="number" name="EnvanterSatislari[{INDEX}].KalanTutar" value="0"
+                                       class="form-control form-control-sm kalan-tutar-input" step="0.01" min="0" readonly style="min-width: 80px; background-color: #e9ecef;" />
+                            </td>
+                            <td>
+                                <input type="date" name="EnvanterSatislari[{INDEX}].KalanTutarTahsilTarihi"
+                                       class="form-control form-control-sm kalan-tutar-tarih-input" style="min-width: 130px;" />
+                            </td>
+                            <td>
+                                <input type="text" name="EnvanterSatislari[{INDEX}].Aciklama"
+                                       class="form-control form-control-sm" placeholder="Not..." style="min-width: 100px;" />
+                            </td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-sm btn-danger yeni-sil-btn" title="Satırı Kaldır">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </template>
 
                     <hr class="my-4" />
                     <h5 class="mb-3"><i class="fas fa-credit-card me-2"></i>Ödeme Bilgileri</h5>
@@ -418,244 +418,244 @@ class="form-control form-control-sm" style="min-width: 130px;" />
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
-           // Telefon numarası input mask
-        document.addEventListener('DOMContentLoaded', function() {
-           const telefonInput = document.getElementById('telefonInput');
-           const veliTelefonInput = document.getElementById('VeliTelefonNumarasi');
-           const okulHocasiTelefonInput = document.getElementById('OkulHocasiTelefon');
+                   // Telefon numarası input mask
+                document.addEventListener('DOMContentLoaded', function() {
+                   const telefonInput = document.getElementById('telefonInput');
+                   const veliTelefonInput = document.getElementById('VeliTelefonNumarasi');
+                   const okulHocasiTelefonInput = document.getElementById('OkulHocasiTelefon');
 
-          function applyPhoneMask(input) {
-              if (!input) return;
-              input.addEventListener('input', function(e) {
-                  let value = e.target.value.replace(/\D/g, '');
-             if (value.length > 11) {
-                value = value.substring(0, 11);
-              }
-                  if (value.length > 0 && value.charAt(0) !== '0') {
-               value = '0' + value.substring(0, 10);
-            }
-                  e.target.value = value;
-              });
-              input.addEventListener('paste', function(e) {
-              setTimeout(function() {
-            let value = input.value.replace(/\D/g, '');
-         if (value.length > 11) {
-                value = value.substring(0, 11);
-          }
-                if (value.length > 0 && value.charAt(0) !== '0') {
-              value = '0' + value.substring(0, 10);
-            }
-                      input.value = value;
-                  }, 0);
-         });
-          }
-
-          applyPhoneMask(telefonInput);
-          applyPhoneMask(veliTelefonInput);
-          applyPhoneMask(okulHocasiTelefonInput);
-
-      // Envanter Tablosu İşlemleri
-      const tbody = document.getElementById('envanterTbody');
-         const yeniSatirEkleBtn = document.getElementById('yeniSatirEkleBtn');
-           const yeniSatirTemplate = document.getElementById('yeniSatirTemplate');
-           let yeniSatirIndex = @(ViewBag.MevcutEnvanterSatislari != null ? ((List<EnvanterSatisViewModel>)ViewBag.MevcutEnvanterSatislari).Count : 0);
-
-          console.log('Edit Envanter Script Yüklendi', {
- tbody: tbody ? 'OK' : 'NULL',
-        yeniSatirEkleBtn: yeniSatirEkleBtn ? 'OK' : 'NULL',
-             yeniSatirTemplate: yeniSatirTemplate ? 'OK' : 'NULL',
-yeniSatirIndex: yeniSatirIndex
-       });
-
- // Mevcut satırlar için event listener'ları ekle
-  document.querySelectorAll('.envanter-satir').forEach(row => {
-  setupMevcutSatirListeners(row);
-        });
-
-       // Yeni satır ekle
-           if (yeniSatirEkleBtn && yeniSatirTemplate && tbody) {
-        yeniSatirEkleBtn.addEventListener('click', function() {
-         console.log('Yeni satır ekleme butonuna tıklandı, Index:', yeniSatirIndex);
-    try {
-      const templateContent = yeniSatirTemplate.content.cloneNode(true);
-            const templateHTML = templateContent.querySelector('tr').outerHTML;
-         const yeniSatir = templateHTML.replace(/{INDEX}/g, yeniSatirIndex);
-
-           tbody.insertAdjacentHTML('beforeend', yeniSatir);
-     console.log('Satır eklendi, Yeni Index:', yeniSatirIndex + 1);
-
-     // Yeni eklenen satıra event listener'ları ekle
-       const yeniRow = tbody.lastElementChild;
-             setupEnvanterListeners(yeniRow, yeniSatirIndex);
-    
-     yeniSatirIndex++;
-
-        // Yeni eklenen satırın sil butonunu dinle
-         guncelSilButonlari();
-    } catch (error) {
-     console.error('Satır eklenirken hata:', error);
-      alert('Satır eklenirken bir hata oluştu: ' + error.message);
-      }
-  });
-        } else {
-             console.error('Envanter bileşenleri bulunamadı!', {
-        tbody: !!tbody,
-            yeniSatirEkleBtn: !!yeniSatirEkleBtn,
-            yeniSatirTemplate: !!yeniSatirTemplate
-});
-           }
-
-        // Mevcut satırlar için listener'lar
-        function setupMevcutSatirListeners(row) {
-      const odenenTutarInput = row.querySelector('.odenen-tutar-input');
-        const satisFiyatHidden = row.querySelector('.envanter-satis-fiyat');
-          
-       if (odenenTutarInput && satisFiyatHidden) {
-                odenenTutarInput.addEventListener('input', function() {
-       hesaplaMevcutKalanTutar(row, satisFiyatHidden.value);
-     });
-            }
-        }
-
-        // Mevcut satırlar için kalan tutar hesaplama
-        function hesaplaMevcutKalanTutar(row, satisFiyat) {
-            const odenenTutarInput = row.querySelector('.odenen-tutar-input');
-     const kalanTutarInput = row.querySelector('.kalan-tutar-input');
-       const kalanTutarTarihInput = row.querySelector('.kalan-tutar-tarih-input');
-            
-     if (!odenenTutarInput || !kalanTutarInput) return;
-          
-       const satisFiyatValue = parseFloat(satisFiyat) || 0;
-            const odenenTutar = parseFloat(odenenTutarInput.value) || 0;
-    
-            const kalanTutar = Math.max(0, satisFiyatValue - odenenTutar);
-            kalanTutarInput.value = kalanTutar.toFixed(2);
-        
-// Kalan tutar varsa tarihi aktif et, yoksa temizle
-            if (kalanTutarTarihInput) {
-       if (kalanTutar > 0) {
-      kalanTutarTarihInput.removeAttribute('disabled');
-        kalanTutarTarihInput.style.backgroundColor = '';
-      } else {
-          kalanTutarTarihInput.value = '';
-        kalanTutarTarihInput.setAttribute('disabled', 'disabled');
-        kalanTutarTarihInput.style.backgroundColor = '#e9ecef';
-                }
-      }
-        }
-
-        // Yeni satırlar için listener'lar
-        function setupEnvanterListeners(row, index) {
-            const envanterSelect = row.querySelector('.envanter-select');
-            const odenenTutarInput = row.querySelector('.odenen-tutar-input');
-      const kalanTutarInput = row.querySelector('.kalan-tutar-input');
-     const kalanTutarTarihInput = row.querySelector('.kalan-tutar-tarih-input');
-
-    if (envanterSelect) {
-              envanterSelect.addEventListener('change', function() {
-        const selectedOption = this.options[this.selectedIndex];
-     const satisFiyat = parseFloat(selectedOption.getAttribute('data-satis-fiyat')) || 0;
-    
-    // Otomatik olarak satış fiyatını ödenen tutar alanına yerleştir
-    if (odenenTutarInput) {
-       odenenTutarInput.value = satisFiyat.toFixed(2);
-     hesaplaKalanTutar(row);
+                  function applyPhoneMask(input) {
+                      if (!input) return;
+                      input.addEventListener('input', function(e) {
+                          let value = e.target.value.replace(/\D/g, '');
+                     if (value.length > 11) {
+                        value = value.substring(0, 11);
+                      }
+                          if (value.length > 0 && value.charAt(0) !== '0') {
+                       value = '0' + value.substring(0, 10);
+                    }
+                          e.target.value = value;
+                      });
+                      input.addEventListener('paste', function(e) {
+                      setTimeout(function() {
+                    let value = input.value.replace(/\D/g, '');
+                 if (value.length > 11) {
+                        value = value.substring(0, 11);
                   }
-         });
-   }
+                        if (value.length > 0 && value.charAt(0) !== '0') {
+                      value = '0' + value.substring(0, 10);
+                    }
+                              input.value = value;
+                          }, 0);
+                 });
+                  }
 
-            if (odenenTutarInput) {
- odenenTutarInput.addEventListener('input', function() {
-         hesaplaKalanTutar(row);
-       });
-   }
-        }
+                  applyPhoneMask(telefonInput);
+                  applyPhoneMask(veliTelefonInput);
+                  applyPhoneMask(okulHocasiTelefonInput);
 
-    // Yeni satırlar için kalan tutar hesaplama
-        function hesaplaKalanTutar(row) {
-            const envanterSelect = row.querySelector('.envanter-select');
-  const odenenTutarInput = row.querySelector('.odenen-tutar-input');
-   const kalanTutarInput = row.querySelector('.kalan-tutar-input');
-            const kalanTutarTarihInput = row.querySelector('.kalan-tutar-tarih-input');
+              // Envanter Tablosu İşlemleri
+              const tbody = document.getElementById('envanterTbody');
+                 const yeniSatirEkleBtn = document.getElementById('yeniSatirEkleBtn');
+                   const yeniSatirTemplate = document.getElementById('yeniSatirTemplate');
+                   let yeniSatirIndex = @(ViewBag.MevcutEnvanterSatislari != null ? ((List<EnvanterSatisViewModel>)ViewBag.MevcutEnvanterSatislari).Count : 0);
 
-   if (!envanterSelect || !odenenTutarInput || !kalanTutarInput) return;
+                  console.log('Edit Envanter Script Yüklendi', {
+         tbody: tbody ? 'OK' : 'NULL',
+                yeniSatirEkleBtn: yeniSatirEkleBtn ? 'OK' : 'NULL',
+                     yeniSatirTemplate: yeniSatirTemplate ? 'OK' : 'NULL',
+        yeniSatirIndex: yeniSatirIndex
+               });
 
-            const selectedOption = envanterSelect.options[envanterSelect.selectedIndex];
-            const satisFiyat = parseFloat(selectedOption.getAttribute('data-satis-fiyat')) || 0;
-   const odenenTutar = parseFloat(odenenTutarInput.value) || 0;
+         // Mevcut satırlar için event listener'ları ekle
+          document.querySelectorAll('.envanter-satir').forEach(row => {
+          setupMevcutSatirListeners(row);
+                });
 
-            const kalanTutar = Math.max(0, satisFiyat - odenenTutar);
-          kalanTutarInput.value = kalanTutar.toFixed(2);
+               // Yeni satır ekle
+                   if (yeniSatirEkleBtn && yeniSatirTemplate && tbody) {
+                yeniSatirEkleBtn.addEventListener('click', function() {
+                 console.log('Yeni satır ekleme butonuna tıklandı, Index:', yeniSatirIndex);
+            try {
+              const templateContent = yeniSatirTemplate.content.cloneNode(true);
+                    const templateHTML = templateContent.querySelector('tr').outerHTML;
+                 const yeniSatir = templateHTML.replace(/{INDEX}/g, yeniSatirIndex);
 
-  // Kalan tutar varsa tarihi aktif et, yoksa temizle
-      if (kalanTutarTarihInput) {
-       if (kalanTutar > 0) {
-              kalanTutarTarihInput.removeAttribute('disabled');
-     kalanTutarTarihInput.style.backgroundColor = '';
-        } else {
-      kalanTutarTarihInput.value = '';
- kalanTutarTarihInput.setAttribute('disabled', 'disabled');
-    kalanTutarTarihInput.style.backgroundColor = '#e9ecef';
-        }
-   }
-        }
+                   tbody.insertAdjacentHTML('beforeend', yeniSatir);
+             console.log('Satır eklendi, Yeni Index:', yeniSatirIndex + 1);
 
-    // Mevcut kayıtların sil butonları (soft delete)
- document.querySelectorAll('.sil-btn').forEach(btn => {
-             btn.addEventListener('click', function() {
- if (confirm('Bu envanter satışını silmek istediğinizden emin misiniz? Stok geri eklenecektir.')) {
-      const row = this.closest('tr');
-         const silinecekInput = row.querySelector('.silinecek-input');
-    if (silinecekInput) {
-               silinecekInput.value = 'true';
- }
+             // Yeni eklenen satıra event listener'ları ekle
+               const yeniRow = tbody.lastElementChild;
+                     setupEnvanterListeners(yeniRow, yeniSatirIndex);
 
-       // Satırı görsel olarak gizle ve işaretle
-            row.style.opacity = '0.5';
-           row.style.textDecoration = 'line-through';
-   this.disabled = true;
-     this.innerHTML = '<i class="fas fa-check"></i> Silinecek';
-      this.classList.remove('btn-danger');
-         this.classList.add('btn-secondary');
-    }
+             yeniSatirIndex++;
+
+                // Yeni eklenen satırın sil butonunu dinle
+                 guncelSilButonlari();
+            } catch (error) {
+             console.error('Satır eklenirken hata:', error);
+              alert('Satır eklenirken bir hata oluştu: ' + error.message);
+              }
           });
+                } else {
+                     console.error('Envanter bileşenleri bulunamadı!', {
+                tbody: !!tbody,
+                    yeniSatirEkleBtn: !!yeniSatirEkleBtn,
+                    yeniSatirTemplate: !!yeniSatirTemplate
         });
+                   }
 
- // Sil butonlarını güncelle
-  function guncelSilButonlari() {
-               document.querySelectorAll('.yeni-sil-btn').forEach(btn => {
-              btn.removeEventListener('click', yeniSilHandler);
-        btn.addEventListener('click', yeniSilHandler);
-           });
+                // Mevcut satırlar için listener'lar
+                function setupMevcutSatirListeners(row) {
+              const odenenTutarInput = row.querySelector('.odenen-tutar-input');
+                const satisFiyatHidden = row.querySelector('.envanter-satis-fiyat');
+
+               if (odenenTutarInput && satisFiyatHidden) {
+                        odenenTutarInput.addEventListener('input', function() {
+               hesaplaMevcutKalanTutar(row, satisFiyatHidden.value);
+             });
+                    }
+                }
+
+                // Mevcut satırlar için kalan tutar hesaplama
+                function hesaplaMevcutKalanTutar(row, satisFiyat) {
+                    const odenenTutarInput = row.querySelector('.odenen-tutar-input');
+             const kalanTutarInput = row.querySelector('.kalan-tutar-input');
+               const kalanTutarTarihInput = row.querySelector('.kalan-tutar-tarih-input');
+
+             if (!odenenTutarInput || !kalanTutarInput) return;
+
+               const satisFiyatValue = parseFloat(satisFiyat) || 0;
+                    const odenenTutar = parseFloat(odenenTutarInput.value) || 0;
+
+                    const kalanTutar = Math.max(0, satisFiyatValue - odenenTutar);
+                    kalanTutarInput.value = kalanTutar.toFixed(2);
+
+        // Kalan tutar varsa tarihi aktif et, yoksa temizle
+                    if (kalanTutarTarihInput) {
+               if (kalanTutar > 0) {
+              kalanTutarTarihInput.removeAttribute('disabled');
+                kalanTutarTarihInput.style.backgroundColor = '';
+              } else {
+                  kalanTutarTarihInput.value = '';
+                kalanTutarTarihInput.setAttribute('disabled', 'disabled');
+                kalanTutarTarihInput.style.backgroundColor = '#e9ecef';
+                        }
+              }
+                }
+
+                // Yeni satırlar için listener'lar
+                function setupEnvanterListeners(row, index) {
+                    const envanterSelect = row.querySelector('.envanter-select');
+                    const odenenTutarInput = row.querySelector('.odenen-tutar-input');
+              const kalanTutarInput = row.querySelector('.kalan-tutar-input');
+             const kalanTutarTarihInput = row.querySelector('.kalan-tutar-tarih-input');
+
+            if (envanterSelect) {
+                      envanterSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+             const satisFiyat = parseFloat(selectedOption.getAttribute('data-satis-fiyat')) || 0;
+
+            // Otomatik olarak satış fiyatını ödenen tutar alanına yerleştir
+            if (odenenTutarInput) {
+               odenenTutarInput.value = satisFiyat.toFixed(2);
+             hesaplaKalanTutar(row);
+                          }
+                 });
            }
 
-      function yeniSilHandler(e) {
-          const row = e.target.closest('tr');
-    if (row && confirm('Bu satırı kaldırmak istediğinizden emin misiniz?')) {
-   row.remove();
-     // Index'leri yeniden düzenle
-                 yenidenIndexle();
-              }
-  }
+                    if (odenenTutarInput) {
+         odenenTutarInput.addEventListener('input', function() {
+                 hesaplaKalanTutar(row);
+               });
+           }
+                }
 
-           // Satır index'lerini yeniden düzenle
-function yenidenIndexle() {
-        const rows = tbody.querySelectorAll('tr');
-               rows.forEach((row, index) => {
-   row.querySelectorAll('[name]').forEach(input => {
-             const name = input.getAttribute('name');
-     if (name) {
-  const newName = name.replace(/\[\d+\]/, `[${index}]`);
-       input.setAttribute('name', newName);
-        }
-         });
-         // data-index özelliğini güncelle
-      row.querySelectorAll('[data-index]').forEach(element => {
-        element.setAttribute('data-index', index);
-    });
-     });
-   yeniSatirIndex = rows.length;
-    }
-        });
+            // Yeni satırlar için kalan tutar hesaplama
+                function hesaplaKalanTutar(row) {
+                    const envanterSelect = row.querySelector('.envanter-select');
+          const odenenTutarInput = row.querySelector('.odenen-tutar-input');
+           const kalanTutarInput = row.querySelector('.kalan-tutar-input');
+                    const kalanTutarTarihInput = row.querySelector('.kalan-tutar-tarih-input');
+
+           if (!envanterSelect || !odenenTutarInput || !kalanTutarInput) return;
+
+                    const selectedOption = envanterSelect.options[envanterSelect.selectedIndex];
+                    const satisFiyat = parseFloat(selectedOption.getAttribute('data-satis-fiyat')) || 0;
+           const odenenTutar = parseFloat(odenenTutarInput.value) || 0;
+
+                    const kalanTutar = Math.max(0, satisFiyat - odenenTutar);
+                  kalanTutarInput.value = kalanTutar.toFixed(2);
+
+          // Kalan tutar varsa tarihi aktif et, yoksa temizle
+              if (kalanTutarTarihInput) {
+               if (kalanTutar > 0) {
+                      kalanTutarTarihInput.removeAttribute('disabled');
+             kalanTutarTarihInput.style.backgroundColor = '';
+                } else {
+              kalanTutarTarihInput.value = '';
+         kalanTutarTarihInput.setAttribute('disabled', 'disabled');
+            kalanTutarTarihInput.style.backgroundColor = '#e9ecef';
+                }
+           }
+                }
+
+            // Mevcut kayıtların sil butonları (soft delete)
+         document.querySelectorAll('.sil-btn').forEach(btn => {
+                     btn.addEventListener('click', function() {
+         if (confirm('Bu envanter satışını silmek istediğinizden emin misiniz? Stok geri eklenecektir.')) {
+              const row = this.closest('tr');
+                 const silinecekInput = row.querySelector('.silinecek-input');
+            if (silinecekInput) {
+                       silinecekInput.value = 'true';
+         }
+
+               // Satırı görsel olarak gizle ve işaretle
+                    row.style.opacity = '0.5';
+                   row.style.textDecoration = 'line-through';
+           this.disabled = true;
+             this.innerHTML = '<i class="fas fa-check"></i> Silinecek';
+              this.classList.remove('btn-danger');
+                 this.classList.add('btn-secondary');
+            }
+                  });
+                });
+
+         // Sil butonlarını güncelle
+          function guncelSilButonlari() {
+                       document.querySelectorAll('.yeni-sil-btn').forEach(btn => {
+                      btn.removeEventListener('click', yeniSilHandler);
+                btn.addEventListener('click', yeniSilHandler);
+                   });
+                   }
+
+              function yeniSilHandler(e) {
+                  const row = e.target.closest('tr');
+            if (row && confirm('Bu satırı kaldırmak istediğinizden emin misiniz?')) {
+           row.remove();
+             // Index'leri yeniden düzenle
+                         yenidenIndexle();
+                      }
+          }
+
+                   // Satır index'lerini yeniden düzenle
+        function yenidenIndexle() {
+                const rows = tbody.querySelectorAll('tr');
+                       rows.forEach((row, index) => {
+           row.querySelectorAll('[name]').forEach(input => {
+                     const name = input.getAttribute('name');
+             if (name) {
+          const newName = name.replace(/\[\d+\]/, `[${index}]`);
+               input.setAttribute('name', newName);
+                }
+                 });
+                 // data-index özelliğini güncelle
+              row.querySelectorAll('[data-index]').forEach(element => {
+                element.setAttribute('data-index', index);
+            });
+             });
+           yeniSatirIndex = rows.length;
+            }
+                });
     </script>
 }
