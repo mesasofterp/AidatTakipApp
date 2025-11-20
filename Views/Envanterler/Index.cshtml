@@ -2,8 +2,13 @@
 
 @{
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     ViewData["Title"] = "Envanter Yï¿½netimi";
     var toplamDeger = ViewBag.ToplamDeger as decimal? ?? 0;
+=======
+    ViewData["Title"] = "Envanter Yönetimi";
+    var toplamSatisDeger = ViewBag.ToplamSatisDeger as decimal? ?? 0;
+>>>>>>> Stashed changes
 =======
     ViewData["Title"] = "Envanter Yönetimi";
     var toplamSatisDeger = ViewBag.ToplamSatisDeger as decimal? ?? 0;
@@ -40,6 +45,7 @@
     <div class="card-body">
         <form asp-action="Index" method="get" class="row g-3 align-items-end">
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
        <div class="col-md-8">
        <label for="searchTerm" class="form-label">
               <i class="fas fa-search me-1"></i>Envanter Ara
@@ -63,6 +69,12 @@ placeholder="Envanter adï¿½, aï¿½ï¿½klama veya fiyat aralï¿½ï¿½ï¿½..."
                 <label for="searchTerm" class="form-label">
                     <i class="fas fa-search me-1"></i>Envanter Ara
                 </label>
+=======
+            <div class="col-md-8">
+                <label for="searchTerm" class="form-label">
+                    <i class="fas fa-search me-1"></i>Envanter Ara
+                </label>
+>>>>>>> Stashed changes
                 <input type="text" name="searchTerm" id="searchTerm" class="form-control"
                        placeholder="Envanter adý, açýklama veya fiyat aralýðý..."
                        value="@ViewBag.SearchTerm" />
@@ -88,6 +100,9 @@ placeholder="Envanter adï¿½, aï¿½ï¿½klama veya fiyat aralï¿½ï¿½ï¿½..."
                         <i class="fas fa-times"></i>
                     </a>
                 }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
             </div>
         </form>
@@ -99,6 +114,7 @@ placeholder="Envanter adï¿½, aï¿½ï¿½klama veya fiyat aralï¿½ï¿½ï¿½..."
     <div class="col-md-4">
         <div class="card bg-primary text-white">
             <div class="card-body">
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
          <h5 class="card-title">
          <i class="fas fa-list me-2"></i>Toplam Kalem
@@ -150,6 +166,28 @@ placeholder="Envanter adï¿½, aï¿½ï¿½klama veya fiyat aralï¿½ï¿½ï¿½..."
         </div>
     </div>
     <div class="col-md-4">
+=======
+                <h5 class="card-title">
+                    <i class="fas fa-list me-2"></i>Toplam Kalem
+                </h5>
+                <h3 class="mb-0">@toplamKalem</h3>
+                <small>Farklý envanter kalemi</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-cubes me-2"></i>Toplam Adet
+                </h5>
+                <h3 class="mb-0">@toplamAdet</h3>
+                <small>Toplam ürün adedi</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+>>>>>>> Stashed changes
         <div class="card bg-success text-white">
             <div class="card-body">
                 <h5 class="card-title">
@@ -159,6 +197,9 @@ placeholder="Envanter adï¿½, aï¿½ï¿½klama veya fiyat aralï¿½ï¿½ï¿½..."
                 <small>Envanter toplam potansiyel satýþ deðeri</small>
             </div>
         </div>
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     </div>
 </div>
@@ -167,6 +208,7 @@ placeholder="Envanter adï¿½, aï¿½ï¿½klama veya fiyat aralï¿½ï¿½ï¿½..."
 {
     <div class="card">
         <div class="card-body">
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
  <div class="table-responsive">
      <table class="table table-striped table-hover" id="envanterTable">
@@ -261,6 +303,8 @@ placeholder="Envanter adï¿½, aï¿½ï¿½klama veya fiyat aralï¿½ï¿½ï¿½..."
  </tbody>
      </table>
 =======
+=======
+>>>>>>> Stashed changes
             <div class="table-responsive">
                 <table class="table table-striped table-hover" id="envanterTable">
                     <thead>
@@ -353,6 +397,9 @@ placeholder="Envanter adï¿½, aï¿½ï¿½klama veya fiyat aralï¿½ï¿½ï¿½..."
                         }
                     </tbody>
                 </table>
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
             </div>
         </div>
