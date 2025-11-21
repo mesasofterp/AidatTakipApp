@@ -23,6 +23,7 @@ namespace StudentApp.Controllers
         private readonly StudentApp.Data.AppDbContext _context;
         private readonly IZamanlayiciService _schedulerService;
         private readonly IEnvanterlerService _envanterlerService;
+        private readonly ISeanslarService _seanslarService;
 
         public OgrencilerController(
             IOgrencilerService ogrencilerService,
@@ -31,7 +32,8 @@ namespace StudentApp.Controllers
             ISmsService smsService,
             StudentApp.Data.AppDbContext context,
             IZamanlayiciService schedulerService,
-            IEnvanterlerService envanterlerService)
+            IEnvanterlerService envanterlerService,
+            ISeanslarService seanslarService)
         {
             _ogrenciService = ogrencilerService;
             _odemePlanlariService = odemePlanlariService;
@@ -40,6 +42,7 @@ namespace StudentApp.Controllers
             _context = context;
             _schedulerService = schedulerService;
             _envanterlerService = envanterlerService;
+            _seanslarService = seanslarService;
         }
 
         // GET: Student
@@ -243,15 +246,33 @@ namespace StudentApp.Controllers
             {
                 try
                 {
-                    // İlk Taksit Son Ödeme Tarihi girilmemişse, Kayıt Tarihi ile doldur
-                    if (!ogrenci.IlkTaksitSonOdemeTarihi.HasValue)
-                    {
-                        ogrenci.IlkTaksitSonOdemeTarihi = ogrenci.KayitTarihi;
-                    }
+                    // Seans kapasitesi kontrolü
+ if (ogrenci.SeansId.HasValue)
+        {
+      var seansKapasiteUygun = await _seanslarService.CheckSeansKapasitesiAsync(ogrenci.SeansId.Value);
+       if (!seansKapasiteUygun)
+       {
+         ModelState.AddModelError("SeansId", "Seçilen seansın kapasitesi dolmuştur.");
+         await LoadDropdownsAsync();
+        return View(ogrenci);
+}
+      }
 
-                    await _ogrenciService.AddOgrenciAsync(ogrenci);
+        // İlk Taksit Son Ödeme Tarihi girilmemişse, Kayıt Tarihi ile doldur
+             if (!ogrenci.IlkTaksitSonOdemeTarihi.HasValue)
+           {
+        ogrenci.IlkTaksitSonOdemeTarihi = ogrenci.KayitTarihi;
+ }
 
-                    // OgrenciDetay kaydı oluştur (varsa)
+        await _ogrenciService.AddOgrenciAsync(ogrenci);
+
+        // Seans mevcudunu güncelle
+           if (ogrenci.SeansId.HasValue)
+       {
+     await _seanslarService.UpdateSeansMevcuduAsync(ogrenci.SeansId.Value, 1);
+    }
+
+    // OgrenciDetay kaydı oluştur (varsa)
                     if (ogrenciDetay != null && (ogrenciDetay.VeliAdSoyad != null || ogrenciDetay.VeliTelefonNumarasi != null ||
                         ogrenciDetay.OkulAdi != null || ogrenciDetay.OkulAdresi != null || ogrenciDetay.Sinif != null ||
                         ogrenciDetay.OkulHocasiAdSoyad != null || ogrenciDetay.OkulHocasiTelefon != null ||
@@ -503,13 +524,82 @@ namespace StudentApp.Controllers
             {
                 try
                 {
-                    var updatedOgrenci = await _ogrenciService.UpdateOgrenciAsync(ogrenci);
-                    if (updatedOgrenci == null)
-                    {
-                        return NotFound();
-                    }
+                    // Seans kapasitesi kontrolü
+ if (ogrenci.SeansId.HasValue)
+        {
+      var seansKapasiteUygun = await _seanslarService.CheckSeansKapasitesiAsync(ogrenci.SeansId.Value);
+       if (!seansKapasiteUygun)
+       {
+         ModelState.AddModelError("SeansId", "Seçilen seansın kapasitesi dolmuştur.");
+         await LoadDropdownsAsync();
+        return View(ogrenci);
+}
+      }
 
-                    // OgrenciDetay kaydını güncelle veya oluştur
+        // İlk Taksit Son Ödeme Tarihi girilmemişse, Kayıt Tarihi ile doldur
+             if (!ogrenci.IlkTaksitSonOdemeTarihi.HasValue)
+           {
+        ogrenci.IlkTaksitSonOdemeTarihi = ogrenci.KayitTarihi;
+ }
+
+        // Eski seans bilgisini al
+     var eskiSeansId = mevcutOgrenci?.SeansId;
+
+    // Yeni seans seçildiyse kapasite kontrolü yap
+   if (ogrenci.SeansId.HasValue && ogrenci.SeansId != eskiSeansId)
+        {
+       var seansKapasiteUygun = await _seanslarService.CheckSeansKapasitesiAsync(ogrenci.SeansId.Value);
+      if (!seansKapasiteUygun)
+   {
+         ModelState.AddModelError("SeansId", "Seçilen seansın kapasitesi dolmuştur.");
+   await LoadDropdownsAsync();
+        // Mevcut satışları tekrar yükle
+            var tempSatislar = await _context.OgrenciEnvanterSatis
+                .Include(e => e.Envanter)
+       .Where(e => e.OgrenciId == id && !e.IsDeleted && e.Aktif)
+                .OrderByDescending(e => e.SatisTarihi)
+    .Select(e => new EnvanterSatisViewModel
+        {
+  Id = e.Id,
+            EnvanterId = e.EnvanterId,
+    EnvanterAdi = e.Envanter.EnvanterAdi,
+     SatisTarihi = e.SatisTarihi,
+  SatisAdet = e.SatisAdet,
+  OdenenTutar = e.OdenenTutar,
+         KalanTutar = e.KalanTutar,
+    KalanTutarTahsilTarihi = e.KalanTutarTahsilTarihi,
+  Aciklama = e.Aciklama
+    })
+           .ToListAsync();
+       ViewBag.MevcutEnvanterSatislari = tempSatislar;
+      var tempEnvanterler = await _envanterlerService.GetActiveAsync();
+  ViewBag.EnvanterFiyatlari = tempEnvanterler.ToDictionary(e => e.Id, e => e.SatisFiyat);
+   return View(ogrenci);
+    }
+     }
+
+      var updatedOgrenci = await _ogrenciService.UpdateOgrenciAsync(ogrenci);
+      if (updatedOgrenci == null)
+         {
+    return NotFound();
+   }
+
+ // Seans mevcudunu güncelle
+           if (eskiSeansId != ogrenci.SeansId)
+     {
+ // Eski seansdan çıkar
+   if (eskiSeansId.HasValue)
+  {
+           await _seanslarService.UpdateSeansMevcuduAsync(eskiSeansId.Value, -1);
+     }
+          // Yeni seansa ekle
+      if (ogrenci.SeansId.HasValue)
+       {
+       await _seanslarService.UpdateSeansMevcuduAsync(ogrenci.SeansId.Value, 1);
+           }
+    }
+
+ // OgrenciDetay kaydını güncelle veya oluştur
                     // Form'dan gelen verileri oku (önce model binding, sonra Request.Form)
                     string? GetFormValue(string key, string? modelValue)
                     {
@@ -838,6 +928,9 @@ namespace StudentApp.Controllers
 
             var envanterler = await _envanterlerService.GetActiveAsync();
             ViewBag.Envanterler = new SelectList(envanterler, "Id", "EnvanterAdi");
+
+            var seanslar = await _seanslarService.GetAllSeanslarAsync();
+  ViewBag.Seanslar = new SelectList(seanslar, "Id", "SeansAdi");
         }
 
         // POST: Ogrenciler/SendSmsSelected
@@ -855,7 +948,7 @@ namespace StudentApp.Controllers
                 var today = DateTime.Today;
                 var activeSchedulers = await _schedulerService.GetActiveSchedulersAsync();
                 var activeSettings = activeSchedulers.FirstOrDefault();
-                var template = activeSettings?.MesajSablonu ?? "Sayın [ÖĞRENCİ_ADI] [ÖĞRENCİ_SOYADI], ödemeniz [REFERANS_TARIH] tarihinden beri yapılmamıştır. Lütfen ödemenizi yapınız.";
+                var template = activeSettings?.MesajSablonu ?? "Sayın [ÖĞRENCİ_ADI] [ÖĞRENCİ_SOYADI], ödemeniz [REFERANS_TARIH] tarihinden beri yapılmamıştır. Lütfen ödemenizi yapınız." ;
 
                 var students = await _context.Ogrenciler
            .Include(s => s.OdemePlanlari)

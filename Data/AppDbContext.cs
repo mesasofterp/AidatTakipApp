@@ -22,6 +22,7 @@ namespace StudentApp.Data
         public DbSet<OgrenciDetay> OgrenciDetay { get; set; }
         public DbSet<Gunler> Gunler { get; set; }
         public DbSet<Seanslar> Seanslar { get; set; }
+        public DbSet<SeansGunler> SeansGunler { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -208,12 +209,38 @@ namespace StudentApp.Data
                 entity.Property(e => e.SeansKapasitesi);
                 entity.Property(e => e.SeansMevcudu);
 
-                // Foreign key relationship
+                // GunId and Gun are NotMapped - no configuration needed
+                // Many-to-Many relationship through SeansGunler is configured separately
+            });
+
+            // Configure SeansGunler entity (Many-to-Many junction table)
+            modelBuilder.Entity<SeansGunler>(entity =>
+            {
+                entity.ToTable("SeansGunler");
+                entity.HasKey(e => e.Id);
+
+                // Explicitly define foreign key columns
+                entity.Property(e => e.SeansId).HasColumnName("SeansId").IsRequired();
+                entity.Property(e => e.GunId).HasColumnName("GunId").IsRequired();
+
+                // Composite unique index - Bir seans bir günde sadece bir kez olabilir
+                entity.HasIndex(e => new { e.SeansId, e.GunId })
+                    .IsUnique()
+                    .HasDatabaseName("IX_SeansGunler_SeansId_GunId");
+
+                // Foreign key: SeansGunler -> Seanslar (explicitly use SeansId and navigation property)
+                entity.HasOne(e => e.Seans)
+                    .WithMany(s => s.SeansGunler)
+                    .HasForeignKey(e => e.SeansId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_SeansGunler_Seanslar");
+
+                // Foreign key: SeansGunler -> Gunler
                 entity.HasOne(e => e.Gun)
                     .WithMany()
                     .HasForeignKey(e => e.GunId)
-                    .OnDelete(DeleteBehavior.Restrict);
-
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("FK_SeansGunler_Gunler");
             });
 
         }

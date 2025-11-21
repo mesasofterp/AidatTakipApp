@@ -51,18 +51,28 @@
        </tr>
 </thead>
      <tbody>
-       @foreach (var item in Model)
-          {
-        var dolulukOrani = item.SeansKapasitesi.HasValue && item.SeansKapasitesi.Value > 0
-       ? (item.SeansMevcudu ?? 0) * 100.0 / item.SeansKapasitesi.Value
-         : 0;
-             var dolulukClass = dolulukOrani >= 90 ? "danger" : dolulukOrani >= 70 ? "warning" : "success";
+  @foreach (var item in Model)
+    {
+ var dolulukOrani = item.SeansKapasitesi.HasValue && item.SeansKapasitesi.Value > 0
+      ? (item.SeansMevcudu ?? 0) * 100.0 / item.SeansKapasitesi.Value
+ : 0;
+  var dolulukClass = dolulukOrani >= 90 ? "danger" : dolulukOrani >= 70 ? "warning" : "success";
 
-     <tr>
-      <td>
-       <span class="badge bg-primary">@item.Gun?.Gun</span>
-      </td>
-                  <td><strong>@item.SeansAdi</strong></td>
+  <tr>
+         <td>
+       @if (item.SeansGunler != null && item.SeansGunler.Any())
+   {
+     foreach (var sg in item.SeansGunler.Where(sg => !sg.IsDeleted && sg.Aktif).OrderBy(sg => sg.Gun.Id))
+ {
+<span class="badge bg-primary me-1 mb-1">@sg.Gun?.Gun</span>
+      }
+   }
+ else
+      {
+   <span class="text-muted">-</span>
+  }
+     </td>
+  <td><strong>@item.SeansAdi</strong></td>
   <td>
     <i class="fas fa-play-circle text-success me-1"></i>
          @item.SeansBaslangicSaati.ToString(@"hh\:mm")

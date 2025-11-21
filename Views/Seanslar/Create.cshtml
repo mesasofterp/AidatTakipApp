@@ -15,14 +15,35 @@
        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
     <div class="mb-3">
-             <label asp-for="GunId" class="form-label">
-           <i class="fas fa-calendar-day me-1"></i>Gün <span class="text-danger">*</span>
-             </label>
-    <select asp-for="GunId" class="form-select" asp-items="ViewBag.Gunler">
-           <option value="">-- Gün Seçiniz --</option>
-       </select>
-           <span asp-validation-for="GunId" class="text-danger"></span>
+             <label class="form-label">
+       <i class="fas fa-calendar-day me-1"></i>Günler <span class="text-danger">*</span>
+        </label>
+ <small class="form-text text-muted d-block mb-2">Seansýn yapýlacaðý günleri seçin (Birden fazla gün seçebilirsiniz)</small>
+      <div class="row">
+      @{
+  var gunler = ViewBag.Gunler as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>;
+  if (gunler != null)
+      {
+       foreach (var gun in gunler)
+   {
+       <div class="col-md-4 col-sm-6 mb-2">
+       <div class="form-check">
+    <input class="form-check-input" 
+        type="checkbox" 
+      name="SelectedGunIds" 
+    value="@gun.Value" 
+    id="gun_@gun.Value" />
+        <label class="form-check-label" for="gun_@gun.Value">
+      <i class="fas fa-calendar-day me-1"></i>@gun.Text
+   </label>
+       </div>
+      </div>
+      }
+       }
+   }
  </div>
+  <span class="text-danger" id="gun-error"></span>
+        </div>
 
          <div class="mb-3">
         <label asp-for="SeansAdi" class="form-label">
@@ -113,33 +134,61 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-  <script>
-        // Baþlangýç ve bitiþ saati validasyonu
-        document.querySelector('form').addEventListener('submit', function(e) {
-            const baslangic = document.querySelector('input[name="SeansBaslangicSaati"]').value;
-            const bitis = document.querySelector('input[name="SeansBitisSaati"]').value;
-   
-  if (baslangic && bitis && baslangic >= bitis) {
-             e.preventDefault();
+   <script>
+        // Gündeðiþiklik kontrolü
+  const gunCheckboxes = document.querySelectorAll('input[name="SelectedGunIds"]');
+        const gunError = document.getElementById('gun-error');
+    const form = document.querySelector('form');
+
+   form.addEventListener('submit', function(e) {
+  const checkedBoxes = document.querySelectorAll('input[name="SelectedGunIds"]:checked');
+  
+       if (checkedBoxes.length === 0) {
+     e.preventDefault();
+   gunError.textContent = 'En az bir gün seçmelisiniz.';
+gunError.style.display = 'block';
+    return false;
+   } else {
+       gunError.textContent = '';
+        gunError.style.display = 'none';
+       }
+
+   // Baþlangýç ve bitiþ saati validasyonu
+    const baslangic = document.querySelector('input[name="SeansBaslangicSaati"]').value;
+    const bitis = document.querySelector('input[name="SeansBitisSaati"]').value;
+      
+       if (baslangic && bitis && baslangic >= bitis) {
+  e.preventDefault();
      alert('Bitiþ saati, baþlangýç saatinden sonra olmalýdýr!');
- return false;
-          }
-        });
+   return false;
+    }
+ });
+
+        // Checkbox deðiþiminde hata mesajýný temizle
+  gunCheckboxes.forEach(checkbox => {
+       checkbox.addEventListener('change', function() {
+       const checkedBoxes = document.querySelectorAll('input[name="SelectedGunIds"]:checked');
+  if (checkedBoxes.length > 0) {
+  gunError.textContent = '';
+      gunError.style.display = 'none';
+       }
+  });
+   });
 
         // Kapasite ve mevcut validasyonu
-        const kapasiteInput = document.querySelector('input[name="SeansKapasitesi"]');
-        const mevcutInput = document.querySelector('input[name="SeansMevcudu"]');
-        
+  const kapasiteInput = document.querySelector('input[name="SeansKapasitesi"]');
+ const mevcutInput = document.querySelector('input[name="SeansMevcudu"]');
+   
         if (kapasiteInput && mevcutInput) {
-       mevcutInput.addEventListener('change', function() {
- const kapasite = parseInt(kapasiteInput.value) || 0;
-          const mevcut = parseInt(mevcutInput.value) || 0;
-       
-     if (kapasite > 0 && mevcut > kapasite) {
-              alert('Mevcut sayýsý, kapasite deðerinden fazla olamaz!');
+mevcutInput.addEventListener('change', function() {
+      const kapasite = parseInt(kapasiteInput.value) || 0;
+      const mevcut = parseInt(mevcutInput.value) || 0;
+      
+   if (kapasite > 0 && mevcut > kapasite) {
+   alert('Mevcut sayýsý, kapasite deðerinden fazla olamaz!');
      mevcutInput.value = kapasite;
-                }
+ }
     });
-        }
+  }
     </script>
 }

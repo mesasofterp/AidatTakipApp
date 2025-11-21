@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace StudentApp.Models
 {
@@ -26,7 +27,16 @@ namespace StudentApp.Models
         [Display(Name = "Seans Mevcudu")]
         public int? SeansMevcudu { get; set; }
 
-        public long GunId { get; set; }
-        public Gunler Gun { get; set; }
+        // Backward compatibility - Deprecated, use SeansGunler collection instead
+        [NotMapped]
+        public long? GunId { get; set; }
+
+        [ValidateNever]
+        [NotMapped]
+        public Gunler? Gun { get; set; }
+
+        // Many-to-Many relationship with Gunler through SeansGunler
+        [ValidateNever]
+        public ICollection<SeansGunler> SeansGunler { get; set; } = new List<SeansGunler>();
     }
 }

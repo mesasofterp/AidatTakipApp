@@ -5,113 +5,138 @@ using StudentApp.Models;
 namespace StudentApp.Services
 {
     public class SeanslarService : ISeanslarService
- {
+    {
         private readonly AppDbContext _context;
 
         public SeanslarService(AppDbContext context)
- {
-         _context = context;
+        {
+            _context = context;
         }
 
         public async Task<IEnumerable<Seanslar>> GetAllSeanslarAsync()
         {
-      return await _context.Seanslar
-    .Include(s => s.Gun)
-    .Where(s => !s.IsDeleted)
-     .OrderBy(s => s.Gun.Gun)
-.ThenBy(s => s.SeansBaslangicSaati)
-       .ToListAsync();
+            return await _context.Seanslar
+     .Include(s => s.SeansGunler)
+     .Where(s => !s.IsDeleted)
+     .OrderBy(s => s.SeansAdi)
+   .ToListAsync();
         }
 
-     public async Task<Seanslar?> GetSeansByIdAsync(long id)
-        {
-  return await _context.Seanslar
-     .Include(s => s.Gun)
-       .Where(s => !s.IsDeleted)
-    .FirstOrDefaultAsync(s => s.Id == id);
-        }
+    public async Task<Seanslar?> GetSeansByIdAsync(long id)
+      {
+        return await _context.Seanslar
+                .Include(s => s.SeansGunler)
+     .Where(s => !s.IsDeleted)
+             .FirstOrDefaultAsync(s => s.Id == id);
+      }
 
         public async Task<Seanslar> AddSeansAsync(Seanslar seans)
         {
-       seans.IsDeleted = false;
+     seans.IsDeleted = false;
        seans.Aktif = true;
-  seans.Version = 0;
+            seans.Version = 0;
 
-            _context.Seanslar.Add(seans);
-  await _context.SaveChangesAsync();
+        _context.Seanslar.Add(seans);
+   await _context.SaveChangesAsync();
 
-        return seans;
-  }
+            return seans;
+        }
 
         public async Task<Seanslar?> UpdateSeansAsync(Seanslar seans)
         {
-var existingSeans = await _context.Seanslar
-     .Where(s => !s.IsDeleted)
+         var existingSeans = await _context.Seanslar
+   .Where(s => !s.IsDeleted)
       .FirstOrDefaultAsync(s => s.Id == seans.Id);
 
-            if (existingSeans == null)
-        return null;
+         if (existingSeans == null)
+      return null;
 
-          existingSeans.SeansAdi = seans.SeansAdi;
-    existingSeans.GunId = seans.GunId;
-   existingSeans.SeansBaslangicSaati = seans.SeansBaslangicSaati;
-          existingSeans.SeansBitisSaati = seans.SeansBitisSaati;
-    existingSeans.SeansKapasitesi = seans.SeansKapasitesi;
- existingSeans.SeansMevcudu = seans.SeansMevcudu;
-            existingSeans.Aciklama = seans.Aciklama;
-     existingSeans.Version++;
+     existingSeans.SeansAdi = seans.SeansAdi;
+            // GunId artýk NotMapped, güncellemiyoruz
+            existingSeans.SeansBaslangicSaati = seans.SeansBaslangicSaati;
+    existingSeans.SeansBitisSaati = seans.SeansBitisSaati;
+          existingSeans.SeansKapasitesi = seans.SeansKapasitesi;
+    existingSeans.SeansMevcudu = seans.SeansMevcudu;
+       existingSeans.Aciklama = seans.Aciklama;
+   existingSeans.Version++;
 
-    await _context.SaveChangesAsync();
-        return existingSeans;
+      await _context.SaveChangesAsync();
+  return existingSeans;
       }
 
         public async Task<bool> DeleteSeansAsync(long id)
         {
-            var seans = await _context.Seanslar
+     var seans = await _context.Seanslar
          .Where(s => !s.IsDeleted)
-              .FirstOrDefaultAsync(s => s.Id == id);
+         .FirstOrDefaultAsync(s => s.Id == id);
 
-            if (seans == null)
-       return false;
+    if (seans == null)
+            return false;
 
     // Bu seansa kayýtlý öðrencileri kontrol et
-       var ogrencilerCount = await _context.Ogrenciler
-    .Where(o => o.SeansId == id && !o.IsDeleted)
-                .CountAsync();
+            var ogrencilerCount = await _context.Ogrenciler
+        .Where(o => o.SeansId == id && !o.IsDeleted)
+  .CountAsync();
 
-          if (ogrencilerCount > 0)
-{
-                throw new InvalidOperationException($"Bu seansa kayýtlý {ogrencilerCount} öðrenci bulunmaktadýr. Önce öðrencilerin seans bilgilerini güncelleyiniz.");
+  if (ogrencilerCount > 0)
+            {
+     throw new InvalidOperationException($"Bu seansa kayýtlý {ogrencilerCount} öðrenci bulunmaktadýr. Önce öðrencilerin seans bilgilerini güncelleyiniz.");
             }
 
-         // Soft delete
+            // Soft delete
        seans.IsDeleted = true;
-   seans.Aktif = false;
+            seans.Aktif = false;
 
-   await _context.SaveChangesAsync();
-            return true;
-   }
+     await _context.SaveChangesAsync();
+      return true;
+        }
 
         public async Task<IEnumerable<Seanslar>> GetSeansByGunIdAsync(long gunId)
         {
-            return await _context.Seanslar
- .Include(s => s.Gun)
-      .Where(s => s.GunId == gunId && !s.IsDeleted)
-                .OrderBy(s => s.SeansBaslangicSaati)
-             .ToListAsync();
+      // SeansGunler üzerinden günlük seanslarý getir
+     return await _context.SeansGunler
+       .Include(sg => sg.Seans)
+     .Where(sg => sg.GunId == gunId && !sg.IsDeleted && !sg.Seans.IsDeleted)
+            .Select(sg => sg.Seans)
+    .OrderBy(s => s.SeansBaslangicSaati)
+     .ToListAsync();
+     }
+
+  public async Task<bool> CheckSeansKapasitesiAsync(long seansId)
+        {
+    var seans = await GetSeansByIdAsync(seansId);
+    if (seans == null || !seans.SeansKapasitesi.HasValue)
+      return true;
+
+        var mevcutOgrenciSayisi = await _context.Ogrenciler
+                .Where(o => o.SeansId == seansId && !o.IsDeleted && o.Aktif)
+    .CountAsync();
+
+    return mevcutOgrenciSayisi < seans.SeansKapasitesi.Value;
         }
 
-        public async Task<bool> CheckSeansKapasitesiAsync(long seansId)
-   {
-            var seans = await GetSeansByIdAsync(seansId);
-         if (seans == null || !seans.SeansKapasitesi.HasValue)
-   return true;
+public async Task UpdateSeansMevcuduAsync(long seansId, int delta)
+        {
+            var seans = await _context.Seanslar.FindAsync(seansId);
+            if (seans != null)
+        {
+      seans.SeansMevcudu = (seans.SeansMevcudu ?? 0) + delta;
+                if (seans.SeansMevcudu < 0) seans.SeansMevcudu = 0;
+      await _context.SaveChangesAsync();
+   }
+        }
 
-            var mevcutOgrenciSayisi = await _context.Ogrenciler
-                .Where(o => o.SeansId == seansId && !o.IsDeleted && o.Aktif)
-                .CountAsync();
-
-     return mevcutOgrenciSayisi < seans.SeansKapasitesi.Value;
+        public async Task RecalculateSeansMevcuduAsync(long seansId)
+        {
+            var seans = await _context.Seanslar.FindAsync(seansId);
+   if (seans != null)
+            {
+         var mevcutOgrenciSayisi = await _context.Ogrenciler
+    .Where(o => o.SeansId == seansId && !o.IsDeleted && o.Aktif)
+   .CountAsync();
+             seans.SeansMevcudu = mevcutOgrenciSayisi;
+       await _context.SaveChangesAsync();
+        }
         }
     }
 }
