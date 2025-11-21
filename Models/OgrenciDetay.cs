@@ -39,6 +39,14 @@ namespace StudentApp.Models
         [Display(Name = "Okul Hocası Telefon")]
         public string? OkulHocasiTelefon { get; set; }
 
+        [Display(Name = "Okul Giriş Saati")]
+        [DataType(DataType.Time)]
+        public TimeSpan? OkulGirisSaati { get; set; }
+
+        [Display(Name = "Okul Çıkış Saati")]
+        [DataType(DataType.Time)]
+        public TimeSpan? OkulCikisSaati { get; set; }
+
         [ValidateNever]
         public Ogrenciler Ogrenci { get; set; }
     }

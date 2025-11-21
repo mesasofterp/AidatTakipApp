@@ -1,0 +1,116 @@
+@model StudentApp.Models.Seanslar
+
+@{
+    ViewData["Title"] = "Seans Düzenle";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+ <div class="card shadow-lg border-0">
+      <div class="card-header bg-warning text-dark">
+       <h4 class="mb-0"><i class="fas fa-edit me-2"></i>Seans Düzenle</h4>
+            </div>
+            <div class="card-body">
+    <form asp-action="Edit" method="post">
+ <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+      <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+   <label asp-for="GunId" class="form-label">
+       <i class="fas fa-calendar-day me-1"></i>Gün <span class="text-danger">*</span>
+     </label>
+       <select asp-for="GunId" class="form-select" asp-items="ViewBag.Gunler">
+       <option value="">-- Gün Seçiniz --</option>
+ </select>
+       <span asp-validation-for="GunId" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+      <label asp-for="SeansAdi" class="form-label">
+        <i class="fas fa-tag me-1"></i>Seans Adý <span class="text-danger">*</span>
+            </label>
+     <input asp-for="SeansAdi" class="form-control" />
+     <span asp-validation-for="SeansAdi" class="text-danger"></span>
+ </div>
+
+       <div class="row">
+   <div class="col-md-6 mb-3">
+     <label asp-for="SeansBaslangicSaati" class="form-label">
+        <i class="fas fa-play-circle me-1"></i>Baþlangýç Saati <span class="text-danger">*</span>
+     </label>
+    <div class="input-group">
+    <span class="input-group-text"><i class="fas fa-clock"></i></span>
+<input asp-for="SeansBaslangicSaati" type="time" class="form-control" />
+     </div>
+          <span asp-validation-for="SeansBaslangicSaati" class="text-danger"></span>
+    </div>
+<div class="col-md-6 mb-3">
+   <label asp-for="SeansBitisSaati" class="form-label">
+  <i class="fas fa-stop-circle me-1"></i>Bitiþ Saati <span class="text-danger">*</span>
+        </label>
+  <div class="input-group">
+    <span class="input-group-text"><i class="fas fa-clock"></i></span>
+  <input asp-for="SeansBitisSaati" type="time" class="form-control" />
+</div>
+   <span asp-validation-for="SeansBitisSaati" class="text-danger"></span>
+        </div>
+</div>
+
+       <div class="row">
+      <div class="col-md-6 mb-3">
+  <label asp-for="SeansKapasitesi" class="form-label">
+ <i class="fas fa-users me-1"></i>Seans Kapasitesi
+    </label>
+   <div class="input-group">
+        <span class="input-group-text"><i class="fas fa-users"></i></span>
+    <input asp-for="SeansKapasitesi" type="number" class="form-control" min="1" />
+    </div>
+  <span asp-validation-for="SeansKapasitesi" class="text-danger"></span>
+  <small class="form-text text-muted">Opsiyonel - Boþ býrakýlýrsa sýnýrsýz</small>
+            </div>
+   <div class="col-md-6 mb-3">
+  <label asp-for="SeansMevcudu" class="form-label">
+ <i class="fas fa-user-check me-1"></i>Seans Mevcudu
+    </label>
+  <div class="input-group">
+  <span class="input-group-text"><i class="fas fa-user-check"></i></span>
+      <input asp-for="SeansMevcudu" type="number" class="form-control" min="0" />
+         </div>
+<span asp-validation-for="SeansMevcudu" class="text-danger"></span>
+   </div>
+    </div>
+
+       <div class="mb-3">
+   <label asp-for="Aciklama" class="form-label">
+        <i class="fas fa-sticky-note me-1"></i>Notlar / Açýklama
+  </label>
+         <textarea asp-for="Aciklama" class="form-control" rows="3"></textarea>
+   <span asp-validation-for="Aciklama" class="text-danger"></span>
+   </div>
+
+       <div class="mb-3">
+   <div class="form-check form-switch">
+    <input asp-for="Aktif" class="form-check-input" type="checkbox" role="switch" />
+  <label asp-for="Aktif" class="form-check-label">Seans Aktif</label>
+    </div>
+          </div>
+
+        <div class="d-flex justify-content-between gap-2 mt-4">
+     <a asp-action="Index" class="btn btn-secondary">
+ <i class="fas fa-arrow-left me-1"></i>Listeye Dön
+   </a>
+        <button type="submit" class="btn btn-warning">
+        <i class="fas fa-save me-1"></i>Deðiþiklikleri Kaydet
+ </button>
+        </div>
+  </form>
+     </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

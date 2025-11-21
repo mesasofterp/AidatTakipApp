@@ -161,6 +161,12 @@ namespace StudentApp.Controllers
         public async Task<IActionResult> Create()
         {
             await LoadDropdownsAsync();
+
+            // Envanter fiyatlarını ViewBag'e ekle
+            var envanterler = await _envanterlerService.GetActiveAsync();
+            var envanterFiyatlari = envanterler.ToDictionary(e => e.Id, e => e.SatisFiyat);
+            ViewBag.EnvanterFiyatlari = envanterFiyatlari;
+
             return View();
         }
 
@@ -186,56 +192,70 @@ namespace StudentApp.Controllers
 
             // Kilo için InvariantCulture ile parse et
             if (Request.Form.ContainsKey("Kilo"))
-       {
-    var kiloValue = Request.Form["Kilo"].ToString();
-  if (!string.IsNullOrWhiteSpace(kiloValue))
-                {
-            if (decimal.TryParse(kiloValue, System.Globalization.NumberStyles.Number,
-        System.Globalization.CultureInfo.InvariantCulture, out decimal parsedKilo))
-          {
-      ogrenci.Kilo = parsedKilo;
-             }
-       }
-           else
-    {
-    ogrenci.Kilo = null;
-           }
-         }
-
-         // EnvanterSatislari için OdenenTutar değerlerini Request.Form'dan al ve InvariantCulture ile parse et
-      if (EnvanterSatislari != null && EnvanterSatislari.Any())
             {
-    for (int i = 0; i < EnvanterSatislari.Count; i++)
-      {
-   var formKey = $"EnvanterSatislari[{i}].OdenenTutar";
-   if (Request.Form.ContainsKey(formKey))
-      {
-          var formValue = Request.Form[formKey].ToString();
-             if (decimal.TryParse(formValue, System.Globalization.NumberStyles.Number,
-  System.Globalization.CultureInfo.InvariantCulture, out decimal parsedValue))
-           {
-            EnvanterSatislari[i].OdenenTutar = parsedValue;
-       }
-        }
-       }
-  }
+                var kiloValue = Request.Form["Kilo"].ToString();
+                if (!string.IsNullOrWhiteSpace(kiloValue))
+                {
+                    if (decimal.TryParse(kiloValue, System.Globalization.NumberStyles.Number,
+                System.Globalization.CultureInfo.InvariantCulture, out decimal parsedKilo))
+                    {
+                        ogrenci.Kilo = parsedKilo;
+                    }
+                }
+                else
+                {
+                    ogrenci.Kilo = null;
+                }
+            }
+
+            // EnvanterSatislari için OdenenTutar ve KalanTutar değerlerini Request.Form'dan al ve InvariantCulture ile parse et
+            if (EnvanterSatislari != null && EnvanterSatislari.Any())
+            {
+                for (int i = 0; i < EnvanterSatislari.Count; i++)
+                {
+                    // OdenenTutar
+                    var odenenFormKey = $"EnvanterSatislari[{i}].OdenenTutar";
+                    if (Request.Form.ContainsKey(odenenFormKey))
+                    {
+                        var formValue = Request.Form[odenenFormKey].ToString();
+                        if (decimal.TryParse(formValue, System.Globalization.NumberStyles.Number,
+                    System.Globalization.CultureInfo.InvariantCulture, out decimal parsedValue))
+                        {
+                            EnvanterSatislari[i].OdenenTutar = parsedValue;
+                        }
+                    }
+
+                    // KalanTutar
+                    var kalanFormKey = $"EnvanterSatislari[{i}].KalanTutar";
+                    if (Request.Form.ContainsKey(kalanFormKey))
+                    {
+                        var formValue = Request.Form[kalanFormKey].ToString();
+                        if (decimal.TryParse(formValue, System.Globalization.NumberStyles.Number,
+                             System.Globalization.CultureInfo.InvariantCulture, out decimal parsedKalan))
+                        {
+                            EnvanterSatislari[i].KalanTutar = parsedKalan;
+                        }
+                    }
+                }
+            }
 
             if (ModelState.IsValid)
-     {
-     try
-   {
-        // İlk Taksit Son Ödeme Tarihi girilmemişse, Kayıt Tarihi ile doldur
-          if (!ogrenci.IlkTaksitSonOdemeTarihi.HasValue)
-         {
-      ogrenci.IlkTaksitSonOdemeTarihi = ogrenci.KayitTarihi;
-         }
+            {
+                try
+                {
+                    // İlk Taksit Son Ödeme Tarihi girilmemişse, Kayıt Tarihi ile doldur
+                    if (!ogrenci.IlkTaksitSonOdemeTarihi.HasValue)
+                    {
+                        ogrenci.IlkTaksitSonOdemeTarihi = ogrenci.KayitTarihi;
+                    }
 
-        await _ogrenciService.AddOgrenciAsync(ogrenci);
+                    await _ogrenciService.AddOgrenciAsync(ogrenci);
 
                     // OgrenciDetay kaydı oluştur (varsa)
                     if (ogrenciDetay != null && (ogrenciDetay.VeliAdSoyad != null || ogrenciDetay.VeliTelefonNumarasi != null ||
                         ogrenciDetay.OkulAdi != null || ogrenciDetay.OkulAdresi != null || ogrenciDetay.Sinif != null ||
-                        ogrenciDetay.OkulHocasiAdSoyad != null || ogrenciDetay.OkulHocasiTelefon != null))
+                        ogrenciDetay.OkulHocasiAdSoyad != null || ogrenciDetay.OkulHocasiTelefon != null ||
+         ogrenciDetay.OkulGirisSaati.HasValue || ogrenciDetay.OkulCikisSaati.HasValue))
                     {
                         ogrenciDetay.OgrenciId = ogrenci.Id;
                         ogrenciDetay.Aktif = true;
@@ -277,6 +297,8 @@ namespace StudentApp.Controllers
                                 EnvanterId = satisViewModel.EnvanterId,
                                 SatisTarihi = satisViewModel.SatisTarihi ?? DateTime.Now,
                                 OdenenTutar = satisViewModel.OdenenTutar,
+                                KalanTutar = satisViewModel.KalanTutar,
+                                KalanTutarTahsilTarihi = satisViewModel.KalanTutarTahsilTarihi,
                                 SatisAdet = satisAdedi,
                                 Aciklama = satisViewModel.Aciklama,
                                 Aktif = true,
@@ -390,11 +412,18 @@ namespace StudentApp.Controllers
                SatisTarihi = e.SatisTarihi,
                SatisAdet = e.SatisAdet,
                OdenenTutar = e.OdenenTutar,
+               KalanTutar = e.KalanTutar,
+               KalanTutarTahsilTarihi = e.KalanTutarTahsilTarihi,
                Aciklama = e.Aciklama
            })
                 .ToListAsync();
 
             ViewBag.MevcutEnvanterSatislari = mevcutSatislar;
+
+            // Envanter fiyatlarını ViewBag'e ekle
+            var envanterler = await _envanterlerService.GetActiveAsync();
+            var envanterFiyatlari = envanterler.ToDictionary(e => e.Id, e => e.SatisFiyat);
+            ViewBag.EnvanterFiyatlari = envanterFiyatlari;
 
             await LoadDropdownsAsync();
             return View(ogrenci);
@@ -425,23 +454,23 @@ namespace StudentApp.Controllers
 
             // Kilo için InvariantCulture ile parse et
             if (Request.Form.ContainsKey("Kilo"))
-      {
-        var kiloValue = Request.Form["Kilo"].ToString();
-       if (!string.IsNullOrWhiteSpace(kiloValue))
-        {
-    if (decimal.TryParse(kiloValue, System.Globalization.NumberStyles.Number,
-     System.Globalization.CultureInfo.InvariantCulture, out decimal parsedKilo))
-       {
-       ogrenci.Kilo = parsedKilo;
-      }
-       }
-    else
-      {
-      ogrenci.Kilo = null;
-       }
-           }
+            {
+                var kiloValue = Request.Form["Kilo"].ToString();
+                if (!string.IsNullOrWhiteSpace(kiloValue))
+                {
+                    if (decimal.TryParse(kiloValue, System.Globalization.NumberStyles.Number,
+                     System.Globalization.CultureInfo.InvariantCulture, out decimal parsedKilo))
+                    {
+                        ogrenci.Kilo = parsedKilo;
+                    }
+                }
+                else
+                {
+                    ogrenci.Kilo = null;
+                }
+            }
 
-            // EnvanterSatislari için OdenenTutar değerlerini Request.Form'dan al ve InvariantCulture ile parse et
+            // EnvanterSatislari için OdenenTutar ve KalanTutar değerlerini Request.Form'dan al ve InvariantCulture ile parse et
             if (EnvanterSatislari != null && EnvanterSatislari.Any())
             {
                 for (int i = 0; i < EnvanterSatislari.Count; i++)
@@ -454,6 +483,17 @@ namespace StudentApp.Controllers
       System.Globalization.CultureInfo.InvariantCulture, out decimal parsedValue))
                         {
                             EnvanterSatislari[i].OdenenTutar = parsedValue;
+                        }
+                    }
+
+                    formKey = $"EnvanterSatislari[{i}].KalanTutar";
+                    if (Request.Form.ContainsKey(formKey))
+                    {
+                        var formValue = Request.Form[formKey].ToString();
+                        if (decimal.TryParse(formValue, System.Globalization.NumberStyles.Number,
+      System.Globalization.CultureInfo.InvariantCulture, out decimal parsedKalan))
+                        {
+                            EnvanterSatislari[i].KalanTutar = parsedKalan;
                         }
                     }
                 }
@@ -482,6 +522,20 @@ namespace StudentApp.Controllers
                         return !string.IsNullOrWhiteSpace(formValue) ? formValue : null;
                     }
 
+                    TimeSpan? GetTimeSpanValue(string key, TimeSpan? modelValue)
+                    {
+                        // Önce model binding'den gelen değeri kontrol et
+                        if (modelValue.HasValue)
+                            return modelValue;
+
+                        // Model binding'den değer yoksa Request.Form'dan oku
+                        var formValue = Request.Form[$"OgrenciDetay.{key}"].ToString();
+                        if (!string.IsNullOrWhiteSpace(formValue) && TimeSpan.TryParse(formValue, out var timeValue))
+                            return timeValue;
+
+                        return null;
+                    }
+
                     var veliAdSoyad = GetFormValue("VeliAdSoyad", ogrenciDetay?.VeliAdSoyad);
                     var veliTelefon = GetFormValue("VeliTelefonNumarasi", ogrenciDetay?.VeliTelefonNumarasi);
                     var okulAdi = GetFormValue("OkulAdi", ogrenciDetay?.OkulAdi);
@@ -489,13 +543,16 @@ namespace StudentApp.Controllers
                     var sinif = GetFormValue("Sinif", ogrenciDetay?.Sinif);
                     var okulHocasiAdSoyad = GetFormValue("OkulHocasiAdSoyad", ogrenciDetay?.OkulHocasiAdSoyad);
                     var okulHocasiTelefon = GetFormValue("OkulHocasiTelefon", ogrenciDetay?.OkulHocasiTelefon);
+                    var okulGirisSaati = GetTimeSpanValue("OkulGirisSaati", ogrenciDetay?.OkulGirisSaati);
+                    var okulCikisSaati = GetTimeSpanValue("OkulCikisSaati", ogrenciDetay?.OkulCikisSaati);
 
                     // En az bir alan dolu mu kontrol et
                     bool enAzBirAlanDolu = veliAdSoyad != null || veliTelefon != null || okulAdi != null ||
-                                            okulAdresi != null || sinif != null || okulHocasiAdSoyad != null || okulHocasiTelefon != null;
+                            okulAdresi != null || sinif != null || okulHocasiAdSoyad != null || okulHocasiTelefon != null ||
+                      okulGirisSaati.HasValue || okulCikisSaati.HasValue;
 
                     var mevcutDetay = await _context.OgrenciDetay
-                        .FirstOrDefaultAsync(d => d.OgrenciId == ogrenci.Id && !d.IsDeleted);
+                  .FirstOrDefaultAsync(d => d.OgrenciId == ogrenci.Id && !d.IsDeleted);
 
                     if (mevcutDetay != null)
                     {
@@ -507,6 +564,8 @@ namespace StudentApp.Controllers
                         mevcutDetay.Sinif = sinif;
                         mevcutDetay.OkulHocasiAdSoyad = okulHocasiAdSoyad;
                         mevcutDetay.OkulHocasiTelefon = okulHocasiTelefon;
+                        mevcutDetay.OkulGirisSaati = okulGirisSaati;
+                        mevcutDetay.OkulCikisSaati = okulCikisSaati;
                         mevcutDetay.Version++;
                         _context.OgrenciDetay.Update(mevcutDetay);
                     }
@@ -523,6 +582,8 @@ namespace StudentApp.Controllers
                             Sinif = sinif,
                             OkulHocasiAdSoyad = okulHocasiAdSoyad,
                             OkulHocasiTelefon = okulHocasiTelefon,
+                            OkulGirisSaati = okulGirisSaati,
+                            OkulCikisSaati = okulCikisSaati,
                             Aktif = true,
                             IsDeleted = false,
                             Version = 0
@@ -583,6 +644,8 @@ namespace StudentApp.Controllers
                                     // Diğer alanları güncelle
                                     mevcutSatis.SatisTarihi = satisViewModel.SatisTarihi ?? DateTime.Now;
                                     mevcutSatis.OdenenTutar = satisViewModel.OdenenTutar;
+                                    mevcutSatis.KalanTutar = satisViewModel.KalanTutar;
+                                    mevcutSatis.KalanTutarTahsilTarihi = satisViewModel.KalanTutarTahsilTarihi;
                                     mevcutSatis.SatisAdet = satisViewModel.SatisAdet;
                                     mevcutSatis.Aciklama = satisViewModel.Aciklama;
                                     _context.OgrenciEnvanterSatis.Update(mevcutSatis);
@@ -618,6 +681,8 @@ namespace StudentApp.Controllers
                                 EnvanterId = satisViewModel.EnvanterId,
                                 SatisTarihi = satisViewModel.SatisTarihi ?? DateTime.Now,
                                 OdenenTutar = satisViewModel.OdenenTutar,
+                                KalanTutar = satisViewModel.KalanTutar,
+                                KalanTutarTahsilTarihi = satisViewModel.KalanTutarTahsilTarihi,
                                 SatisAdet = satisAdedi,
                                 Aciklama = satisViewModel.Aciklama,
                                 Aktif = true,
@@ -654,37 +719,59 @@ namespace StudentApp.Controllers
 
             // Hata durumunda mevcut satışları tekrar yükle
             var mevcutSatislar = await _context.OgrenciEnvanterSatis
-          .Include(e => e.Envanter)
-               .Where(e => e.OgrenciId == id && !e.IsDeleted && e.Aktif)
-         .OrderByDescending(e => e.SatisTarihi)
-        .Select(e => new EnvanterSatisViewModel
-        {
-            Id = e.Id,
-            EnvanterId = e.EnvanterId,
-            EnvanterAdi = e.Envanter.EnvanterAdi,
-            SatisTarihi = e.SatisTarihi,
-            SatisAdet = e.SatisAdet,
-            OdenenTutar = e.OdenenTutar,
-            Aciklama = e.Aciklama
-        })
-              .ToListAsync();
+  .Include(e => e.Envanter)
+                .Where(e => e.OgrenciId == id && !e.IsDeleted && e.Aktif)
+        .OrderByDescending(e => e.SatisTarihi)
+   .Select(e => new EnvanterSatisViewModel
+   {
+       Id = e.Id,
+       EnvanterId = e.EnvanterId,
+       EnvanterAdi = e.Envanter.EnvanterAdi,
+       SatisTarihi = e.SatisTarihi,
+       SatisAdet = e.SatisAdet,
+       OdenenTutar = e.OdenenTutar,
+       KalanTutar = e.KalanTutar,
+       KalanTutarTahsilTarihi = e.KalanTutarTahsilTarihi,
+       Aciklama = e.Aciklama
+   })
+     .ToListAsync();
 
             ViewBag.MevcutEnvanterSatislari = mevcutSatislar;
+
+            // Envanter fiyatlarını yeniden yükle
+            var envanterler = await _envanterlerService.GetActiveAsync();
+            var envanterFiyatlari = envanterler.ToDictionary(e => e.Id, e => e.SatisFiyat);
+            ViewBag.EnvanterFiyatlari = envanterFiyatlari;
 
             await LoadDropdownsAsync();
             return View(ogrenci);
         }
+
         // GET: Student/Delete/5
         [PageAuthorize("Ogrenciler.Delete")]
         public async Task<IActionResult> Delete(long id)
         {
-            var ogrenci = await _ogrenciService.GetOgrenciByIdAsync(id);
-            if (ogrenci == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            return View(ogrenci);
+            try
+            {
+                var envanter = await _ogrenciService.GetOgrenciByIdAsync(id.Value);
+
+                if (envanter == null)
+                {
+                    return NotFound();
+                }
+
+                return View(envanter);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Öğrenci yüklenirken bir hata oluştu.";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         // POST: Student/Delete/5
@@ -696,9 +783,10 @@ namespace StudentApp.Controllers
             try
             {
                 var result = await _ogrenciService.DeleteOgrenciAsync(id);
+
                 if (result)
                 {
-                    TempData["SuccessMessage"] = "Öğrenci başarıyla silindi!";
+                    TempData["SuccessMessage"] = "Öğrenci başarıyla silindi.";
                 }
                 else
                 {
@@ -724,8 +812,8 @@ namespace StudentApp.Controllers
                 if (result)
                 {
                     TempData["SuccessMessage"] = aktif
-               ? "Öğrenci başarıyla aktif hale getirildi!"
-                 : "Öğrenci başarıyla pasif hale getirildi!";
+                            ? "Öğrenci başarıyla aktif hale getirildi!"
+                          : "Öğrenci başarıyla pasif hale getirildi!";
                 }
                 else
                 {
@@ -770,20 +858,20 @@ namespace StudentApp.Controllers
                 var template = activeSettings?.MesajSablonu ?? "Sayın [ÖĞRENCİ_ADI] [ÖĞRENCİ_SOYADI], ödemeniz [REFERANS_TARIH] tarihinden beri yapılmamıştır. Lütfen ödemenizi yapınız.";
 
                 var students = await _context.Ogrenciler
-                    .Include(s => s.OdemePlanlari)
-                    .Where(s => selectedIds.Contains(s.Id))
-                    .Select(s => new { s.Id, s.OgrenciAdi, s.OgrenciSoyadi, s.Telefon, s.KayitTarihi, s.SonSmsTarihi, PlanTutar = (decimal?)s.OdemePlanlari.ToplamTutar })
-                    .ToListAsync();
+           .Include(s => s.OdemePlanlari)
+     .Where(s => selectedIds.Contains(s.Id))
+          .Select(s => new { s.Id, s.OgrenciAdi, s.OgrenciSoyadi, s.Telefon, s.KayitTarihi, s.SonSmsTarihi, PlanTutar = (decimal?)s.OdemePlanlari.ToplamTutar })
+    .ToListAsync();
 
                 var latestPayments = await _context.OgrenciOdemeTakvimi
-                    .Where(p => selectedIds.Contains(p.OgrenciId) && !p.IsDeleted && p.OdemeTarihi != null)
-                    .OrderByDescending(p => p.OdemeTarihi).ThenByDescending(p => p.Id)
-                    .ToListAsync();
+            .Where(p => selectedIds.Contains(p.OgrenciId) && !p.IsDeleted && p.OdemeTarihi != null)
+           .OrderByDescending(p => p.OdemeTarihi).ThenByDescending(p => p.Id)
+              .ToListAsync();
 
                 var paymentLookup = latestPayments
-                    .GroupBy(x => x.OgrenciId)
-                    .Select(g => g.First())
-                    .ToDictionary(x => x.OgrenciId, x => x);
+                      .GroupBy(x => x.OgrenciId)
+                .Select(g => g.First())
+                 .ToDictionary(x => x.OgrenciId, x => x);
 
                 var smsList = new List<(string phone, string message)>();
                 var updatableIds = new List<long>();
@@ -799,10 +887,10 @@ namespace StudentApp.Controllers
                     var borc = lastPay?.BorcTutari ?? (s.PlanTutar ?? 0m);
 
                     var message = template
-                        .Replace("[ÖĞRENCİ_ADI]", s.OgrenciAdi ?? "")
-                        .Replace("[ÖĞRENCİ_SOYADI]", s.OgrenciSoyadi ?? "")
-                        .Replace("[GEÇEN_GÜN]", days.ToString())
-                        .Replace("[BORÇ_TUTARI]", borc.ToString("N2"))
+                           .Replace("[ÖĞRENCİ_ADI]", s.OgrenciAdi ?? "")
+                       .Replace("[ÖĞRENCİ_SOYADI]", s.OgrenciSoyadi ?? "")
+                     .Replace("[GEÇEN_GÜN]", days.ToString())
+                     .Replace("[BORÇ_TUTARI]", borc.ToString("N2"))
                         .Replace("[REFERANS_TARIH]", referenceDate.ToString("dd.MM.yyyy"));
                     smsList.Add((s.Telefon!, message));
                     updatableIds.Add(s.Id);
@@ -842,27 +930,27 @@ namespace StudentApp.Controllers
                 return BadRequest("Seçim yok");
 
             var rows = await _context.Ogrenciler
-         .Include(s => s.Cinsiyet)
-    .Include(s => s.OdemePlanlari)
-     .Where(s => selectedIds.Contains(s.Id))
-     .Select(s => new
-     {
-         s.OgrenciAdi,
-         s.OgrenciSoyadi,
-         s.TCNO,
-         s.Telefon,
-         s.Email,
-         s.DogumTarihi,
-         CinsiyetAdi = s.Cinsiyet != null ? s.Cinsiyet.Cinsiyet : "",
-         s.Adres,
-         s.KayitTarihi,
-         OdemePlani = s.OdemePlanlari != null ? s.OdemePlanlari.KursProgrami : "",
-         ToplamTutar = s.OdemePlanlari != null ? s.OdemePlanlari.ToplamTutar : 0,
-         TaksitSayisi = s.OdemePlanlari != null ? s.OdemePlanlari.TaksitSayisi : 0,
-         s.SonSmsTarihi,
-         s.Aktif
-     })
-         .ToListAsync();
+                   .Include(s => s.Cinsiyet)
+                      .Include(s => s.OdemePlanlari)
+                      .Where(s => selectedIds.Contains(s.Id))
+                 .Select(s => new
+                 {
+                     s.OgrenciAdi,
+                     s.OgrenciSoyadi,
+                     s.TCNO,
+                     s.Telefon,
+                     s.Email,
+                     s.DogumTarihi,
+                     CinsiyetAdi = s.Cinsiyet != null ? s.Cinsiyet.Cinsiyet : "",
+                     s.Adres,
+                     s.KayitTarihi,
+                     OdemePlani = s.OdemePlanlari != null ? s.OdemePlanlari.KursProgrami : "",
+                     ToplamTutar = s.OdemePlanlari != null ? s.OdemePlanlari.ToplamTutar : 0,
+                     TaksitSayisi = s.OdemePlanlari != null ? s.OdemePlanlari.TaksitSayisi : 0,
+                     s.SonSmsTarihi,
+                     s.Aktif
+                 })
+                    .ToListAsync();
 
             using var wb = new XLWorkbook();
             var ws = wb.AddWorksheet("Ogrenciler");
@@ -945,92 +1033,92 @@ namespace StudentApp.Controllers
                 return BadRequest("Seçim yok");
 
             var rows = await _context.Ogrenciler
-       .Include(s => s.Cinsiyet)
-       .Include(s => s.OdemePlanlari)
-.Where(s => selectedIds.Contains(s.Id))
-   .Select(s => new
-   {
-       s.OgrenciAdi,
-       s.OgrenciSoyadi,
-       s.Telefon,
-       s.Email,
-       s.DogumTarihi,
-       CinsiyetAdi = s.Cinsiyet != null ? s.Cinsiyet.Cinsiyet : "",
-       s.KayitTarihi,
-       OdemePlani = s.OdemePlanlari != null ? s.OdemePlanlari.KursProgrami : "",
-       ToplamTutar = s.OdemePlanlari != null ? s.OdemePlanlari.ToplamTutar : 0,
-       TaksitSayisi = s.OdemePlanlari != null ? s.OdemePlanlari.TaksitSayisi : 0,
-       s.SonSmsTarihi,
-       s.Aktif
-   })
- .ToListAsync();
+         .Include(s => s.Cinsiyet)
+          .Include(s => s.OdemePlanlari)
+            .Where(s => selectedIds.Contains(s.Id))
+           .Select(s => new
+           {
+               s.OgrenciAdi,
+               s.OgrenciSoyadi,
+               s.Telefon,
+               s.Email,
+               s.DogumTarihi,
+               CinsiyetAdi = s.Cinsiyet != null ? s.Cinsiyet.Cinsiyet : "",
+               s.KayitTarihi,
+               OdemePlani = s.OdemePlanlari != null ? s.OdemePlanlari.KursProgrami : "",
+               ToplamTutar = s.OdemePlanlari != null ? s.OdemePlanlari.ToplamTutar : 0,
+               TaksitSayisi = s.OdemePlanlari != null ? s.OdemePlanlari.TaksitSayisi : 0,
+               s.SonSmsTarihi,
+               s.Aktif
+           })
+         .ToListAsync();
 
             QuestPDF.Settings.License = LicenseType.Community;
 
             var doc = Document.Create(container =>
-              {
-                  container.Page(page =>
+         {
+             container.Page(page =>
+         {
+             page.Margin(20);
+             page.Header().Text("Öğrenci Listesi").SemiBold().FontSize(16);
+             page.Content().Table(table =>
+         {
+         table.ColumnsDefinition(columns =>
                {
-                      page.Margin(20);
-                      page.Header().Text("Öğrenci Listesi").SemiBold().FontSize(16);
-                      page.Content().Table(table =>
-           {
-              table.ColumnsDefinition(columns =>
- {
-            columns.RelativeColumn(2); // Ad Soyad
-            columns.RelativeColumn(1.5f); // Telefon
-            columns.RelativeColumn(2.5f); // Email
-            columns.RelativeColumn(1.5f); // Doğum Tarihi
-            columns.RelativeColumn(1); // Yaş
-            columns.RelativeColumn(1); // Cinsiyet
-            columns.RelativeColumn(2); // Ödeme Planı
-            columns.RelativeColumn(1.5f); // ToplamTutar
-            columns.RelativeColumn(1); // Taksit Sayısı
-            columns.RelativeColumn(1); // Durum
-        });
+                    columns.RelativeColumn(2); // Ad Soyad
+                    columns.RelativeColumn(1.5f); // Telefon
+                    columns.RelativeColumn(2.5f); // Email
+                    columns.RelativeColumn(1.5f); // Doğum Tarihi
+                    columns.RelativeColumn(1); // Yaş
+                    columns.RelativeColumn(1); // Cinsiyet
+                    columns.RelativeColumn(2); // Ödeme Planı
+                    columns.RelativeColumn(1.5f); // ToplamTutar
+                    columns.RelativeColumn(1); // Taksit Sayısı
+                    columns.RelativeColumn(1); // Durum
+                });
 
-              table.Header(header =>
-   {
-              header.Cell().Element(CellStyle).Text("Ad Soyad").FontSize(9);
-              header.Cell().Element(CellStyle).Text("Telefon").FontSize(9);
-              header.Cell().Element(CellStyle).Text("Email").FontSize(9);
-              header.Cell().Element(CellStyle).Text("Doğum").FontSize(9);
-              header.Cell().Element(CellStyle).Text("Yaş").FontSize(9);
-              header.Cell().Element(CellStyle).Text("Cinsiyet").FontSize(9);
-              header.Cell().Element(CellStyle).Text("Ödeme Planı").FontSize(9);
-              header.Cell().Element(CellStyle).Text("ToplamTutar").FontSize(9);
-              header.Cell().Element(CellStyle).Text("Taksit Sayısı").FontSize(9);
-              header.Cell().Element(CellStyle).Text("Durum").FontSize(9);
+         table.Header(header =>
+     {
+         header.Cell().Element(CellStyle).Text("Ad Soyad").FontSize(9);
+         header.Cell().Element(CellStyle).Text("Telefon").FontSize(9);
+         header.Cell().Element(CellStyle).Text("Email").FontSize(9);
+         header.Cell().Element(CellStyle).Text("Doğum").FontSize(9);
+         header.Cell().Element(CellStyle).Text("Yaş").FontSize(9);
+         header.Cell().Element(CellStyle).Text("Cinsiyet").FontSize(9);
+         header.Cell().Element(CellStyle).Text("Ödeme Planı").FontSize(9);
+         header.Cell().Element(CellStyle).Text("ToplamTutar").FontSize(9);
+         header.Cell().Element(CellStyle).Text("Taksit Sayısı").FontSize(9);
+         header.Cell().Element(CellStyle).Text("Durum").FontSize(9);
 
-              static IContainer CellStyle(IContainer container)
-              {
-                  return container.BorderBottom(1).BorderColor(QuestPDF.Helpers.Colors.Grey.Lighten2).Padding(5);
-              }
-          });
+         static IContainer CellStyle(IContainer container)
+         {
+             return container.BorderBottom(1).BorderColor(QuestPDF.Helpers.Colors.Grey.Lighten2).Padding(5);
+         }
+     });
 
-              var today = DateTime.Today;
-              foreach (var x in rows.OrderBy(o => o.OgrenciSoyadi).ThenBy(o => o.OgrenciAdi))
-              {
-                  var yas = today.Year - x.DogumTarihi.Year;
-                  if (today.DayOfYear < x.DogumTarihi.DayOfYear) yas--;
+         var today = DateTime.Today;
+         foreach (var x in rows.OrderBy(o => o.OgrenciSoyadi).ThenBy(o => o.OgrenciAdi))
+         {
+             var yas = today.Year - x.DogumTarihi.Year;
+             if (today.DayOfYear < x.DogumTarihi.DayOfYear) yas--;
 
-                  table.Cell().Text($"{x.OgrenciAdi} {x.OgrenciSoyadi}").FontSize(8);
-                  table.Cell().Text(x.Telefon ?? "-").FontSize(8);
-                  table.Cell().Text(x.Email ?? "-").FontSize(7);
-                  table.Cell().Text(x.DogumTarihi.ToString("dd.MM.yyyy")).FontSize(8);
-                  table.Cell().Text(yas.ToString()).FontSize(8);
-                  table.Cell().Text(x.CinsiyetAdi).FontSize(8);
-                  table.Cell().Text(x.OdemePlani).FontSize(7);
-                  table.Cell().Text(x.ToplamTutar.ToString("N0") + " ₺").FontSize(8);
-                  table.Cell().Text(x.TaksitSayisi.ToString()).FontSize(8);
-                  table.Cell().Text(x.Aktif ? "✓ Aktif" : "○ Pasif")
-         .FontSize(8)
-      .FontColor(x.Aktif ? QuestPDF.Helpers.Colors.Green.Darken2 : QuestPDF.Helpers.Colors.Grey.Darken1);
-              }
-          });
-                      page.Footer().AlignRight().Text($"Oluşturma: {DateTime.Now:dd.MM.yyyy HH:mm}").FontSize(8);
-                  });
-              });
+             table.Cell().Text($"{x.OgrenciAdi} {x.OgrenciSoyadi}").FontSize(8);
+             table.Cell().Text(x.Telefon ?? "-").FontSize(8);
+             table.Cell().Text(x.Email ?? "-").FontSize(7);
+             table.Cell().Text(x.DogumTarihi.ToString("dd.MM.yyyy")).FontSize(8);
+             table.Cell().Text(yas.ToString()).FontSize(8);
+             table.Cell().Text(x.CinsiyetAdi).FontSize(8);
+             table.Cell().Text(x.OdemePlani).FontSize(7);
+             table.Cell().Text(x.ToplamTutar.ToString("N0") + " ₺").FontSize(8);
+             table.Cell().Text(x.TaksitSayisi.ToString()).FontSize(8);
+             table.Cell().Text(x.Aktif ? "✓ Aktif" : "○ Pasif")
+     .FontSize(8)
+         .FontColor(x.Aktif ? QuestPDF.Helpers.Colors.Green.Darken2 : QuestPDF.Helpers.Colors.Grey.Darken1);
+         }
+     });
+             page.Footer().AlignRight().Text($"Oluşturma: {DateTime.Now:dd.MM.yyyy HH:mm}").FontSize(8);
+         });
+         });
 
             using var ms = new MemoryStream();
             doc.GeneratePdf(ms);

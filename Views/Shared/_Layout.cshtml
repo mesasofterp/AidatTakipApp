@@ -157,6 +157,21 @@
                         <i class="fas fa-money-check-alt me-2"></i>Ödeme Takvimleri
                     </a>
                 </div>
+
+                <!-- Seans Yönetimi -->
+                <button class="accordion @(IsActive("Seanslar") ? "active" : "")">
+                    <i class="fas fa-clock me-2"></i> Seans Yönetimi
+                    <i class="fas fa-chevron-down ms-auto toggle-icon"></i>
+                </button>
+                <div class="panel @(IsActive("Seanslar") ? "active" : "")">
+                    <a class="nav-link @(IsActive("Seanslar", "Index") ? "active" : "")" asp-controller="Seanslar" asp-action="Index">
+                        <i class="fas fa-list me-2"></i>Seanslar
+                    </a>
+                    <a class="nav-link @(IsActive("Seanslar", "Create") ? "active" : "")" asp-controller="Seanslar" asp-action="Create">
+                        <i class="fas fa-plus-circle me-2"></i>Yeni Seans
+                    </a>
+                </div>
+
                 <button class="accordion @(IsActive("Envanterler") ? "active" : "")">
                     <i class="fas fa-boxes me-2"></i> Envanter
                     <i class="fas fa-chevron-down ms-auto toggle-icon"></i>

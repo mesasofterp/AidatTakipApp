@@ -67,8 +67,33 @@ namespace StudentApp.Controllers
          _logger.LogError(ex, "Envanterler listesi y�klenirken hata olu�tu");
                 TempData["ErrorMessage"] = "Envanterler y�klenirken bir hata olu�tu.";
           return View(new List<Envanterler>());
+                if (!string.IsNullOrWhiteSpace(stokDurumu))
+                {
+                    envanterler = stokDurumu switch
+                    {
+                        "stokta" => envanterler.Where(e => e.Adet > 0).ToList(),
+                        "tukendi" => envanterler.Where(e => e.Adet == 0).ToList(),
+                        "azaldi" => envanterler.Where(e => e.Adet > 0 && e.Adet <= 5).ToList(),
+                        _ => envanterler
+                    };
+                    ViewBag.StokDurumu = stokDurumu;
                 }
+
+                var toplamSatisDeger = envanterler.Sum(e => e.Adet * e.SatisFiyat);
+
+                ViewBag.ToplamSatisDeger = toplamSatisDeger;
+                ViewBag.ToplamKalem = envanterler.Count();
+                ViewBag.ToplamAdet = envanterler.Sum(e => e.Adet);
+
+                return View(envanterler);
             }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Envanterler listesi y�klenirken hata olu�tu");
+                TempData["ErrorMessage"] = "Envanterler y�klenirken bir hata olu�tu.";
+                return View(new List<Envanterler>());
+            }
+        }
 
         // GET: Envanterler/Details/5
         [PageAuthorize("Envanterler.Details")]
