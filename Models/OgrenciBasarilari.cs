@@ -31,6 +31,9 @@ namespace StudentApp.Models
 
         [ValidateNever]
         public Ogrenciler Ogrenci { get; set; }
+
+        [ValidateNever]
+        public List<OgrenciBasariMaclari> OgrenciBasariMaclari { get; set; } = new List<OgrenciBasariMaclari>();
     }
 }
 

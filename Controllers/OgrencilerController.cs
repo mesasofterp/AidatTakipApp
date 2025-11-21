@@ -384,6 +384,8 @@ namespace StudentApp.Controllers
                 .Include(s => s.Cinsiyet)
                 .Include(s => s.OdemePlanlari)
                 .Include(s => s.OgrenciDetay)
+                .Include(s => s.OgrenciBasarilari.Where(b => !b.IsDeleted))
+                    .ThenInclude(b => b.OgrenciBasariMaclari.Where(m => !m.IsDeleted))
                 .Where(s => !s.IsDeleted && s.Id == id)
                 .FirstOrDefaultAsync();
 
