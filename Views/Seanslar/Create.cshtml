@@ -1,0 +1,145 @@
+@model StudentApp.Models.Seanslar
+
+@{
+    ViewData["Title"] = "Yeni Seans Ekle";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+     <div class="card shadow-lg border-0">
+  <div class="card-header bg-primary text-white">
+ <h4 class="mb-0"><i class="fas fa-plus me-2"></i>Yeni Seans Ekle</h4>
+</div>
+            <div class="card-body">
+    <form asp-action="Create" method="post">
+       <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+    <div class="mb-3">
+             <label asp-for="GunId" class="form-label">
+           <i class="fas fa-calendar-day me-1"></i>Gün <span class="text-danger">*</span>
+             </label>
+    <select asp-for="GunId" class="form-select" asp-items="ViewBag.Gunler">
+           <option value="">-- Gün Seçiniz --</option>
+       </select>
+           <span asp-validation-for="GunId" class="text-danger"></span>
+ </div>
+
+         <div class="mb-3">
+        <label asp-for="SeansAdi" class="form-label">
+     <i class="fas fa-tag me-1"></i>Seans Adý <span class="text-danger">*</span>
+          </label>
+                 <input asp-for="SeansAdi" class="form-control" placeholder="Örn: Sabah Seansý, Öðleden Sonra Seansý" />
+    <span asp-validation-for="SeansAdi" class="text-danger"></span>
+      <small class="form-text text-muted">Seansý tanýmlayan açýklayýcý bir isim girin</small>
+ </div>
+
+   <div class="row">
+      <div class="col-md-6 mb-3">
+ <label asp-for="SeansBaslangicSaati" class="form-label">
+       <i class="fas fa-play-circle me-1"></i>Baþlangýç Saati <span class="text-danger">*</span>
+</label>
+     <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-clock"></i></span>
+    <input asp-for="SeansBaslangicSaati" type="time" class="form-control" />
+       </div>
+    <span asp-validation-for="SeansBaslangicSaati" class="text-danger"></span>
+         </div>
+   <div class="col-md-6 mb-3">
+        <label asp-for="SeansBitisSaati" class="form-label">
+                   <i class="fas fa-stop-circle me-1"></i>Bitiþ Saati <span class="text-danger">*</span>
+     </label>
+<div class="input-group">
+                 <span class="input-group-text"><i class="fas fa-clock"></i></span>
+       <input asp-for="SeansBitisSaati" type="time" class="form-control" />
+           </div>
+   <span asp-validation-for="SeansBitisSaati" class="text-danger"></span>
+          </div>
+           </div>
+
+              <div class="row">
+  <div class="col-md-6 mb-3">
+    <label asp-for="SeansKapasitesi" class="form-label">
+  <i class="fas fa-users me-1"></i>Seans Kapasitesi
+  </label>
+           <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-users"></i></span>
+        <input asp-for="SeansKapasitesi" type="number" class="form-control" placeholder="Örn: 20" min="1" />
+              </div>
+                  <span asp-validation-for="SeansKapasitesi" class="text-danger"></span>
+        <small class="form-text text-muted">Opsiyonel - Boþ býrakýlýrsa sýnýrsýz</small>
+    </div>
+           <div class="col-md-6 mb-3">
+      <label asp-for="SeansMevcudu" class="form-label">
+      <i class="fas fa-user-check me-1"></i>Seans Mevcudu
+ </label>
+              <div class="input-group">
+        <span class="input-group-text"><i class="fas fa-user-check"></i></span>
+        <input asp-for="SeansMevcudu" type="number" class="form-control" value="0" min="0" />
+            </div>
+       <span asp-validation-for="SeansMevcudu" class="text-danger"></span>
+     <small class="form-text text-muted">Baþlangýç mevcut sayýsý (genellikle 0)</small>
+   </div>
+      </div>
+
+ <div class="mb-3">
+      <label asp-for="Aciklama" class="form-label">
+      <i class="fas fa-sticky-note me-1"></i>Notlar / Açýklama
+    </label>
+       <textarea asp-for="Aciklama" class="form-control" rows="3" placeholder="Seans hakkýnda notlar veya açýklama..."></textarea>
+     <span asp-validation-for="Aciklama" class="text-danger"></span>
+     <small class="form-text text-muted">Opsiyonel</small>
+             </div>
+
+        <div class="alert alert-info">
+   <i class="fas fa-info-circle me-2"></i>
+  <strong>Not:</strong> Seans oluþturulduktan sonra öðrenciler bu seansa kayýt edilebilir.
+       </div>
+
+   <div class="d-flex justify-content-between gap-2 mt-4">
+   <a asp-action="Index" class="btn btn-secondary">
+       <i class="fas fa-arrow-left me-1"></i>Listeye Dön
+         </a>
+           <button type="submit" class="btn btn-primary">
+         <i class="fas fa-save me-1"></i>Seans Oluþtur
+      </button>
+            </div>
+        </form>
+         </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+  <script>
+        // Baþlangýç ve bitiþ saati validasyonu
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const baslangic = document.querySelector('input[name="SeansBaslangicSaati"]').value;
+            const bitis = document.querySelector('input[name="SeansBitisSaati"]').value;
+   
+  if (baslangic && bitis && baslangic >= bitis) {
+             e.preventDefault();
+     alert('Bitiþ saati, baþlangýç saatinden sonra olmalýdýr!');
+ return false;
+          }
+        });
+
+        // Kapasite ve mevcut validasyonu
+        const kapasiteInput = document.querySelector('input[name="SeansKapasitesi"]');
+        const mevcutInput = document.querySelector('input[name="SeansMevcudu"]');
+        
+        if (kapasiteInput && mevcutInput) {
+       mevcutInput.addEventListener('change', function() {
+ const kapasite = parseInt(kapasiteInput.value) || 0;
+          const mevcut = parseInt(mevcutInput.value) || 0;
+       
+     if (kapasite > 0 && mevcut > kapasite) {
+              alert('Mevcut sayýsý, kapasite deðerinden fazla olamaz!');
+     mevcutInput.value = kapasite;
+                }
+    });
+        }
+    </script>
+}

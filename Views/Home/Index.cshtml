@@ -121,6 +121,39 @@
             </div>
         </div>
 
+        <!-- Seans Yönetimi Bölümü -->
+        <div class="menu-section">
+            <h3 class="section-title">
+                <i class="fas fa-clock me-2"></i>Seans Yönetimi
+            </h3>
+            <div class="menu-cards">
+                <a asp-controller="Seanslar" asp-action="Index" class="menu-card">
+                    <div class="menu-card-icon">
+                        <i class="fas fa-list"></i>
+                    </div>
+                    <div class="menu-card-content">
+                        <h4 class="menu-card-title">Seanslar</h4>
+                        <p class="menu-card-description">Seans listesini görüntüleyin ve yönetin</p>
+                    </div>
+                    <div class="menu-card-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+                <a asp-controller="Seanslar" asp-action="Create" class="menu-card">
+                    <div class="menu-card-icon">
+                        <i class="fas fa-plus-circle"></i>
+                    </div>
+                    <div class="menu-card-content">
+                        <h4 class="menu-card-title">Yeni Seans</h4>
+                        <p class="menu-card-description">Yeni seans kaydı oluşturun</p>
+                    </div>
+                    <div class="menu-card-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+            </div>
+        </div>
+
         <!-- Envanter Bölümü -->
         <div class="menu-section">
             <h3 class="section-title">
@@ -582,11 +615,13 @@
                                     <td>
                                         ${odeme.sonOdemeTarihi ? `
                                             ${isGecikmis ? `
+
                                                 <span class="text-danger">
                                                     <i class="fas fa-exclamation-triangle me-1"></i>${odeme.sonOdemeTarihi}
                                                     <br><small>(${odeme.gecikmeGunu} gün gecikme)</small>
                                                 </span>
                                             ` : `<i class="fas fa-calendar-check me-1"></i>${odeme.sonOdemeTarihi}`}
+
                                         ` : '<span class="text-muted">-</span>'}
                                     </td>
                                     <td>

@@ -1,0 +1,171 @@
+@model StudentApp.Models.Seanslar
+
+@{
+    ViewData["Title"] = "Seans Detaylarý";
+    var dolulukOrani = Model.SeansKapasitesi.HasValue && Model.SeansKapasitesi.Value > 0
+        ? (Model.SeansMevcudu ?? 0) * 100.0 / Model.SeansKapasitesi.Value
+        : 0;
+    var dolulukClass = dolulukOrani >= 90 ? "danger" : dolulukOrani >= 70 ? "warning" : "success";
+    var seansSuresi = Model.SeansBitisSaati - Model.SeansBaslangicSaati;
+ var kayitliOgrenciSayisi = ViewBag.KayitliOgrenciSayisi ?? 0;
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+      <div class="card shadow-lg border-0">
+            <div class="card-header bg-info text-white">
+      <h4 class="mb-0"><i class="fas fa-clock me-2"></i>Seans Detaylarý</h4>
+     </div>
+     <div class="card-body">
+    <h5 class="mb-3"><i class="fas fa-info-circle me-2"></i>Temel Bilgiler</h5>
+  <dl class="row">
+        <dt class="col-sm-4">Gün</dt>
+            <dd class="col-sm-8">
+   <span class="badge bg-primary fs-6">
+  <i class="fas fa-calendar-day me-1"></i>@Model.Gun?.Gun
+     </span>
+     </dd>
+
+        <dt class="col-sm-4">Seans Adý</dt>
+      <dd class="col-sm-8">
+          <strong class="fs-5">@Model.SeansAdi</strong>
+  </dd>
+
+          <dt class="col-sm-4">Baþlangýç Saati</dt>
+         <dd class="col-sm-8">
+              <i class="fas fa-play-circle text-success me-2"></i>
+          <span class="badge bg-success fs-6">@Model.SeansBaslangicSaati.ToString(@"hh\:mm")</span>
+        </dd>
+
+     <dt class="col-sm-4">Bitiþ Saati</dt>
+             <dd class="col-sm-8">
+           <i class="fas fa-stop-circle text-danger me-2"></i>
+       <span class="badge bg-danger fs-6">@Model.SeansBitisSaati.ToString(@"hh\:mm")</span>
+             </dd>
+
+ <dt class="col-sm-4">Seans Süresi</dt>
+     <dd class="col-sm-8">
+       <i class="fas fa-hourglass-half text-info me-2"></i>
+       <span class="badge bg-info fs-6">
+      @if (seansSuresi.TotalHours >= 1)
+          {
+    <span>@((int)seansSuresi.TotalHours) saat @seansSuresi.Minutes dakika</span>
+          }
+else
+                {
+   <span>@seansSuresi.Minutes dakika</span>
+             }
+     </span>
+       </dd>
+
+     <dt class="col-sm-4">Durum</dt>
+         <dd class="col-sm-8">
+    @if (Model.Aktif)
+      {
+        <span class="badge bg-success fs-6">
+    <i class="fas fa-check-circle me-1"></i>Aktif
+   </span>
+      }
+       else
+{
+        <span class="badge bg-secondary fs-6">
+        <i class="fas fa-times-circle me-1"></i>Pasif
+        </span>
+ }
+     </dd>
+     </dl>
+
+     <hr class="my-4" />
+
+     <h5 class="mb-3"><i class="fas fa-users me-2"></i>Kapasite Bilgileri</h5>
+   <dl class="row">
+        <dt class="col-sm-4">Seans Kapasitesi</dt>
+    <dd class="col-sm-8">
+      @if (Model.SeansKapasitesi.HasValue)
+      {
+      <span class="badge bg-primary fs-6">
+ <i class="fas fa-users me-1"></i>@Model.SeansKapasitesi kiþi
+    </span>
+      }
+   else
+          {
+      <span class="badge bg-secondary fs-6">
+  <i class="fas fa-infinity me-1"></i>Sýnýrsýz
+          </span>
+    }
+        </dd>
+
+         <dt class="col-sm-4">Kayýtlý Öðrenci</dt>
+           <dd class="col-sm-8">
+          <span class="badge bg-info fs-6">
+      <i class="fas fa-user-check me-1"></i>@kayitliOgrenciSayisi öðrenci
+     </span>
+    </dd>
+
+             @if (Model.SeansKapasitesi.HasValue)
+        {
+     <dt class="col-sm-4">Doluluk Oraný</dt>
+            <dd class="col-sm-8">
+       <div class="progress" style="height: 30px;">
+ <div class="progress-bar bg-@dolulukClass progress-bar-striped progress-bar-animated" 
+       role="progressbar" 
+     style="width: @dolulukOrani.ToString("F0")%;" 
+           aria-valuenow="@dolulukOrani.ToString("F0")" 
+   aria-valuemin="0" 
+         aria-valuemax="100">
+          <strong>@kayitliOgrenciSayisi / @Model.SeansKapasitesi (@dolulukOrani.ToString("F0")%)</strong>
+  </div>
+    </div>
+       @if (dolulukOrani >= 90)
+          {
+    <small class="text-danger mt-1 d-block">
+         <i class="fas fa-exclamation-triangle me-1"></i>Seans neredeyse dolu!
+            </small>
+           }
+      else if (dolulukOrani >= 70)
+       {
+      <small class="text-warning mt-1 d-block">
+       <i class="fas fa-info-circle me-1"></i>Seans dolmak üzere
+         </small>
+ }
+          </dd>
+
+     <dt class="col-sm-4">Kalan Kontenjan</dt>
+  <dd class="col-sm-8">
+     @{
+           var kalanKontenjan = Model.SeansKapasitesi.Value - kayitliOgrenciSayisi;
+         }
+       <span class="badge bg-@(kalanKontenjan > 0 ? "success" : "danger") fs-6">
+        <i class="fas fa-@(kalanKontenjan > 0 ? "check" : "times") me-1"></i>
+       @kalanKontenjan kiþi
+   </span>
+        </dd>
+    }
+       </dl>
+
+     @if (!string.IsNullOrWhiteSpace(Model.Aciklama))
+           {
+ <hr class="my-4" />
+  <h5 class="mb-3"><i class="fas fa-sticky-note me-2"></i>Notlar / Açýklama</h5>
+           <div class="alert alert-light border">
+              <p class="mb-0" style="white-space: pre-wrap;">@Model.Aciklama</p>
+  </div>
+           }
+
+      <div class="d-flex flex-column flex-md-row justify-content-between gap-2 mt-4">
+<a asp-action="Index" class="btn btn-secondary order-3 order-md-1">
+       <i class="fas fa-arrow-left me-1"></i>Listeye Dön
+          </a>
+              <div class="d-flex gap-2 order-1 order-md-2">
+          <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+         <i class="fas fa-edit me-1"></i>Düzenle
+       </a>
+      <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+<i class="fas fa-trash me-1"></i>Sil
+     </a>
+     </div>
+  </div>
+     </div>
+        </div>
+    </div>
+</div>
