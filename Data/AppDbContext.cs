@@ -20,6 +20,8 @@ namespace StudentApp.Data
         public DbSet<OgrenciEnvanterSatis> OgrenciEnvanterSatis { get; set; }
         public DbSet<OgrenciBasarilari> OgrenciBasarilari { get; set; }
         public DbSet<OgrenciDetay> OgrenciDetay { get; set; }
+        public DbSet<Gunler> Gunler { get; set; }
+        public DbSet<Seanslar> Seanslar { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -51,6 +53,11 @@ namespace StudentApp.Data
                     .HasForeignKey(e => e.OdemePlanlariId)
                     .OnDelete(DeleteBehavior.Restrict);
 
+                entity.HasOne(e => e.Seans)
+                    .WithMany()
+                    .HasForeignKey(e => e.SeansId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
                 // One-to-Many relationship with OgrenciBasarilari
                 entity.HasMany(e => e.OgrenciBasarilari)
                     .WithOne(b => b.Ogrenci)
@@ -64,6 +71,14 @@ namespace StudentApp.Data
                 entity.ToTable("Cinsiyetler");
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Cinsiyet).IsRequired().HasMaxLength(50);
+            });
+
+            // Configure Günler entity
+            modelBuilder.Entity<Gunler>(entity =>
+            {
+                entity.ToTable("Gunler");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Gun).IsRequired().HasMaxLength(50);
             });
 
             // Configure OdemePlanlari entity
@@ -127,6 +142,8 @@ namespace StudentApp.Data
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.SatisTarihi);
                 entity.Property(e => e.OdenenTutar).HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.KalanTutar).HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.KalanTutarTahsilTarihi);
                 entity.Property(e => e.SatisAdet).IsRequired();
 
                 // Foreign key relationships
@@ -170,6 +187,8 @@ namespace StudentApp.Data
                 entity.Property(e => e.Sinif).HasMaxLength(50);
                 entity.Property(e => e.OkulHocasiAdSoyad).HasMaxLength(200);
                 entity.Property(e => e.OkulHocasiTelefon).HasMaxLength(20);
+                entity.Property(e => e.OkulGirisSaati).HasColumnType("time");
+                entity.Property(e => e.OkulCikisSaati).HasColumnType("time");
 
                 // Foreign key relationship
                 entity.HasOne(e => e.Ogrenci)
@@ -177,6 +196,26 @@ namespace StudentApp.Data
                     .HasForeignKey<OgrenciDetay>(e => e.OgrenciId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
+
+            // Configure Seanslar entity
+            modelBuilder.Entity<Seanslar>(entity =>
+            {
+                entity.ToTable("Seanslar");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.SeansAdi).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.SeansBaslangicSaati).IsRequired().HasColumnType("time");
+                entity.Property(e => e.SeansBitisSaati).IsRequired().HasColumnType("time");
+                entity.Property(e => e.SeansKapasitesi);
+                entity.Property(e => e.SeansMevcudu);
+
+                // Foreign key relationship
+                entity.HasOne(e => e.Gun)
+                    .WithMany()
+                    .HasForeignKey(e => e.GunId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+            });
+
         }
     }
 }

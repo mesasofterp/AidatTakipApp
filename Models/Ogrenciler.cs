@@ -73,6 +73,9 @@ namespace StudentApp.Models
         [DataType(DataType.MultilineText)]
         public string? Biyografi { get; set; }
 
+        [Display(Name = "Seans")]
+        public long? SeansId { get; set; }
+
         [ValidateNever]
         [Display(Name = "Ödeme Planı")]
         public OdemePlanlari OdemePlanlari { get; set; }
@@ -85,5 +88,8 @@ namespace StudentApp.Models
 
         [ValidateNever]
         public OgrenciDetay? OgrenciDetay { get; set; }
+
+        [ValidateNever]
+        public Seanslar Seans { get; set; }
     }
 }

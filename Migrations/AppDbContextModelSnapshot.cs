@@ -277,6 +277,24 @@ namespace StudentApp.Migrations
                     b.ToTable("Envanterler", (string)null);
                 });
 
+            modelBuilder.Entity("StudentApp.Models.Gunler", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Gun")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Gunler", (string)null);
+                });
+
             modelBuilder.Entity("StudentApp.Models.OdemePlanlari", b =>
                 {
                     b.Property<long>("Id")
@@ -596,6 +614,9 @@ namespace StudentApp.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<long?>("SeansId")
+                        .HasColumnType("bigint");
+
                     b.Property<DateTime?>("SonSmsTarihi")
                         .HasColumnType("datetime2");
 
@@ -619,7 +640,56 @@ namespace StudentApp.Migrations
 
                     b.HasIndex("OdemePlanlariId");
 
+                    b.HasIndex("SeansId");
+
                     b.ToTable("Ogrenciler", (string)null);
+                });
+
+            modelBuilder.Entity("StudentApp.Models.Seanslar", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Aciklama")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Aktif")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("GunId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SeansAdi")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<TimeSpan>("SeansBaslangicSaati")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan>("SeansBitisSaati")
+                        .HasColumnType("time");
+
+                    b.Property<int?>("SeansKapasitesi")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SeansMevcudu")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GunId");
+
+                    b.ToTable("Seanslar", (string)null);
                 });
 
             modelBuilder.Entity("StudentApp.Models.ZamanlayiciAyarlar", b =>
@@ -795,9 +865,27 @@ namespace StudentApp.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("StudentApp.Models.Seanslar", "Seans")
+                        .WithMany()
+                        .HasForeignKey("SeansId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Cinsiyet");
 
                     b.Navigation("OdemePlanlari");
+
+                    b.Navigation("Seans");
+                });
+
+            modelBuilder.Entity("StudentApp.Models.Seanslar", b =>
+                {
+                    b.HasOne("StudentApp.Models.Gunler", "Gun")
+                        .WithMany()
+                        .HasForeignKey("GunId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Gun");
                 });
 
             modelBuilder.Entity("StudentApp.Models.Ogrenciler", b =>
