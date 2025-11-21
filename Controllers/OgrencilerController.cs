@@ -749,7 +749,7 @@ namespace StudentApp.Controllers
 
         // GET: Student/Delete/5
         [PageAuthorize("Ogrenciler.Delete")]
-        public async Task<IActionResult> Delete(long id)
+        public async Task<IActionResult> Delete(long? id)
         {
             if (id == null)
             {
