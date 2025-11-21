@@ -7,78 +7,28 @@ using AppSchedulerFactory = StudentApp.Services.IZamanlayiciFactory;
 using Microsoft.AspNetCore.Identity;
 using StudentApp.Helpers;
 using System.Globalization;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
-try
+var builder = WebApplication.CreateBuilder(args);
+string keyPath = Path.Combine(builder.Environment.ContentRootPath, "App_Data", "public.key");
+string licPath = Path.Combine(builder.Environment.ContentRootPath, "App_Data", "license.lic");
+
+if (!LicenseManager.CheckLicense(keyPath, licPath, out string failReason))
 {
-    var builder = WebApplication.CreateBuilder(args);
+    Console.ForegroundColor = ConsoleColor.Red;
+    Console.WriteLine("❌ Lisans geçersiz: " + failReason);
+    Console.ResetColor();
+    return; // Uygulamayı başlatma
+}
 
-    // Windows Service desteği ekle
-    builder.Host.UseWindowsService(options =>
-    {
-        options.ServiceName = "AidatTakipApp";
-    });
+// Tarih formatını ayarla - Türkiye lokalizasyonu
+var cultureInfo = new CultureInfo("tr-TR");
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
-    // Logging yapılandırması - Event Log ve Console
-    builder.Logging.ClearProviders();
-    builder.Logging.AddConsole();
-    builder.Logging.AddEventLog(settings =>
-    {
-        settings.SourceName = "AidatTakipApp";
-        settings.LogName = "Application";
-    });
-    builder.Logging.SetMinimumLevel(LogLevel.Information);
-
-    string keyPath = Path.Combine(builder.Environment.ContentRootPath, "App_Data", "public.key");
-    string licPath = Path.Combine(builder.Environment.ContentRootPath, "App_Data", "license.lic");
-
-    // Logger'ı erken oluştur (Windows Service için gerekli)
-    var loggerFactory = LoggerFactory.Create(logging => 
-    {
-        logging.AddConsole();
-        logging.AddEventLog(settings =>
-        {
-            settings.SourceName = "AidatTakipApp";
-            settings.LogName = "Application";
-        });
-        logging.SetMinimumLevel(LogLevel.Information);
-    });
-    var earlyLogger = loggerFactory.CreateLogger<Program>();
-
-    earlyLogger.LogInformation("Uygulama başlatılıyor... ContentRootPath: {Path}", builder.Environment.ContentRootPath);
-    earlyLogger.LogInformation("Lisans dosyası kontrol ediliyor: {LicPath}", licPath);
-    earlyLogger.LogInformation("Public key kontrol ediliyor: {KeyPath}", keyPath);
-
-    if (!LicenseManager.CheckLicense(keyPath, licPath, out string failReason))
-    {
-        earlyLogger.LogError("Lisans geçersiz: {FailReason}", failReason);
-        // Windows Service olarak çalışıyorsa Console yok, EventLog kullan
-        if (Environment.UserInteractive)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("❌ Lisans geçersiz: " + failReason);
-            Console.ResetColor();
-        }
-        // Windows Service için 30 saniye bekle ki hata loglanabilsin
-        if (!Environment.UserInteractive)
-        {
-            Thread.Sleep(30000);
-        }
-        return; // Uygulamayı başlatma
-    }
-
-    earlyLogger.LogInformation("Lisans doğrulandı.");
-
-    // Tarih formatını ayarla - Türkiye lokalizasyonu
-    var cultureInfo = new CultureInfo("tr-TR");
-    CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
-    CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
-
-    //var app = builder.Build();
-    //app.MapGet("/", () => "Lisans doğrulandı, uygulama çalışıyor.");
-    // Add services to the container.
-    builder.Services.AddControllersWithViews();
+//var app = builder.Build();
+//app.MapGet("/", () => "Lisans doğrulandı, uygulama çalışıyor.");
+// Add services to the container.
+builder.Services.AddControllersWithViews();
 
 // Identity
 builder.Services
@@ -113,6 +63,7 @@ builder.Services.AddScoped<IOdemePlanlariService, OdemePlanlariService>();
 builder.Services.AddScoped<ICinsiyetlerService, CinsiyetlerService>();
 builder.Services.AddScoped<IOgrenciOdemeTakvimiService, OgrenciOdemeTakvimiService>();
 builder.Services.AddScoped<IEnvanterlerService, EnvanterlerService>();
+builder.Services.AddScoped<IPagePermissionService, PagePermissionService>();
 
 // Add Daily Task Service and SMS Service
 builder.Services.AddScoped<IGunlukZamanlayiciService, GunlukZamanlayiciService>();
@@ -205,7 +156,7 @@ app.MapControllerRoute(
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    var logger2 = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     
     try
  {
@@ -214,14 +165,14 @@ using (var scope = app.Services.CreateScope())
      
         if (pendingMigrations.Any())
   {
-            logger2.LogInformation("Bekleyen migration'lar uygulanıyor: {Migrations}", 
+          logger.LogInformation("Bekleyen migration'lar uygulanıyor: {Migrations}", 
   string.Join(", ", pendingMigrations));
         context.Database.Migrate();
-            logger2.LogInformation("Migration'lar başarıyla uygulandı.");
+  logger.LogInformation("Migration'lar başarıyla uygulandı.");
       }
   else
         {
-            logger2.LogInformation("Bekleyen migration yok, database güncel.");
+      logger.LogInformation("Bekleyen migration yok, database güncel.");
         }
       
   // Seed data oluştur
@@ -229,65 +180,8 @@ using (var scope = app.Services.CreateScope())
     }
     catch (Exception ex)
     {
-        logger2.LogError(ex, "Migration veya seed data uygulanırken hata oluştu.");
+        logger.LogError(ex, "Migration veya seed data uygulanırken hata oluştu.");
     }
 }
 
-    // Port yapılandırması - IP + 2961 portu ile erişim için
-    var port = builder.Configuration["Port"] ?? "2961";
-    var urls = $"http://0.0.0.0:{port}";
-
-    var logger = app.Services.GetRequiredService<ILogger<Program>>();
-    logger.LogInformation("Uygulama başlatılıyor: {Urls}", urls);
-    logger.LogInformation("Windows Service modu: {IsWindowsService}", Environment.UserInteractive == false);
-    logger.LogInformation("Content Root Path: {Path}", builder.Environment.ContentRootPath);
-    logger.LogInformation("Working Directory: {Path}", Directory.GetCurrentDirectory());
-
-    try
-    {
-        app.Run(urls);
-    }
-    catch (Exception ex)
-    {
-        logger.LogCritical(ex, "Uygulama çalışırken kritik hata oluştu!");
-        throw;
-    }
-}
-catch (Exception ex)
-{
-    // Tüm başlatma hatalarını yakala ve logla
-    try
-    {
-        var loggerFactory = LoggerFactory.Create(logging => 
-        {
-            logging.AddConsole();
-            logging.AddEventLog(settings =>
-            {
-                settings.SourceName = "AidatTakipApp";
-                settings.LogName = "Application";
-            });
-            logging.SetMinimumLevel(LogLevel.Critical);
-        });
-        var errorLogger = loggerFactory.CreateLogger<Program>();
-        errorLogger.LogCritical(ex, "Uygulama başlatılırken kritik hata oluştu! Hata: {Message}\nStack Trace: {StackTrace}", 
-            ex.Message, ex.StackTrace);
-    }
-    catch
-    {
-        // Logger bile çalışmıyorsa, dosyaya yazmayı dene
-        try
-        {
-            var logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "startup-error.log");
-            File.AppendAllText(logPath, $"[{DateTime.Now}] CRITICAL ERROR: {ex.Message}\n{ex.StackTrace}\n\n");
-        }
-        catch { }
-    }
-
-    // Windows Service için biraz bekle ki hata loglanabilsin
-    if (!Environment.UserInteractive)
-    {
-        Thread.Sleep(30000);
-    }
-    
-    throw; // Hata kodunu döndür
-}
+app.Run();

@@ -31,6 +31,9 @@ public class CreateUserViewModel
     [Display(Name = "Roller")]
     public List<string> SelectedRoles { get; set; } = new List<string>();
 
+    [Display(Name = "Sayfa İzinleri")]
+    public List<string> SelectedPages { get; set; } = new List<string>();
+
     [Display(Name = "E-posta Onaylı mı?")]
     public bool EmailConfirmed { get; set; } = true;
 }

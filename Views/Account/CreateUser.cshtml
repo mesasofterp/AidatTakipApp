@@ -70,7 +70,7 @@
                                     if (!string.IsNullOrEmpty(role.Value))
                                     {
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="SelectedRoles" value="@role.Value" id="role_@role.Value" />
+                                            <input class="form-check-input role-checkbox" type="checkbox" name="SelectedRoles" value="@role.Value" id="role_@role.Value" />
                                             <label class="form-check-label" for="role_@role.Value">
                                                 @role.Text
                                             </label>
@@ -78,6 +78,29 @@
                                     }
                                 }
                             }
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-file-alt me-2"></i>Sayfa İzinleri
+                            </label>
+                            <div class="alert alert-info mb-2">
+                                <small><i class="fas fa-info-circle me-1"></i>Admin rolü seçiliyse tüm sayfalara erişim sağlanır. Admin değilse aşağıdaki sayfalardan seçim yapın.</small>
+                            </div>
+                            <div class="border rounded p-3" style="max-height: 400px; overflow-y: auto;" id="pagePermissionsContainer">
+                                @if (ViewBag.AllPages != null)
+                                {
+                                    @foreach (var pageItem in (List<StudentApp.Services.PagePermission>)ViewBag.AllPages)
+                                    {
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input page-checkbox" type="checkbox" name="SelectedPages" value="@(pageItem.ClaimValue)" id="page_@(pageItem.ClaimValue)" />
+                                            <label class="form-check-label" for="page_@(pageItem.ClaimValue)">
+                                                @(pageItem.DisplayName)
+                                            </label>
+                                        </div>
+                                    }
+                                }
+                            </div>
                         </div>
 
                         <div class="mb-3">
@@ -106,5 +129,35 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const adminCheckbox = document.getElementById('role_Admin');
+            const pageCheckboxes = document.querySelectorAll('.page-checkbox');
+            const pageContainer = document.getElementById('pagePermissionsContainer');
+
+            function togglePageCheckboxes() {
+                const isAdmin = adminCheckbox && adminCheckbox.checked;
+                pageCheckboxes.forEach(checkbox => {
+                    checkbox.disabled = isAdmin;
+                    if (isAdmin) {
+                        checkbox.checked = false;
+                    }
+                });
+                
+                if (isAdmin) {
+                    pageContainer.style.opacity = '0.5';
+                    pageContainer.style.pointerEvents = 'none';
+                } else {
+                    pageContainer.style.opacity = '1';
+                    pageContainer.style.pointerEvents = 'auto';
+                }
+            }
+
+            if (adminCheckbox) {
+                adminCheckbox.addEventListener('change', togglePageCheckboxes);
+            }
+            togglePageCheckboxes();
+        });
+    </script>
 }
 

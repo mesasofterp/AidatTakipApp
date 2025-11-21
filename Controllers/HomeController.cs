@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using StudentApp.Models;
 using StudentApp.Services;
 using StudentApp.Data;
+using StudentApp.Attributes;
 
 namespace StudentApp.Controllers
 {
@@ -24,6 +25,7 @@ namespace StudentApp.Controllers
             _context = context;
         }
 
+        [PageAuthorize("Home.Index")]
         public IActionResult Index()
         {
             return View();

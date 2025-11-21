@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using StudentApp.Models.ViewModels;
+using StudentApp.Services;
+using StudentApp.Attributes;
 
 namespace StudentApp.Controllers
 {
@@ -11,12 +13,14 @@ namespace StudentApp.Controllers
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IPagePermissionService _pagePermissionService;
 
-        public AccountController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+        public AccountController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IPagePermissionService pagePermissionService)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _roleManager = roleManager;
+            _pagePermissionService = pagePermissionService;
         }
 
         [HttpGet]
@@ -65,6 +69,9 @@ namespace StudentApp.Controllers
 
             if (result.Succeeded)
             {
+                // Kullanıcının claim'lerini yükle (Identity otomatik yapar ama emin olmak için)
+                await _signInManager.SignInAsync(user, model.RememberMe);
+
                 if (model.RememberMe)
                 {
                     Response.Cookies.Append("RememberMeUser", model.UserName, new CookieOptions
@@ -109,7 +116,7 @@ namespace StudentApp.Controllers
             return View();
         }
 
-        [Authorize]
+        [PageAuthorize("Account.Profile")]
         [HttpGet]
         public async Task<IActionResult> Profile()
         {
@@ -129,7 +136,7 @@ namespace StudentApp.Controllers
             return View(model);
         }
 
-        [Authorize]
+        [PageAuthorize("Account.Profile")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Profile(ProfileViewModel model)
@@ -164,14 +171,14 @@ namespace StudentApp.Controllers
             return View(model);
         }
 
-        [Authorize]
+        [PageAuthorize("Account.ChangePassword")]
         [HttpGet]
         public IActionResult ChangePassword()
         {
             return View();
         }
 
-        [Authorize]
+        [PageAuthorize("Account.ChangePassword")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
@@ -203,7 +210,7 @@ namespace StudentApp.Controllers
             return View(model);
         }
 
-        [Authorize(Roles = "Admin")]
+        [PageAuthorize("Account.Users")]
         [HttpGet]
         public async Task<IActionResult> Users()
         {
@@ -227,16 +234,17 @@ namespace StudentApp.Controllers
             return View(userViewModels);
         }
 
-        [Authorize(Roles = "Admin")]
+        [PageAuthorize("Account.CreateUser")]
         [HttpGet]
         public async Task<IActionResult> CreateUser()
         {
             var roles = _roleManager.Roles.ToList();
             ViewBag.Roles = new SelectList(roles, "Name", "Name");
+            ViewBag.AllPages = _pagePermissionService.GetAllPages();
             return View();
         }
 
-        [Authorize(Roles = "Admin")]
+        [PageAuthorize("Account.CreateUser")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateUser(CreateUserViewModel model)
@@ -245,6 +253,7 @@ namespace StudentApp.Controllers
             {
                 var roles = _roleManager.Roles.ToList();
                 ViewBag.Roles = new SelectList(roles, "Name", "Name");
+                ViewBag.AllPages = _pagePermissionService.GetAllPages();
                 return View(model);
             }
 
@@ -259,6 +268,7 @@ namespace StudentApp.Controllers
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
+                // Rolleri ekle
                 if (model.SelectedRoles != null && model.SelectedRoles.Any())
                 {
                     // Geçerli rolleri filtrele (null, boş veya "on" değerlerini çıkar)
@@ -281,6 +291,20 @@ namespace StudentApp.Controllers
                     }
                 }
 
+                // Admin değilse sayfa izinlerini ekle
+                var isAdmin = model.SelectedRoles != null && model.SelectedRoles.Contains("Admin");
+                if (!isAdmin && model.SelectedPages != null && model.SelectedPages.Any())
+                {
+                    var validPages = model.SelectedPages
+                        .Where(p => !string.IsNullOrWhiteSpace(p) && p.ToLower() != "on")
+                        .ToList();
+                    
+                    if (validPages.Any())
+                    {
+                        await _pagePermissionService.AddPageClaimsToUserAsync(user.Id, validPages);
+                    }
+                }
+
                 TempData["SuccessMessage"] = $"Kullanıcı '{model.UserName}' başarıyla oluşturuldu.";
                 return RedirectToAction("Users");
             }
@@ -292,10 +316,11 @@ namespace StudentApp.Controllers
 
             var rolesList = _roleManager.Roles.ToList();
             ViewBag.Roles = new SelectList(rolesList, "Name", "Name");
+            ViewBag.AllPages = _pagePermissionService.GetAllPages();
             return View(model);
         }
 
-        [Authorize(Roles = "Admin")]
+        [PageAuthorize("Account.EditUser")]
         [HttpGet]
         public async Task<IActionResult> EditUser(string id)
         {
@@ -308,6 +333,7 @@ namespace StudentApp.Controllers
 
             var userRoles = await _userManager.GetRolesAsync(user);
             var allRoles = _roleManager.Roles.ToList();
+            var userPageClaims = _pagePermissionService.GetUserPageClaims(user.Id);
 
             var model = new CreateUserViewModel
             {
@@ -315,15 +341,17 @@ namespace StudentApp.Controllers
                 Email = user.Email ?? string.Empty,
                 PhoneNumber = user.PhoneNumber,
                 SelectedRoles = userRoles.ToList(),
+                SelectedPages = userPageClaims,
                 EmailConfirmed = user.EmailConfirmed
             };
 
             ViewBag.Roles = new SelectList(allRoles, "Name", "Name");
+            ViewBag.AllPages = _pagePermissionService.GetAllPages();
             ViewBag.UserId = user.Id;
             return View(model);
         }
 
-        [Authorize(Roles = "Admin")]
+        [PageAuthorize("Account.EditUser")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditUser(string id, CreateUserViewModel model)
@@ -336,10 +364,15 @@ namespace StudentApp.Controllers
                 return RedirectToAction("Users");
             }
 
+            // EditUser'da Password ve ConfirmPassword alanları yok, bu yüzden validation hatalarını temizle
+            ModelState.Remove(nameof(model.Password));
+            ModelState.Remove(nameof(model.ConfirmPassword));
+
             if (!ModelState.IsValid)
             {
                 var allRoles = _roleManager.Roles.ToList();
                 ViewBag.Roles = new SelectList(allRoles, "Name", "Name");
+                ViewBag.AllPages = _pagePermissionService.GetAllPages();
                 ViewBag.UserId = user.Id;
                 return View(model);
             }
@@ -381,6 +414,51 @@ namespace StudentApp.Controllers
                     }
                 }
 
+                // Admin kontrolü - güncellenmiş rollerden kontrol et
+                var updatedRoles = model.SelectedRoles != null 
+                    ? model.SelectedRoles
+                        .Where(r => !string.IsNullOrWhiteSpace(r) && r.ToLower() != "on")
+                        .ToList()
+                    : new List<string>();
+                
+                var isAdmin = updatedRoles.Contains("Admin");
+                
+                if (isAdmin)
+                {
+                    // Admin ise tüm sayfa claim'lerini temizle
+                    await _pagePermissionService.UpdatePageClaimsForUserAsync(user.Id, new List<string>());
+                }
+                else
+                {
+                    // Admin değilse sayfa izinlerini güncelle
+                    // Form'dan SelectedPages'i al - model binding'den veya Request.Form'dan
+                    List<string> selectedPages = new List<string>();
+                    
+                    // Önce model binding'den dene
+                    if (model.SelectedPages != null && model.SelectedPages.Any())
+                    {
+                        selectedPages = model.SelectedPages.ToList();
+                    }
+                    // Eğer model'de yoksa Request.Form'dan al
+                    else if (Request.Form.ContainsKey("SelectedPages"))
+                    {
+                        var formValues = Request.Form["SelectedPages"];
+                        if (formValues.Count > 0)
+                        {
+                            selectedPages = formValues.ToList();
+                        }
+                    }
+                    
+                    // Geçerli sayfaları filtrele
+                    var validPages = selectedPages
+                        .Where(p => !string.IsNullOrWhiteSpace(p) && p.ToLower() != "on")
+                        .Distinct()
+                        .ToList();
+                    
+                    // Her zaman güncelle (boş liste de olsa, claim'leri temizlemek için)
+                    await _pagePermissionService.UpdatePageClaimsForUserAsync(user.Id, validPages);
+                }
+
                 TempData["SuccessMessage"] = $"Kullanıcı '{model.UserName}' başarıyla güncellendi.";
                 return RedirectToAction("Users");
             }
@@ -392,6 +470,7 @@ namespace StudentApp.Controllers
 
             var rolesList = _roleManager.Roles.ToList();
             ViewBag.Roles = new SelectList(rolesList, "Name", "Name");
+            ViewBag.AllPages = _pagePermissionService.GetAllPages();
             ViewBag.UserId = user.Id;
             return View(model);
         }
@@ -429,7 +508,7 @@ namespace StudentApp.Controllers
             return RedirectToAction("Users");
         }
 
-        [Authorize(Roles = "Admin")]
+        [PageAuthorize("Account.Users")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(string id, string newPassword)

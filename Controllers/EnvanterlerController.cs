@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudentApp.Models;
 using StudentApp.Services;
+using StudentApp.Attributes;
 
 namespace StudentApp.Controllers
 {
@@ -20,6 +21,7 @@ namespace StudentApp.Controllers
         }
 
         // GET: Envanterler
+        [PageAuthorize("Envanterler.Index")]
         public async Task<IActionResult> Index(string searchTerm, string stokDurumu)
         {
             try
@@ -62,13 +64,14 @@ namespace StudentApp.Controllers
        }
          catch (Exception ex)
               {
-         _logger.LogError(ex, "Envanterler listesi yüklenirken hata oluþtu");
-                TempData["ErrorMessage"] = "Envanterler yüklenirken bir hata oluþtu.";
+         _logger.LogError(ex, "Envanterler listesi yï¿½klenirken hata oluï¿½tu");
+                TempData["ErrorMessage"] = "Envanterler yï¿½klenirken bir hata oluï¿½tu.";
           return View(new List<Envanterler>());
                 }
             }
 
         // GET: Envanterler/Details/5
+        [PageAuthorize("Envanterler.Details")]
         public async Task<IActionResult> Details(long? id)
         {
             if (id == null)
@@ -89,13 +92,14 @@ namespace StudentApp.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Envanter detayý yüklenirken hata oluþtu. ID: {Id}", id);
-                TempData["ErrorMessage"] = "Envanter detayý yüklenirken bir hata oluþtu.";
+                _logger.LogError(ex, "Envanter detayï¿½ yï¿½klenirken hata oluï¿½tu. ID: {Id}", id);
+                TempData["ErrorMessage"] = "Envanter detayï¿½ yï¿½klenirken bir hata oluï¿½tu.";
                 return RedirectToAction(nameof(Index));
             }
         }
 
         // GET: Envanterler/Create
+        [PageAuthorize("Envanterler.Create")]
         public IActionResult Create()
         {
             return View();
@@ -104,6 +108,7 @@ namespace StudentApp.Controllers
         // POST: Envanterler/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [PageAuthorize("Envanterler.Create")]
         public async Task<IActionResult> Create([Bind("EnvanterAdi,Adet,AlisFiyat,SatisFiyat,Aciklama")] Envanterler envanter)
         {
             if (ModelState.IsValid)
@@ -111,13 +116,13 @@ namespace StudentApp.Controllers
                 try
                 {
                     await _envanterlerService.CreateAsync(envanter);
-                    TempData["SuccessMessage"] = "Envanter baþarýyla oluþturuldu.";
+                    TempData["SuccessMessage"] = "Envanter baï¿½arï¿½yla oluï¿½turuldu.";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Envanter oluþturulurken hata oluþtu");
-                    ModelState.AddModelError("", "Envanter oluþturulurken bir hata oluþtu: " + ex.Message);
+                    _logger.LogError(ex, "Envanter oluï¿½turulurken hata oluï¿½tu");
+                    ModelState.AddModelError("", "Envanter oluï¿½turulurken bir hata oluï¿½tu: " + ex.Message);
                 }
             }
 
@@ -125,6 +130,7 @@ namespace StudentApp.Controllers
         }
 
         // GET: Envanterler/Edit/5
+        [PageAuthorize("Envanterler.Edit")]
         public async Task<IActionResult> Edit(long? id)
         {
             if (id == null)
@@ -145,8 +151,8 @@ namespace StudentApp.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Envanter düzenleme sayfasý yüklenirken hata oluþtu. ID: {Id}", id);
-                TempData["ErrorMessage"] = "Envanter yüklenirken bir hata oluþtu.";
+                _logger.LogError(ex, "Envanter dï¿½zenleme sayfasï¿½ yï¿½klenirken hata oluï¿½tu. ID: {Id}", id);
+                TempData["ErrorMessage"] = "Envanter yï¿½klenirken bir hata oluï¿½tu.";
                 return RedirectToAction(nameof(Index));
             }
         }
@@ -154,6 +160,7 @@ namespace StudentApp.Controllers
         // POST: Envanterler/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [PageAuthorize("Envanterler.Edit")]
         public async Task<IActionResult> Edit(long id, [Bind("Id,EnvanterAdi,Adet,AlisFiyat,SatisFiyat,Aktif,Aciklama,Version")] Envanterler envanter)
         {
             if (id != envanter.Id)
@@ -166,17 +173,17 @@ namespace StudentApp.Controllers
                 try
                 {
                     await _envanterlerService.UpdateAsync(envanter);
-                    TempData["SuccessMessage"] = "Envanter baþarýyla güncellendi.";
+                    TempData["SuccessMessage"] = "Envanter baï¿½arï¿½yla gï¿½ncellendi.";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException)
                 {
-                    ModelState.AddModelError("", "Bu envanter baþka bir kullanýcý tarafýndan deðiþtirilmiþ. Lütfen sayfayý yenileyin.");
+                    ModelState.AddModelError("", "Bu envanter baï¿½ka bir kullanï¿½cï¿½ tarafï¿½ndan deï¿½iï¿½tirilmiï¿½. Lï¿½tfen sayfayï¿½ yenileyin.");
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Envanter güncellenirken hata oluþtu. ID: {Id}", id);
-                    ModelState.AddModelError("", "Envanter güncellenirken bir hata oluþtu: " + ex.Message);
+                    _logger.LogError(ex, "Envanter gï¿½ncellenirken hata oluï¿½tu. ID: {Id}", id);
+                    ModelState.AddModelError("", "Envanter gï¿½ncellenirken bir hata oluï¿½tu: " + ex.Message);
                 }
             }
 
@@ -184,6 +191,7 @@ namespace StudentApp.Controllers
         }
 
         // GET: Envanterler/Delete/5
+        [PageAuthorize("Envanterler.Delete")]
         public async Task<IActionResult> Delete(long? id)
         {
             if (id == null)
@@ -204,8 +212,8 @@ namespace StudentApp.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Envanter silme sayfasý yüklenirken hata oluþtu. ID: {Id}", id);
-                TempData["ErrorMessage"] = "Envanter yüklenirken bir hata oluþtu.";
+                _logger.LogError(ex, "Envanter silme sayfasï¿½ yï¿½klenirken hata oluï¿½tu. ID: {Id}", id);
+                TempData["ErrorMessage"] = "Envanter yï¿½klenirken bir hata oluï¿½tu.";
                 return RedirectToAction(nameof(Index));
             }
         }
@@ -213,6 +221,7 @@ namespace StudentApp.Controllers
         // POST: Envanterler/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [PageAuthorize("Envanterler.Delete")]
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
             try
@@ -221,17 +230,17 @@ namespace StudentApp.Controllers
 
                 if (result)
                 {
-                    TempData["SuccessMessage"] = "Envanter baþarýyla silindi.";
+                    TempData["SuccessMessage"] = "Envanter baï¿½arï¿½yla silindi.";
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Envanter bulunamadý.";
+                    TempData["ErrorMessage"] = "Envanter bulunamadï¿½.";
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Envanter silinirken hata oluþtu. ID: {Id}", id);
-                TempData["ErrorMessage"] = "Envanter silinirken bir hata oluþtu.";
+                _logger.LogError(ex, "Envanter silinirken hata oluï¿½tu. ID: {Id}", id);
+                TempData["ErrorMessage"] = "Envanter silinirken bir hata oluï¿½tu.";
             }
 
             return RedirectToAction(nameof(Index));

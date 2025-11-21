@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using StudentApp.Models;
 using StudentApp.Services;
+using StudentApp.Attributes;
 
 namespace StudentApp.Controllers;
 
@@ -18,6 +19,7 @@ public class ZamanlayiciController : Controller
     }
 
     // GET: Scheduler
+    [PageAuthorize("Zamanlayici.Index")]
     public async Task<IActionResult> Index()
     {
         var activeSchedulers = await _schedulerService.GetActiveSchedulersAsync();
@@ -25,6 +27,7 @@ public class ZamanlayiciController : Controller
     }
 
     // GET: Scheduler/Create
+    [PageAuthorize("Zamanlayici.Create")]
     public IActionResult Create()
     {
         var model = new ZamanlayiciAyarlar
@@ -41,6 +44,7 @@ public class ZamanlayiciController : Controller
     // POST: Scheduler/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [PageAuthorize("Zamanlayici.Create")]
     public async Task<IActionResult> Create(ZamanlayiciAyarlar model)
     {
         if (ModelState.IsValid)
@@ -74,6 +78,7 @@ public class ZamanlayiciController : Controller
     }
 
     // GET: Scheduler/Edit/5
+    [PageAuthorize("Zamanlayici.Edit")]
     public async Task<IActionResult> Edit(long id)
     {
         var scheduler = await _schedulerService.GetSchedulerByIdAsync(id);
@@ -88,6 +93,7 @@ public class ZamanlayiciController : Controller
     // POST: Scheduler/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [PageAuthorize("Zamanlayici.Edit")]
     public async Task<IActionResult> Edit(long id, ZamanlayiciAyarlar model)
     {
         if (id != model.Id)

@@ -13,22 +13,22 @@ namespace StudentApp.Data
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
   var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-            // Veritabanýnýn oluþturulduðundan emin ol
+            // Veritabanï¿½nï¿½n oluï¿½turulduï¿½undan emin ol
             await context.Database.MigrateAsync();
 
-        // Admin rolü oluþtur
+        // Admin rolï¿½ oluï¿½tur
     if (!await roleManager.RoleExistsAsync("Admin"))
       {
     await roleManager.CreateAsync(new IdentityRole("Admin"));
             }
 
-            // User rolü oluþtur
+            // User rolï¿½ oluï¿½tur
  if (!await roleManager.RoleExistsAsync("User"))
   {
  await roleManager.CreateAsync(new IdentityRole("User"));
             }
 
-    // Admin kullanýcýsý oluþtur
+    // Admin kullanï¿½cï¿½sï¿½ oluï¿½tur
             var adminEmail = "admin@aidattakip.com";
     var adminUser = await userManager.FindByEmailAsync(adminEmail);
 
@@ -46,13 +46,13 @@ UserName = adminEmail,
    if (result.Succeeded)
        {
         await userManager.AddToRoleAsync(adminUser, "Admin");
-        Console.WriteLine("Admin kullanýcýsý baþarýyla oluþturuldu!");
+        Console.WriteLine("Admin kullanï¿½cï¿½sï¿½ baï¿½arï¿½yla oluï¿½turuldu!");
            Console.WriteLine($"Email: {adminEmail}");
- Console.WriteLine("Þifre: 123456");
+ Console.WriteLine("ï¿½ifre: 123456");
              }
     else
     {
-                    Console.WriteLine("Admin kullanýcýsý oluþturulamadý:");
+                    Console.WriteLine("Admin kullanï¿½cï¿½sï¿½ oluï¿½turulamadï¿½:");
                foreach (var error in result.Errors)
          {
               Console.WriteLine($"- {error.Description}");
@@ -61,13 +61,13 @@ UserName = adminEmail,
   }
        else
      {
-                Console.WriteLine("Admin kullanýcýsý zaten mevcut.");
+                Console.WriteLine("Admin kullanï¿½cï¿½sï¿½ zaten mevcut.");
  
-           // Admin rolüne sahip deðilse ekle
+           // Admin rolï¿½ne sahip deï¿½ilse ekle
                 if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
               {
            await userManager.AddToRoleAsync(adminUser, "Admin");
-      Console.WriteLine("Mevcut kullanýcýya Admin rolü eklendi.");
+      Console.WriteLine("Mevcut kullanï¿½cï¿½ya Admin rolï¿½ eklendi.");
        }
  }
 
@@ -76,10 +76,10 @@ UserName = adminEmail,
          {
             context.Cinsiyetler.AddRange(
             new Cinsiyetler { Cinsiyet = "Erkek" },
-            new Cinsiyetler { Cinsiyet = "Kadýn" }
+            new Cinsiyetler { Cinsiyet = "Kadï¿½n" }
             );
             await context.SaveChangesAsync();
-            Console.WriteLine("Cinsiyet verileri oluþturuldu.");
+            Console.WriteLine("Cinsiyet verileri oluï¿½turuldu.");
          }
         }
  }

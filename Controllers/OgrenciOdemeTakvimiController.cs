@@ -7,6 +7,7 @@ using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using StudentApp.Models;
 using StudentApp.Services;
+using StudentApp.Attributes;
 
 namespace StudentApp.Controllers
 {
@@ -25,6 +26,7 @@ namespace StudentApp.Controllers
         }
 
         // GET: OgrenciOdemeTakvimi
+        [PageAuthorize("OgrenciOdemeTakvimi.Index")]
         public async Task<IActionResult> Index(long? ogrenciId, string searchTerm)
         {
    IEnumerable<OgrenciOdemeTakvimi> odemeler;
@@ -72,7 +74,8 @@ return View(odemeler);
    }
 
         // GET: OgrenciOdemeTakvimi/Create
-      public async Task<IActionResult> Create(long? ogrenciId)
+        [PageAuthorize("OgrenciOdemeTakvimi.Create")]
+        public async Task<IActionResult> Create(long? ogrenciId)
  {
             // Öğrenci ID'si zorunlu - yoksa öğrenci listesine yönlendir
             if (!ogrenciId.HasValue)
@@ -117,6 +120,7 @@ return View(odemeler);
     // POST: OgrenciOdemeTakvimi/Create
       [HttpPost]
   [ValidateAntiForgeryToken]
+        [PageAuthorize("OgrenciOdemeTakvimi.Create")]
         public async Task<IActionResult> Create(OgrenciOdemeTakvimi odeme)
         {
       // Öğrenci ID kontrolü
@@ -165,6 +169,7 @@ ViewBag.OdemePlani = ogrenci.OdemePlanlari;
         }
 
         // GET: OgrenciOdemeTakvimi/Details/5
+        [PageAuthorize("OgrenciOdemeTakvimi.Details")]
   public async Task<IActionResult> Details(long id)
   {
       var odeme = await _odemeService.GetOdemeByIdAsync(id);
@@ -177,6 +182,7 @@ ViewBag.OdemePlani = ogrenci.OdemePlanlari;
      }
 
         // GET: OgrenciOdemeTakvimi/Edit/5
+        [PageAuthorize("OgrenciOdemeTakvimi.Edit")]
      public async Task<IActionResult> Edit(long id)
    {
       var odeme = await _odemeService.GetOdemeByIdAsync(id);
@@ -196,6 +202,7 @@ ViewBag.OdemePlani = ogrenci.OdemePlanlari;
         // POST: OgrenciOdemeTakvimi/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [PageAuthorize("OgrenciOdemeTakvimi.Edit")]
    public async Task<IActionResult> Edit(long id, OgrenciOdemeTakvimi odeme)
         {
    if (id != odeme.Id)
@@ -232,6 +239,7 @@ if (updatedOdeme == null)
         }
 
         // GET: OgrenciOdemeTakvimi/Delete/5
+        [PageAuthorize("OgrenciOdemeTakvimi.Delete")]
         public async Task<IActionResult> Delete(long id)
       {
        var odeme = await _odemeService.GetOdemeByIdAsync(id);
@@ -246,6 +254,7 @@ if (updatedOdeme == null)
         // POST: OgrenciOdemeTakvimi/Delete/5
    [HttpPost, ActionName("Delete")]
       [ValidateAntiForgeryToken]
+        [PageAuthorize("OgrenciOdemeTakvimi.Delete")]
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
       try

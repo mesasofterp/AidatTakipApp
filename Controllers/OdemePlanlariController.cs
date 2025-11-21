@@ -6,6 +6,7 @@ using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using StudentApp.Models;
 using StudentApp.Services;
+using StudentApp.Attributes;
 
 namespace StudentApp.Controllers
 {
@@ -20,6 +21,7 @@ namespace StudentApp.Controllers
         }
 
         // GET: OdemePlani
+        [PageAuthorize("OdemePlanlari.Index")]
         public async Task<IActionResult> Index(bool showPasif = false)
         {
             var odemePlanlari = await _odemePlaniService.GetAllOdemePlanlariAsync(showPasif);
@@ -28,6 +30,7 @@ namespace StudentApp.Controllers
         }
 
         // GET: OdemePlani/Create
+        [PageAuthorize("OdemePlanlari.Create")]
         public IActionResult Create()
         {
             return View();
@@ -36,6 +39,7 @@ namespace StudentApp.Controllers
         // POST: OdemePlani/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [PageAuthorize("OdemePlanlari.Create")]
         public async Task<IActionResult> Create(OdemePlanlari odemePlani)
         {
             if (ModelState.IsValid)
@@ -58,6 +62,7 @@ namespace StudentApp.Controllers
 
 
         // GET: OdemePlani/Details/5
+        [PageAuthorize("OdemePlanlari.Details")]
         public async Task<IActionResult> Details(long id)
         {
             var odemePlani = await _odemePlaniService.GetOdemePlaniByIdAsync(id);
@@ -70,6 +75,7 @@ namespace StudentApp.Controllers
         }
 
         // GET: OdemePlani/Edit/5
+        [PageAuthorize("OdemePlanlari.Edit")]
         public async Task<IActionResult> Edit(long id)
         {
             var odemePlani = await _odemePlaniService.GetOdemePlaniByIdAsync(id);
@@ -84,6 +90,7 @@ namespace StudentApp.Controllers
         // POST: OdemePlani/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [PageAuthorize("OdemePlanlari.Edit")]
         public async Task<IActionResult> Edit(long id, OdemePlanlari odemePlani)
         {
             if (id != odemePlani.Id)
@@ -114,6 +121,7 @@ namespace StudentApp.Controllers
         }
 
         // GET: OdemePlani/Delete/5
+        [PageAuthorize("OdemePlanlari.Delete")]
         public async Task<IActionResult> Delete(long id)
         {
             var odemePlani = await _odemePlaniService.GetOdemePlaniByIdAsync(id);
@@ -128,6 +136,7 @@ namespace StudentApp.Controllers
         // POST: OdemePlani/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [PageAuthorize("OdemePlanlari.Delete")]
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
             try

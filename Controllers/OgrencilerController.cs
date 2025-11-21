@@ -9,6 +9,7 @@ using QuestPDF.Infrastructure;
 using StudentApp.Models;
 using StudentApp.Models.ViewModels;
 using StudentApp.Services;
+using StudentApp.Attributes;
 
 namespace StudentApp.Controllers
 {
@@ -42,6 +43,7 @@ namespace StudentApp.Controllers
         }
 
         // GET: Student
+        [PageAuthorize("Ogrenciler.Index")]
         public async Task<IActionResult> Index(OgrencilerFilterViewModel filter)
         {
             IEnumerable<Ogrenciler> ogrenciler;
@@ -155,6 +157,7 @@ namespace StudentApp.Controllers
         }
 
         // GET: Student/Create
+        [PageAuthorize("Ogrenciler.Create")]
         public async Task<IActionResult> Create()
         {
             await LoadDropdownsAsync();
@@ -164,6 +167,7 @@ namespace StudentApp.Controllers
         // POST: Student/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [PageAuthorize("Ogrenciler.Create")]
         public async Task<IActionResult> Create(Ogrenciler ogrenci, OgrenciDetay? ogrenciDetay, List<EnvanterSatisViewModel>? EnvanterSatislari)
         {
             // Model State'deki tarih hatalarını temizle (culture sorunu için)
@@ -320,6 +324,7 @@ namespace StudentApp.Controllers
             return View(ogrenci);
         }
         // GET: Student/Details/5
+        [PageAuthorize("Ogrenciler.Details")]
         public async Task<IActionResult> Details(long id)
         {
             var ogrenci = await _context.Ogrenciler
@@ -357,6 +362,7 @@ namespace StudentApp.Controllers
         }
 
         // GET: Student/Edit/5
+        [PageAuthorize("Ogrenciler.Edit")]
         public async Task<IActionResult> Edit(long id)
         {
             var ogrenci = await _context.Ogrenciler
@@ -669,6 +675,7 @@ namespace StudentApp.Controllers
             return View(ogrenci);
         }
         // GET: Student/Delete/5
+        [PageAuthorize("Ogrenciler.Delete")]
         public async Task<IActionResult> Delete(long id)
         {
             var ogrenci = await _ogrenciService.GetOgrenciByIdAsync(id);
@@ -683,6 +690,7 @@ namespace StudentApp.Controllers
         // POST: Student/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [PageAuthorize("Ogrenciler.Delete")]
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
             try
