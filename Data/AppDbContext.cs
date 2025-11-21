@@ -19,6 +19,7 @@ namespace StudentApp.Data
         public DbSet<Envanterler> Envanterler { get; set; }
         public DbSet<OgrenciEnvanterSatis> OgrenciEnvanterSatis { get; set; }
         public DbSet<OgrenciBasarilari> OgrenciBasarilari { get; set; }
+        public DbSet<OgrenciBasariMaclari> OgrenciBasariMaclari { get; set; }
         public DbSet<OgrenciDetay> OgrenciDetay { get; set; }
         public DbSet<Gunler> Gunler { get; set; }
         public DbSet<Seanslar> Seanslar { get; set; }
@@ -74,7 +75,7 @@ namespace StudentApp.Data
                 entity.Property(e => e.Cinsiyet).IsRequired().HasMaxLength(50);
             });
 
-            // Configure Günler entity
+            // Configure Gï¿½nler entity
             modelBuilder.Entity<Gunler>(entity =>
             {
                 entity.ToTable("Gunler");
@@ -173,6 +174,32 @@ namespace StudentApp.Data
                 entity.HasOne(e => e.Ogrenci)
                     .WithMany(o => o.OgrenciBasarilari)
                     .HasForeignKey(e => e.OgrenciId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // One-to-Many relationship with OgrenciBasariMaclari
+                entity.HasMany(e => e.OgrenciBasariMaclari)
+                    .WithOne(m => m.Basari)
+                    .HasForeignKey(m => m.BasariId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // Configure OgrenciBasariMaclari entity
+            modelBuilder.Entity<OgrenciBasariMaclari>(entity =>
+            {
+                entity.ToTable("OgrenciBasariMaclari");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.RakipAdi).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.Tur).HasMaxLength(100);
+                entity.Property(e => e.Kategori).HasMaxLength(100);
+                entity.Property(e => e.Skor).HasMaxLength(50);
+                entity.Property(e => e.Sonuc).HasMaxLength(50);
+                entity.Property(e => e.Tarih);
+                entity.Property(e => e.Lokasyon).HasMaxLength(200);
+
+                // Foreign key relationship
+                entity.HasOne(e => e.Basari)
+                    .WithMany(b => b.OgrenciBasariMaclari)
+                    .HasForeignKey(e => e.BasariId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
 

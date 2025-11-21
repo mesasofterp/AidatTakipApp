@@ -46,6 +46,7 @@ namespace StudentApp.Controllers
 
             var ogrenciBasarilari = await _context.OgrenciBasarilari
                 .Include(b => b.Ogrenci)
+                .Include(b => b.OgrenciBasariMaclari.Where(m => !m.IsDeleted))
                 .FirstOrDefaultAsync(m => m.Id == id && !m.IsDeleted);
 
             if (ogrenciBasarilari == null)

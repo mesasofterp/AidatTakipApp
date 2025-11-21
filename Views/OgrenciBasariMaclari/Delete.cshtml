@@ -1,0 +1,128 @@
+@model StudentApp.Models.OgrenciBasariMaclari
+
+@{
+    ViewData["Title"] = "Maç Sil";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h4><i class="fas fa-trash me-2"></i>Maç Sil</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Uyarı!</strong> Bu maç kaydını silmek istediğinizden emin misiniz?
+                </div>
+
+                <dl class="row">
+                    <dt class="col-sm-4">
+                        <i class="fas fa-trophy me-2"></i>Başarı
+                    </dt>
+                    <dd class="col-sm-8">
+                        @if (Model.Basari != null)
+                        {
+                            <strong>@Model.Basari.Baslik</strong>
+                        }
+                        else
+                        {
+                            <span class="text-muted">-</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        <i class="fas fa-user-friends me-2"></i>Rakip Adı
+                    </dt>
+                    <dd class="col-sm-8">
+                        <strong>@Model.RakipAdi</strong>
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        <i class="fas fa-tag me-2"></i>Tür
+                    </dt>
+                    <dd class="col-sm-8">
+                        @if (!string.IsNullOrWhiteSpace(Model.Tur))
+                        {
+                            <span class="badge bg-info">@Model.Tur</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">-</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        <i class="fas fa-trophy me-2"></i>Skor
+                    </dt>
+                    <dd class="col-sm-8">
+                        @if (!string.IsNullOrWhiteSpace(Model.Skor))
+                        {
+                            <strong>@Model.Skor</strong>
+                        }
+                        else
+                        {
+                            <span class="text-muted">-</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        <i class="fas fa-flag me-2"></i>Sonuç
+                    </dt>
+                    <dd class="col-sm-8">
+                        @if (!string.IsNullOrWhiteSpace(Model.Sonuc))
+                        {
+                            @if (Model.Sonuc.ToLower().Contains("kazan") || Model.Sonuc.ToLower().Contains("galip") || Model.Sonuc.ToLower().Contains("win"))
+                            {
+                                <span class="badge bg-success">@Model.Sonuc</span>
+                            }
+                            else if (Model.Sonuc.ToLower().Contains("kaybet") || Model.Sonuc.ToLower().Contains("mağlup") || Model.Sonuc.ToLower().Contains("lose"))
+                            {
+                                <span class="badge bg-danger">@Model.Sonuc</span>
+                            }
+                            else if (Model.Sonuc.ToLower().Contains("beraber") || Model.Sonuc.ToLower().Contains("draw"))
+                            {
+                                <span class="badge bg-warning">@Model.Sonuc</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-primary">@Model.Sonuc</span>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-muted">-</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        <i class="fas fa-calendar me-2"></i>Tarih
+                    </dt>
+                    <dd class="col-sm-8">
+                        @if (Model.Tarih.HasValue)
+                        {
+                            <i class="fas fa-calendar-alt me-1"></i>@Model.Tarih.Value.ToString("dd.MM.yyyy")
+                        }
+                        else
+                        {
+                            <span class="text-muted">-</span>
+                        }
+                    </dd>
+                </dl>
+
+                <form asp-action="Delete" method="post" class="mt-4">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" asp-route-basariId="@Model.BasariId" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>İptal
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash me-1"></i>Sil
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

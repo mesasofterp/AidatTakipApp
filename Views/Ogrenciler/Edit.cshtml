@@ -17,7 +17,7 @@
                     <input asp-for="Aktif" type="hidden" />
                     <input asp-for="IsDeleted" type="hidden" />
                     <input asp-for="Version" type="hidden" />
-                    <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
+                    <div asp-validation-summary="All" class="alert alert-danger" role="alert" style="display: none;"></div>
 
                     <h5 class="mb-3"><i class="fas fa-user me-2"></i>Kişisel Bilgiler</h5>
                     <div class="row">
@@ -207,14 +207,106 @@
                     </div>
 
                     <hr class="my-4" />
-                    <h5 class="mb-3"><i class="fas fa-trophy me-2"></i>Başarılar</h5>
-                    <div class="alert alert-info" role="alert">
-                        <i class="fas fa-info-circle me-2"></i>
-                        Öğrencinin başarılarını görüntüleyebilir, yeni başarı ekleyebilir veya mevcut başarıları düzenleyebilirsiniz.
-                        <a asp-controller="OgrenciBasarilari" asp-action="Index" asp-route-ogrenciId="@Model.Id" class="btn btn-sm btn-outline-primary ms-2">
-                            <i class="fas fa-trophy me-1"></i>Başarıları Yönet
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0"><i class="fas fa-trophy me-2"></i>Başarıları Yönet</h5>
+                        <a asp-controller="OgrenciBasarilari" asp-action="Create" asp-route-ogrenciId="@Model.Id" class="btn btn-sm btn-success">
+                            <i class="fas fa-plus me-1"></i>Yeni Başarı Ekle
                         </a>
                     </div>
+
+                    @if (Model.OgrenciBasarilari != null && Model.OgrenciBasarilari.Any())
+                    {
+                        <div class="accordion" id="basarilarAccordion">
+                            @{
+                                int basariIndex = 0;
+                            }
+                            @foreach (var basari in Model.OgrenciBasarilari.OrderByDescending(b => b.Tarih).ThenByDescending(b => b.Id))
+                            {
+                                var basariId = $"basari_{basariIndex}";
+                                var collapsedClass = basariIndex == 0 ? "" : "collapsed";
+                                var showClass = basariIndex == 0 ? "show" : "";
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading_@basariIndex">
+                                        <button class="accordion-button @collapsedClass" type="button" data-bs-toggle="collapse" data-bs-target="#@basariId" aria-expanded="@(basariIndex == 0 ? "true" : "false")" aria-controls="@basariId">
+                                            <div class="d-flex justify-content-between align-items-center w-100 me-3">
+                                                <div>
+                                                    <strong>@basari.Baslik</strong>
+                                                    <span class="badge bg-primary ms-2">@basari.Turu</span>
+                                                    @if (basari.Tarih.HasValue)
+                                                    {
+                                                        <small class="text-muted ms-2">
+                                                            <i class="fas fa-calendar-alt me-1"></i>@basari.Tarih.Value.ToString("dd.MM.yyyy")
+                                                        </small>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </button>
+                                    </h2>
+                                    <div id="@basariId" class="accordion-collapse collapse @showClass" aria-labelledby="heading_@basariIndex" data-bs-parent="#basarilarAccordion">
+                                        <div class="accordion-body">
+                                            <dl class="row mb-3">
+                                                <dt class="col-sm-3">Başlık:</dt>
+                                                <dd class="col-sm-9"><strong>@basari.Baslik</strong></dd>
+
+                                                <dt class="col-sm-3">Tür:</dt>
+                                                <dd class="col-sm-9">
+                                                    <span class="badge bg-primary">@basari.Turu</span>
+                                                </dd>
+
+                                                @if (basari.Tarih.HasValue)
+                                                {
+                                                    <dt class="col-sm-3">Tarih:</dt>
+                                                    <dd class="col-sm-9">
+                                                        <i class="fas fa-calendar-alt me-1"></i>@basari.Tarih.Value.ToString("dd.MM.yyyy")
+                                                    </dd>
+                                                }
+
+                                                @if (!string.IsNullOrWhiteSpace(basari.Aciklama))
+                                                {
+                                                    <dt class="col-sm-3">Açıklama:</dt>
+                                                    <dd class="col-sm-9">@basari.Aciklama</dd>
+                                                }
+
+                                                @if (basari.OgrenciBasariMaclari != null && basari.OgrenciBasariMaclari.Any(m => !m.IsDeleted))
+                                                {
+                                                    <dt class="col-sm-3">Maçlar:</dt>
+                                                    <dd class="col-sm-9">
+                                                        <span class="badge bg-info">@basari.OgrenciBasariMaclari.Count(m => !m.IsDeleted) Maç</span>
+                                                    </dd>
+                                                }
+                                            </dl>
+
+                                            <div class="d-flex gap-2">
+                                                <a asp-controller="OgrenciBasarilari" asp-action="Details" asp-route-id="@basari.Id" class="btn btn-sm btn-info" title="Detaylar">
+                                                    <i class="fas fa-eye me-1"></i>Detaylar
+                                                </a>
+                                                <a asp-controller="OgrenciBasarilari" asp-action="Edit" asp-route-id="@basari.Id" class="btn btn-sm btn-warning" title="Düzenle">
+                                                    <i class="fas fa-edit me-1"></i>Düzenle
+                                                </a>
+                                                <a asp-controller="OgrenciBasarilari" asp-action="Delete" asp-route-id="@basari.Id" class="btn btn-sm btn-danger" title="Sil">
+                                                    <i class="fas fa-trash me-1"></i>Sil
+                                                </a>
+                                                <a asp-controller="OgrenciBasarilari" asp-action="Index" asp-route-ogrenciId="@Model.Id" class="btn btn-sm btn-outline-primary ms-auto" title="Tüm Başarıları Görüntüle">
+                                                    <i class="fas fa-list me-1"></i>Tüm Başarılar
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                basariIndex++;
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Henüz başarı kaydı bulunmamaktadır.
+                            <a asp-controller="OgrenciBasarilari" asp-action="Create" asp-route-ogrenciId="@Model.Id" class="alert-link">
+                                <i class="fas fa-plus me-1"></i>İlk başarıyı eklemek için tıklayın
+                            </a>.
+                        </div>
+                    }
 
                     <hr class="my-4" />
                     <h5 class="mb-3"><i class="fas fa-boxes me-2"></i>Envanter Satışları</h5>
@@ -427,8 +519,22 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
-                   // Telefon numarası input mask
-                document.addEventListener('DOMContentLoaded', function() {
+        // Validation summary'yi sadece hata varsa göster
+        document.addEventListener('DOMContentLoaded', function() {
+            const validationSummary = document.querySelector('[asp-validation-summary]');
+            if (validationSummary) {
+                // Validation summary'nin içinde ul varsa ve içinde li varsa göster
+                const ul = validationSummary.querySelector('ul');
+                if (ul && ul.children.length > 0) {
+                    validationSummary.style.display = 'block';
+                } else {
+                    validationSummary.style.display = 'none';
+                }
+            }
+        });
+
+        // Telefon numarası input mask
+        document.addEventListener('DOMContentLoaded', function() {
                    const telefonInput = document.getElementById('telefonInput');
                    const veliTelefonInput = document.getElementById('VeliTelefonNumarasi');
                    const okulHocasiTelefonInput = document.getElementById('OkulHocasiTelefon');

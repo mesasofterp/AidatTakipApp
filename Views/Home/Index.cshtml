@@ -239,6 +239,7 @@
     <script>
         let searchTimer;
         let selectedOgrenciId = null;
+        let selectedIndex = -1; // Klavye navigasyonu için seçili item index'i
 
         // Öğrenci arama input
         const ogrenciSearch = document.getElementById('ogrenciSearch');
@@ -284,6 +285,16 @@
                         accordionBody.style.transition = 'opacity 0.3s ease';
                     }
                 });
+
+                // Accordion tamamen açıldığında input'a focus ver
+                collapseElement.addEventListener('shown.bs.collapse', function () {
+                    // Kısa bir gecikme ile focus ver (accordion animasyonu tamamlansın diye)
+                    setTimeout(() => {
+                        if (ogrenciSearch) {
+                            ogrenciSearch.focus();
+                        }
+                    }, 100);
+                });
             }
 
             // Input'a odaklanınca dropdown'ı göster
@@ -303,13 +314,64 @@
                 }, 100);
             });
 
+            // Klavye navigasyonu (Arrow Up/Down, Enter, Escape)
+            ogrenciSearch.addEventListener('keydown', function(e) {
+                const items = ogrenciList.querySelectorAll('.list-group-item-action');
+                
+                if (items.length === 0) return;
+                
+                // Arrow Down
+                if (e.key === 'ArrowDown' || e.keyCode === 40) {
+                    e.preventDefault();
+                    selectedIndex = (selectedIndex + 1) % items.length;
+                    highlightItem(items, selectedIndex);
+                }
+                // Arrow Up
+                else if (e.key === 'ArrowUp' || e.keyCode === 38) {
+                    e.preventDefault();
+                    selectedIndex = selectedIndex <= 0 ? items.length - 1 : selectedIndex - 1;
+                    highlightItem(items, selectedIndex);
+                }
+                // Enter
+                else if (e.key === 'Enter' || e.keyCode === 13) {
+                    e.preventDefault();
+                    if (selectedIndex >= 0 && selectedIndex < items.length) {
+                        items[selectedIndex].click();
+                    } else if (items.length > 0) {
+                        // Eğer hiçbir item seçili değilse ilk item'ı seç
+                        items[0].click();
+                    }
+                }
+                // Escape
+                else if (e.key === 'Escape' || e.keyCode === 27) {
+                    e.preventDefault();
+                    ogrenciDropdown.style.display = 'none';
+                    selectedIndex = -1;
+                }
+            });
+
             // Dışarı tıklanınca dropdown'ı kapat
             document.addEventListener('click', function(e) {
                 if (!ogrenciSearch.contains(e.target) && !ogrenciDropdown.contains(e.target) && 
                     !e.target.closest('#ogrenciSearchWrapper')) {
                     ogrenciDropdown.style.display = 'none';
+                    selectedIndex = -1;
                 }
             });
+
+            // Item'ı highlight et ve görünür yap
+            function highlightItem(items, index) {
+                // Tüm item'lardan active class'ını kaldır
+                items.forEach((item, i) => {
+                    if (i === index) {
+                        item.classList.add('active');
+                        // Scroll ile görünür yap
+                        item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+            }
 
             // Öğrenci arama fonksiyonu
             async function searchOgrenci(searchTerm, showDropdown = false) {
@@ -319,6 +381,7 @@
                     const ogrenciler = await response.json();
 
                     ogrenciList.innerHTML = '';
+                    selectedIndex = -1; // Reset seçili index
 
                     if (ogrenciler.length === 0) {
                         ogrenciList.innerHTML = '<div class="list-group-item text-muted text-center">Öğrenci bulunamadı</div>';
@@ -328,7 +391,7 @@
                         return;
                     }
 
-                    ogrenciler.forEach(ogrenci => {
+                    ogrenciler.forEach((ogrenci, index) => {
                         const item = document.createElement('div');
                         item.className = 'list-group-item list-group-item-action';
                         item.style.cursor = 'pointer';
@@ -349,10 +412,18 @@
                                 <i class="fas fa-chevron-right text-muted"></i>
                             </div>
                         `;
+                        
+                        // İlk item'ı otomatik seçili yap
+                        if (index === 0) {
+                            item.classList.add('active');
+                            selectedIndex = 0;
+                        }
+                        
                         item.addEventListener('click', async () => {
                             selectedOgrenciId = ogrenci.id;
                             ogrenciSearch.value = ogrenci.adSoyad;
                             ogrenciDropdown.style.display = 'none';
+                            selectedIndex = -1;
                             
                             // Badge'i göster
                             const badge = document.getElementById('selectedOgrenciBadge');
@@ -373,12 +444,30 @@
                             
                             await showOgrenciDetay(ogrenci.id);
                         });
+                        
                         ogrenciList.appendChild(item);
+                    });
+
+                    // Items array'ini güncelle (klavye navigasyonu için)
+                    const items = ogrenciList.querySelectorAll('.list-group-item-action');
+                    
+                    // Hover ile seçili index'i güncelle
+                    items.forEach((item, index) => {
+                        item.addEventListener('mouseenter', function() {
+                            selectedIndex = index;
+                            highlightItem(items, selectedIndex);
+                        });
                     });
 
                     // Dropdown'ı göster
                     if (showDropdown && ogrenciler.length > 0) {
                         ogrenciDropdown.style.display = 'block';
+                        // İlk item'ı görünür yap
+                        if (items.length > 0) {
+                            setTimeout(() => {
+                                items[0].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                            }, 100);
+                        }
                     }
                 } catch (error) {
                     console.error('Arama hatası:', error);
@@ -1295,6 +1384,26 @@
 
         #ogrenciList .list-group-item:hover {
             background-color: var(--primary-50);
+        }
+
+        #ogrenciList .list-group-item.active {
+            background-color: var(--primary-500);
+            color: white;
+            border-color: var(--primary-600);
+        }
+
+        #ogrenciList .list-group-item.active mark {
+            background-color: rgba(255, 255, 255, 0.3);
+            color: white;
+            font-weight: 700;
+        }
+
+        #ogrenciList .list-group-item.active .text-muted {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+
+        #ogrenciList .list-group-item.active .fa-chevron-right {
+            color: white !important;
         }
 
         /* Modal İyileştirmeleri */

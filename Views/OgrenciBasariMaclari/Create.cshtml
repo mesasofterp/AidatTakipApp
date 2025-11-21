@@ -1,0 +1,136 @@
+@model StudentApp.Models.OgrenciBasariMaclari
+
+@{
+    ViewData["Title"] = "Yeni Maç Ekle";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-futbol me-2"></i>Yeni Maç Ekle</h4>
+            </div>
+            <div class="card-body">
+                @if (ViewBag.BasariBaslik != null)
+                {
+                    <div class="alert alert-info mb-3">
+                        <i class="fas fa-trophy me-2"></i>
+                        <strong>Başarı:</strong> @ViewBag.BasariBaslik
+                    </div>
+                }
+
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    
+                    <input type="hidden" asp-for="BasariId" />
+
+                    <div class="mb-3">
+                        <label asp-for="RakipAdi" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-user-friends"></i></span>
+                            <input asp-for="RakipAdi" class="form-control" placeholder="Örn: Galatasaray, Fenerbahçe" />
+                        </div>
+                        <span asp-validation-for="RakipAdi" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Tur" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                            <input asp-for="Tur" class="form-control" placeholder="Örn: Yarı Final, Final, Çeyrek Final" list="turListesi" />
+                            <datalist id="turListesi">
+                                <option value="Yarı Final" />
+                                <option value="Final" />
+                                <option value="Çeyrek Final" />
+                                <option value="Grup Maçı" />
+                                <option value="Eleme" />
+                                <option value="Ön Eleme" />
+                            </datalist>
+                        </div>
+                        <span asp-validation-for="Tur" class="text-danger"></span>
+                        <small class="form-text text-muted">Örn: Yarı Final, Final, Çeyrek Final, Grup Maçı</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Kategori" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-list"></i></span>
+                            <input asp-for="Kategori" class="form-control" placeholder="Örn: U-15, U-18, A Takım" list="kategoriListesi" />
+                            <datalist id="kategoriListesi">
+                                <option value="U-10" />
+                                <option value="U-12" />
+                                <option value="U-15" />
+                                <option value="U-18" />
+                                <option value="A Takım" />
+                                <option value="B Takım" />
+                            </datalist>
+                        </div>
+                        <span asp-validation-for="Kategori" class="text-danger"></span>
+                        <small class="form-text text-muted">Örn: U-15, U-18, A Takım</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Skor" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-trophy"></i></span>
+                            <input asp-for="Skor" class="form-control" placeholder="Örn: 3-1, 2-0, 1-1" />
+                        </div>
+                        <span asp-validation-for="Skor" class="text-danger"></span>
+                        <small class="form-text text-muted">Örn: 3-1, 2-0, 1-1</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Sonuc" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-flag"></i></span>
+                            <input asp-for="Sonuc" class="form-control" placeholder="Örn: Kazandı, Kaybetti, Berabere" list="sonucListesi" />
+                            <datalist id="sonucListesi">
+                                <option value="Kazandı" />
+                                <option value="Kaybetti" />
+                                <option value="Berabere" />
+                                <option value="Galip" />
+                                <option value="Mağlup" />
+                            </datalist>
+                        </div>
+                        <span asp-validation-for="Sonuc" class="text-danger"></span>
+                        <small class="form-text text-muted">Örn: Kazandı, Kaybetti, Berabere</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Tarih" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                            <input asp-for="Tarih" type="date" class="form-control" />
+                        </div>
+                        <span asp-validation-for="Tarih" class="text-danger"></span>
+                        <small class="form-text text-muted">Opsiyonel - Maçın oynandığı tarih</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Lokasyon" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                            <input asp-for="Lokasyon" class="form-control" placeholder="Örn: İstanbul, Ankara, İzmir" />
+                        </div>
+                        <span asp-validation-for="Lokasyon" class="text-danger"></span>
+                        <small class="form-text text-muted">Opsiyonel - Maçın oynandığı yer</small>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Index" asp-route-basariId="@Model.BasariId" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Listeye Dön
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save me-1"></i>Maç Ekle
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
