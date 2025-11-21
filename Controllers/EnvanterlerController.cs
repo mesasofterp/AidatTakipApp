@@ -28,45 +28,21 @@ namespace StudentApp.Controllers
             {
                 var envanterler = await _envanterlerService.GetAllAsync();
 
-                // Arama filtresi
+                // 🔍 Arama filtresi
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
                     var searchLower = searchTerm.ToLower().Trim();
                     envanterler = envanterler.Where(e =>
-                          e.EnvanterAdi.ToLower().Contains(searchLower) ||
-                 (e.Aciklama != null && e.Aciklama.ToLower().Contains(searchLower)) ||
-               e.AlisFiyat.ToString().Contains(searchLower) ||
-                e.SatisFiyat.ToString().Contains(searchLower)
-                 ).ToList();
+                        e.EnvanterAdi.ToLower().Contains(searchLower) ||
+                        (e.Aciklama != null && e.Aciklama.ToLower().Contains(searchLower)) ||
+                        e.AlisFiyat.ToString().Contains(searchLower) ||
+                        e.SatisFiyat.ToString().Contains(searchLower)
+                    ).ToList();
+
                     ViewBag.SearchTerm = searchTerm;
                 }
 
-                // Stok durumu filtresi
-                 if (!string.IsNullOrWhiteSpace(stokDurumu))
-       {
-                envanterler = stokDurumu switch
-             {
-             "stokta" => envanterler.Where(e => e.Adet > 0).ToList(),
-                      "tukendi" => envanterler.Where(e => e.Adet == 0).ToList(),
-                  "azaldi" => envanterler.Where(e => e.Adet > 0 && e.Adet <= 5).ToList(),
-             _ => envanterler
-               };
-                ViewBag.StokDurumu = stokDurumu;
-                        }
-
-               var toplamDeger = envanterler.Sum(e => e.Adet * e.AlisFiyat);
-
-                 ViewBag.ToplamDeger = toplamDeger;
-             ViewBag.ToplamKalem = envanterler.Count();
-           ViewBag.ToplamAdet = envanterler.Sum(e => e.Adet);
-
-            return View(envanterler);
-       }
-         catch (Exception ex)
-              {
-         _logger.LogError(ex, "Envanterler listesi y�klenirken hata olu�tu");
-                TempData["ErrorMessage"] = "Envanterler y�klenirken bir hata olu�tu.";
-          return View(new List<Envanterler>());
+                // 📦 Stok durumu filtresi
                 if (!string.IsNullOrWhiteSpace(stokDurumu))
                 {
                     envanterler = stokDurumu switch
@@ -76,12 +52,13 @@ namespace StudentApp.Controllers
                         "azaldi" => envanterler.Where(e => e.Adet > 0 && e.Adet <= 5).ToList(),
                         _ => envanterler
                     };
+
                     ViewBag.StokDurumu = stokDurumu;
                 }
 
-                var toplamSatisDeger = envanterler.Sum(e => e.Adet * e.SatisFiyat);
-
-                ViewBag.ToplamSatisDeger = toplamSatisDeger;
+                // 📊 Hesaplamalar
+                ViewBag.ToplamDeger = envanterler.Sum(e => e.Adet * e.AlisFiyat);
+                ViewBag.ToplamSatisDeger = envanterler.Sum(e => e.Adet * e.SatisFiyat);
                 ViewBag.ToplamKalem = envanterler.Count();
                 ViewBag.ToplamAdet = envanterler.Sum(e => e.Adet);
 
@@ -89,8 +66,8 @@ namespace StudentApp.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Envanterler listesi y�klenirken hata olu�tu");
-                TempData["ErrorMessage"] = "Envanterler y�klenirken bir hata olu�tu.";
+                _logger.LogError(ex, "Envanterler listesi yüklenirken hata oluştu");
+                TempData["ErrorMessage"] = "Envanterler yüklenirken bir hata oluştu.";
                 return View(new List<Envanterler>());
             }
         }
