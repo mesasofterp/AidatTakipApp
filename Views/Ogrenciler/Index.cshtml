@@ -187,8 +187,303 @@ function togglePasif(showPasif) {
     }
   })();
 </script>
+<div class="alert alert-info">
+    <i class="fas fa-info-circle me-1"></i>
+    @if (Model.ShowPasif)
+    {
+        <span>Toplam <strong>@Model.Ogrenciler.Count()</strong> öğrenci bulundu (aktif ve pasif kayıtlar dahil).</span>
+    }
+    else
+    {
+        <span>Toplam <strong>@Model.Ogrenciler.Count()</strong> aktif öğrenci bulundu.</span>
+    }
+</div>
 
-@if (Model.Ogrenciler.Any())
+<form asp-action="SendSmsSelected" method="post" id="sendSmsForm">
+    @Html.AntiForgeryToken()
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
+        <div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="selectAllChk" />
+                <label class="form-check-label" for="selectAllChk">Tümünü Seç</label>
+            </div>
+        </div>
+        <div class="btn-group flex-column flex-md-row w-100 w-md-auto">
+            <button type="submit" class="btn btn-sm btn-success">
+                <i class="fas fa-paper-plane me-1"></i><span class="d-none d-sm-inline">Seçilenlere SMS Gönder</span><span class="d-sm-none">SMS</span>
+            </button>
+            <button type="button" id="exportExcelBtn" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-file-excel me-1"></i><span class="d-none d-sm-inline">Excel'e Aktar</span><span class="d-sm-none">Excel</span>
+            </button>
+            <button type="button" id="exportPdfBtn" class="btn btn-sm btn-outline-danger">
+                <i class="fas fa-file-pdf me-1"></i><span class="d-none d-sm-inline">PDF'e Aktar</span><span class="d-sm-none">PDF</span>
+            </button>
+        </div>
+    </div>
+    <div class="table-responsive shadow-sm rounded-soft">
+        <table class="table table-hover mb-0" id="ogrencilerTable" style="background: white;">
+            <thead>
+                <tr>
+                    <th style="width:36px;"></th>
+                    <th>
+                        <a href="@BuildSortLink("OgrenciAdi", Model.SortBy == "OgrenciAdi" && Model.SortOrder == "asc" ? "desc" : "asc")"
+                           class="text-decoration-none text-dark">
+                            Ad
+                            @if (Model.SortBy == "OgrenciAdi")
+                            {
+                                <i class="fas fa-sort-@(Model.SortOrder == "asc" ? "up" : "down")"></i>
+                            }
+                        </a>
+                    </th>
+                    <th>
+                        <a href="@BuildSortLink("OgrenciSoyadi", Model.SortBy == "OgrenciSoyadi" && Model.SortOrder == "asc" ? "desc" : "asc")"
+                           class="text-decoration-none text-dark">
+                            Soyad
+                            @if (Model.SortBy == "OgrenciSoyadi")
+                            {
+                                <i class="fas fa-sort-@(Model.SortOrder == "asc" ? "up" : "down")"></i>
+                            }
+                        </a>
+                    </th>
+                    <th>
+                        <a href="@BuildSortLink("Email", Model.SortBy == "Email" && Model.SortOrder == "asc" ? "desc" : "asc")"
+                           class="text-decoration-none text-dark">
+                            Email
+                            @if (Model.SortBy == "Email")
+                            {
+                                <i class="fas fa-sort-@(Model.SortOrder == "asc" ? "up" : "down")"></i>
+                            }
+                        </a>
+                    </th>
+                    <th>Yaş</th>
+                    <th>Cinsiyet</th>
+                    <th>Ödeme Planı</th>
+                    <th>Durum</th>
+                    <th>
+                        <a href="@BuildSortLink("KayitTarihi", Model.SortBy == "KayitTarihi" && Model.SortOrder == "asc" ? "desc" : "asc")"
+                           class="text-decoration-none text-dark">
+                            Kayıt Tarihi
+                            @if (Model.SortBy == "KayitTarihi")
+                            {
+                                <i class="fas fa-sort-@(Model.SortOrder == "asc" ? "up" : "down")"></i>
+                            }
+                        </a>
+                    </th>
+                    <th class="text-center">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Ogrenciler)
+                {
+                    var yas = DateTime.Now.Year - item.DogumTarihi.Year;
+                    if (DateTime.Now.DayOfYear < item.DogumTarihi.DayOfYear)
+                    {
+                        yas--;
+                    }
+
+                    <tr class="@(!item.Aktif ? "opacity-75" : "")" style="transition: all 0.2s;">
+                        <td>
+                            <input class="form-check-input row-select" type="checkbox" name="selectedIds" value="@item.Id" />
+                        </td>
+                        <td>@item.OgrenciAdi</td>
+                        <td>@item.OgrenciSoyadi</td>
+                        <td>
+                            <a href="mailto:@item.Email" class="text-decoration-none">
+                                <i class="fas fa-envelope me-1"></i>@item.Email
+                            </a>
+                        </td>
+                        <td>
+                            <span class="badge bg-info">@yas yaşında</span>
+                        </td>
+                        <td>
+                            @if (item.Cinsiyet != null)
+                            {
+                                <i class="fas @(item.Cinsiyet.Cinsiyet == "Erkek" ? "fa-mars text-primary" : item.Cinsiyet.Cinsiyet == "Kadın" ? "fa-venus text-danger" : "fa-genderless text-secondary") me-1"></i>
+                                @item.Cinsiyet.Cinsiyet
+                            }
+                            else
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                        </td>
+                        <td>
+                            @if (item.OdemePlanlari != null)
+                            {
+                                <span class="badge bg-success">
+                                    <i class="fas fa-calendar-alt me-1"></i>@item.OdemePlanlari.KursProgrami
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                        </td>
+                        <td>
+                            @if (item.Aktif)
+                            {
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check me-1"></i>Aktif
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">
+                                    <i class="fas fa-times me-1"></i>Pasif
+                                </span>
+                            }
+                        </td>
+                        <td>@item.KayitTarihi.ToString("dd.MM.yyyy")</td>
+                        <td class="text-center">
+                            <div class="btn-group" role="group">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info" title="Detayları Görüntüle">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning" title="Düzenle">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a asp-controller="OgrenciOdemeTakvimi" asp-action="Index" asp-route-ogrenciId="@item.Id" class="btn btn-sm btn-outline-primary" title="Ödemeler">
+                                    <i class="fas fa-money-bill-wave me-1"></i>Ödemeler
+                                </a>
+                                @if (item.Aktif)
+                                {
+                                    <form asp-action="ToggleAktif" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <input type="hidden" name="aktif" value="false" />
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary" title="Pasif Yap" onclick="return confirm('Bu öğrenciyi pasif yapmak istediğinizden emin misiniz?');">
+                                            <i class="fas fa-ban"></i>
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form asp-action="ToggleAktif" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <input type="hidden" name="aktif" value="true" />
+                                        <button type="submit" class="btn btn-sm btn-outline-success" title="Aktif Yap" onclick="return confirm('Bu öğrenciyi aktif yapmak istediğinizden emin misiniz?');">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </form>
+                                }
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Sil">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</form>
+<script>
+           const selectAll = document.getElementById('selectAllChk');
+      if (selectAll) {
+     selectAll.addEventListener('change', function() {
+                   document.querySelectorAll('#ogrencilerTable .row-select').forEach(cb => { cb.checked = selectAll.checked; });
+             });
+       }
+
+           const form = document.getElementById('sendSmsForm');
+         if (form) {
+               form.addEventListener('submit', async function (e) {
+             e.preventDefault();
+                 const token = form.querySelector('input[name="__RequestVerificationToken"]').value;
+            const selected = Array.from(document.querySelectorAll('#ogrencilerTable .row-select:checked'))
+           .map(cb => cb.value);
+                   if (selected.length === 0) {
+       alert('SMS göndermek için en az bir öğrenci seçiniz.');
+             return;
+       }
+
+     const params = new URLSearchParams();
+                   selected.forEach(id => params.append('selectedIds', id));
+
+                   const resp = await fetch('@Url.Action("SendSmsSelected", "Ogrenciler")', {
+      method: 'POST',
+           headers: {
+                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+       'RequestVerificationToken': token
+             },
+        body: params.toString()
+                   });
+
+            try {
+        const data = await resp.json();
+          alert(data.message || (data.success ? 'İşlem tamamlandı' : 'İşlem başarısız'));
+             if (data.success) {
+              // Başarılı ise sayfayı yenileyerek SonSmsTarihi gibi alanları güncel gösterelim
+           location.reload();
+        }
+           } catch {
+           alert('Beklenmeyen bir hata oluştu.');
+           }
+       });
+           }
+
+       async function postAndDownload(url, selected) {
+    const token = document.querySelector('#sendSmsForm input[name="__RequestVerificationToken"]').value;
+               const params = new URLSearchParams();
+               selected.forEach(id => params.append('selectedIds', id));
+       const resp = await fetch(url, {
+        method: 'POST',
+      headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+      'RequestVerificationToken': token
+       },
+      body: params.toString()
+             });
+               if (!resp.ok) {
+          alert('Dışa aktarma sırasında hata oluştu.');
+        return;
+      }
+      const blob = await resp.blob();
+          const cd = resp.headers.get('Content-Disposition') || '';
+            let filename = 'export';
+    const match = cd.match(/filename="?([^";]+)"?/i);
+               if (match && match[1]) filename = match[1];
+         const urlObj = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+               a.href = urlObj;
+        a.download = filename;
+               document.body.appendChild(a);
+          a.click();
+               a.remove();
+        URL.revokeObjectURL(urlObj);
+           }
+
+           const excelBtn = document.getElementById('exportExcelBtn');
+           const pdfBtn = document.getElementById('exportPdfBtn');
+           function getSelectedIds() {
+               return Array.from(document.querySelectorAll('#ogrencilerTable .row-select:checked')).map(cb => cb.value);
+         }
+           if (excelBtn) {
+               excelBtn.addEventListener('click', async () => {
+       const selected = getSelectedIds();
+          if (selected.length === 0) { alert('Lütfen en az bir öğrenci seçiniz.'); return; }
+         await postAndDownload('@Url.Action("ExportSelectedToExcel", "Ogrenciler")', selected);
+               });
+        }
+           if (pdfBtn) {
+               pdfBtn.addEventListener('click', async () => {
+        const selected = getSelectedIds();
+           if (selected.length === 0) { alert('Lütfen en az bir öğrenci seçiniz.'); return; }
+           await postAndDownload('@Url.Action("ExportSelectedToPdf", "Ogrenciler")', selected);
+               });
+           }
+
+           // Filtre accordion chevron animasyonu
+           const filterPanel = document.getElementById('filterPanel');
+           const filterChevron = document.getElementById('filterChevron');
+           if (filterPanel && filterChevron) {
+               filterPanel.addEventListener('show.bs.collapse', function () {
+                   filterChevron.classList.add('fa-rotate-180');
+               });
+               filterPanel.addEventListener('hide.bs.collapse', function () {
+                   filterChevron.classList.remove('fa-rotate-180');
+               });
+           }
+</script>
+@* @if (Model.Ogrenciler.Any())
 {
     <div class="alert alert-info">
   <i class="fas fa-info-circle me-1"></i>
@@ -533,4 +828,4 @@ else
  </a>
         </div>
     </div>
-}
+} *@

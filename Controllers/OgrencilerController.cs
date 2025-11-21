@@ -58,13 +58,7 @@ namespace StudentApp.Controllers
                      !filter.BitisKayitTarihi.HasValue &&
            !filter.ShowList;
 
-            if (hicbirFiltre)
-            {
-                // İlk açılışta boş liste göster
-                ogrenciler = Enumerable.Empty<Ogrenciler>();
-            }
-            else
-            {
+
                 ogrenciler = await _ogrenciService.GetAllOgrenciAsync(filter.ShowPasif);
 
                 // Filtreleme
@@ -133,7 +127,6 @@ namespace StudentApp.Controllers
            ? ogrenciler.OrderByDescending(o => o.OgrenciSoyadi)
                 : ogrenciler.OrderBy(o => o.OgrenciSoyadi)
                 };
-            }
 
             var viewModel = new OgrencilerFilterViewModel
             {
