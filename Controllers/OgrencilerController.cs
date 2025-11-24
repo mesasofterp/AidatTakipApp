@@ -364,18 +364,19 @@ namespace StudentApp.Controllers
         public async Task<IActionResult> Details(long id)
         {
             var ogrenci = await _context.Ogrenciler
-                .Include(s => s.Cinsiyet)
-                .Include(s => s.OdemePlanlari)
-                .Include(s => s.OgrenciDetay)
-                .Where(s => !s.IsDeleted && s.Id == id)
-                .FirstOrDefaultAsync();
+  .Include(s => s.Cinsiyet)
+       .Include(s => s.OdemePlanlari)
+   .Include(s => s.OgrenciDetay)
+     .Include(s => s.Seans)
+          .Where(s => !s.IsDeleted && s.Id == id)
+     .FirstOrDefaultAsync();
 
-            if (ogrenci == null)
-            {
+          if (ogrenci == null)
+      {
                 return NotFound();
-            }
+         }
 
-            // Öğrencinin başarılarını getir
+  // Öğrencinin başarılarını getir
             var basarilar = await _context.OgrenciBasarilari
                 .Where(b => b.OgrenciId == id && !b.IsDeleted)
                 .OrderByDescending(b => b.Tarih)
