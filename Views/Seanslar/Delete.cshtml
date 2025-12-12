@@ -28,12 +28,22 @@
 
  <h5 class="mb-3">Silinecek Seans Bilgileri:</h5>
      <dl class="row">
-      <dt class="col-sm-4">Gün</dt>
-        <dd class="col-sm-8">
-   <span class="badge bg-primary">@Model.Gun?.Gun</span>
-    </dd>
+      <dt class="col-sm-4">Gün(ler)</dt>
+    <dd class="col-sm-8">
+   @if (Model.SeansGunler != null && Model.SeansGunler.Any())
+  {
+  foreach (var sg in Model.SeansGunler.Where(sg => !sg.IsDeleted && sg.Aktif).OrderBy(sg => sg.Gun.Id))
+     {
+   <span class="badge bg-primary me-1 mb-1">@sg.Gun?.Gun</span>
+   }
+  }
+ else
+{
+<span class="text-muted">-</span>
+}
+</dd>
 
-       <dt class="col-sm-4">Seans Adý</dt>
+  <dt class="col-sm-4">Seans Adý</dt>
  <dd class="col-sm-8"><strong>@Model.SeansAdi</strong></dd>
 
     <dt class="col-sm-4">Baþlangýç Saati</dt>

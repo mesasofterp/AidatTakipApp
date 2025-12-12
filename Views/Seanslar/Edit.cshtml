@@ -16,14 +16,38 @@
       <input type="hidden" asp-for="Id" />
 
     <div class="mb-3">
-   <label asp-for="GunId" class="form-label">
-       <i class="fas fa-calendar-day me-1"></i>Gün <span class="text-danger">*</span>
+     <label class="form-label">
+       <i class="fas fa-calendar-day me-1"></i>Günler <span class="text-danger">*</span>
      </label>
-       <select asp-for="GunId" class="form-select" asp-items="ViewBag.Gunler">
-       <option value="">-- Gün Seçiniz --</option>
- </select>
-       <span asp-validation-for="GunId" class="text-danger"></span>
-        </div>
+ <small class="form-text text-muted d-block mb-2">Seansýn yapýlacaðý günleri seçin (Birden fazla gün seçebilirsiniz)</small>
+        <div class="row">
+   @{
+ var gunler = ViewBag.Gunler as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>;
+ var selectedGunIds = ViewBag.SelectedGunIds as List<long> ?? new List<long>();
+      if (gunler != null)
+    {
+ foreach (var gun in gunler)
+   {
+  var isChecked = selectedGunIds.Contains(long.Parse(gun.Value));
+   <div class="col-md-4 col-sm-6 mb-2">
+    <div class="form-check">
+      <input class="form-check-input" 
+      type="checkbox" 
+     name="SelectedGunIds" 
+     value="@gun.Value" 
+  id="gun_@gun.Value"
+       @(isChecked ? "checked" : "") />
+<label class="form-check-label" for="gun_@gun.Value">
+     <i class="fas fa-calendar-day me-1"></i>@gun.Text
+     </label>
+   </div>
+</div>
+     }
+     }
+      }
+ </div>
+<span class="text-danger" id="gun-error"></span>
+     </div>
 
         <div class="mb-3">
       <label asp-for="SeansAdi" class="form-label">
@@ -113,4 +137,45 @@
     @{
 await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+<script>
+   // Gün seçimi kontrolü
+  const gunCheckboxes = document.querySelectorAll('input[name="SelectedGunIds"]');
+     const gunError = document.getElementById('gun-error');
+   const form = document.querySelector('form');
+
+     form.addEventListener('submit', function(e) {
+  const checkedBoxes = document.querySelectorAll('input[name="SelectedGunIds"]:checked');
+    
+    if (checkedBoxes.length === 0) {
+     e.preventDefault();
+       gunError.textContent = 'En az bir gün seçmelisiniz.';
+  gunError.style.display = 'block';
+ return false;
+   } else {
+       gunError.textContent = '';
+ gunError.style.display = 'none';
+     }
+
+       // Baþlangýç ve bitiþ saati validasyonu
+const baslangic = document.querySelector('input[name="SeansBaslangicSaati"]').value;
+     const bitis = document.querySelector('input[name="SeansBitisSaati"]').value;
+  
+      if (baslangic && bitis && baslangic >= bitis) {
+   e.preventDefault();
+ alert('Bitiþ saati, baþlangýç saatinden sonra olmalýdýr!');
+    return false;
+ }
+   });
+
+// Checkbox deðiþiminde hata mesajýný temizle
+   gunCheckboxes.forEach(checkbox => {
+checkbox.addEventListener('change', function() {
+        const checkedBoxes = document.querySelectorAll('input[name="SelectedGunIds"]:checked');
+       if (checkedBoxes.length > 0) {
+   gunError.textContent = '';
+       gunError.style.display = 'none';
+        }
+  });
+});
+    </script>
 }

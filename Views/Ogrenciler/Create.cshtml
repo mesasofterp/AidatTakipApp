@@ -125,6 +125,585 @@
                     </div>
 
                     <div class="mb-3">
+                        <label asp-for="SeansId" class="form-label"><i class="fas fa-clock me-2"></i>Seans</label>
+                        <select asp-for="SeansId" class="form-select" asp-items="ViewBag.Seanslar">
+                            <option value="">-- Seans Seçiniz --</option>
+                        </select>
+                        <span asp-validation-for="SeansId" class="text-danger"></span>
+                        <small class="form-text text-muted">Opsiyonel - Öğrencinin katılacağı seans</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="IlkTaksitSonOdemeTarihi" class="form-label"></label>
+                        <input asp-for="IlkTaksitSonOdemeTarihi" type="date" class="form-control" />
+                        <span asp-validation-for="IlkTaksitSonOdemeTarihi" class="text-danger"></span>
+                        <small class="form-text text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Opsiyonel - Girilmezse kayıt tarihi kullanılır. Bu tarih, ilk taksitin son ödeme tarihidir.
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Biyografi" class="form-label"></label>
+                        <textarea asp-for="Biyografi" class="form-control" rows="5" placeholder="Öğrencinin biyografisi..."></textarea>
+                        <span asp-validation-for="Biyografi" class="text-danger"></span>
+                        <small class="form-text text-muted">Opsiyonel - Öğrencinin biyografisi</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Aciklama" class="form-label">Notlar / Açıklama</label>
+                        <textarea asp-for="Aciklama" class="form-control" rows="3" placeholder="Öğrenci hakkında notlar veya açıklama..."></textarea>
+                        <span asp-validation-for="Aciklama" class="text-danger"></span>
+                        <small class="form-text text-muted">Opsiyonel - Öğrenci hakkında özel notlar</small>
+                    </div>
+
+                    <hr class="my-4" />
+                    <h5 class="mb-4 mt-3" style="color: var(--primary-700); font-weight: 600; border-bottom: 2px solid var(--primary-100); padding-bottom: 0.75rem;"><i class="fas fa-users me-2"></i>Veli Bilgileri</h5>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="VeliAdSoyad" class="form-label">Veli Ad Soyad</label>
+                            <input type="text" id="VeliAdSoyad" name="OgrenciDetay.VeliAdSoyad" class="form-control" placeholder="Veli adı ve soyadı" />
+                            <small class="form-text text-muted">Opsiyonel</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="VeliTelefonNumarasi" class="form-label">Veli Telefon Numarası</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                <input type="text" id="VeliTelefonNumarasi" name="OgrenciDetay.VeliTelefonNumarasi" class="form-control" placeholder="05301234567" maxlength="11" />
+                            </div>
+                            <small class="form-text text-muted">Opsiyonel - Format: 05301234567</small>
+                        </div>
+                    </div>
+
+                    <hr class="my-4" />
+                    <h5 class="mb-4 mt-3" style="color: var(--primary-700); font-weight: 600; border-bottom: 2px solid var(--primary-100); padding-bottom: 0.75rem;"><i class="fas fa-school me-2"></i>Okul Bilgileri</h5>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulAdi" class="form-label">Okul Adı</label>
+                            <input type="text" id="OkulAdi" name="OgrenciDetay.OkulAdi" class="form-control" placeholder="Okul adı" />
+                            <small class="form-text text-muted">Opsiyonel</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="Sinif" class="form-label">Sınıf</label>
+                            <input type="text" id="Sinif" name="OgrenciDetay.Sinif" class="form-control" placeholder="Örn: 5-A, 10/B" />
+                            <small class="form-text text-muted">Opsiyonel</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="OkulAdresi" class="form-label">Okul Adresi</label>
+                        <textarea id="OkulAdresi" name="OgrenciDetay.OkulAdresi" class="form-control" rows="2" placeholder="Okul adresi..."></textarea>
+                        <small class="form-text text-muted">Opsiyonel</small>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulHocasiAdSoyad" class="form-label">Okul Hocası Ad Soyad</label>
+                            <input type="text" id="OkulHocasiAdSoyad" name="OgrenciDetay.OkulHocasiAdSoyad" class="form-control" placeholder="Okul hocası adı ve soyadı" />
+                            <small class="form-text text-muted">Opsiyonel</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulHocasiTelefon" class="form-label">Okul Hocası Telefon</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                <input type="text" id="OkulHocasiTelefon" name="OgrenciDetay.OkulHocasiTelefon" class="form-control" placeholder="05301234567" maxlength="11" />
+                            </div>
+                            <small class="form-text text-muted">Opsiyonel - Format: 05301234567</small>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulGirisSaati" class="form-label"><i class="fas fa-clock me-1"></i>Okul Giriş Saati</label>
+                            <input type="time" id="OkulGirisSaati" name="OgrenciDetay.OkulGirisSaati" class="form-control" />
+                            <small class="form-text text-muted">Opsiyonel - Öğrencinin okula giriş saati</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulCikisSaati" class="form-label"><i class="fas fa-clock me-1"></i>Okul Çıkış Saati</label>
+                            <input type="time" id="OkulCikisSaati" name="OgrenciDetay.OkulCikisSaati" class="form-control" />
+                            <small class="form-text text-muted">Opsiyonel - Öğrencinin okuldan çıkış saati</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="SeansId" class="form-label"><i class="fas fa-clock me-2"></i>Seans</label>
+                        <select asp-for="SeansId" class="form-select" asp-items="ViewBag.Seanslar">
+                            <option value="">-- Seans Seçiniz --</option>
+                        </select>
+                        <span asp-validation-for="SeansId" class="text-danger"></span>
+                        <small class="form-text text-muted">Opsiyonel - Öğrencinin katılacağı seans</small>
+                    </div>
+
+                    <hr class="my-4" />
+                    <h5 class="mb-4 mt-3" style="color: var(--primary-700); font-weight: 600; border-bottom: 2px solid var(--primary-100); padding-bottom: 0.75rem;"><i class="fas fa-credit-card me-2"></i>Ödeme Bilgileri</h5>
+
+                    <div class="mb-3">
+                        <label asp-for="OdemePlanlariId" class="form-label"></label>
+                        <select asp-for="OdemePlanlariId" class="form-select" asp-items="ViewBag.OdemePlanlari">
+                            <option value="">-- Ödeme Planı Seçiniz --</option>
+                        </select>
+                        <span asp-validation-for="OdemePlanlariId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="IlkTaksitSonOdemeTarihi" class="form-label"></label>
+                        <input asp-for="IlkTaksitSonOdemeTarihi" type="date" class="form-control" />
+                        <span asp-validation-for="IlkTaksitSonOdemeTarihi" class="text-danger"></span>
+                        <small class="form-text text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Opsiyonel - Girilmezse kayıt tarihi kullanılır. Bu tarih, ilk taksitin son ödeme tarihidir.
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Biyografi" class="form-label"></label>
+                        <textarea asp-for="Biyografi" class="form-control" rows="5" placeholder="Öğrencinin biyografisi..."></textarea>
+                        <span asp-validation-for="Biyografi" class="text-danger"></span>
+                        <small class="form-text text-muted">Opsiyonel - Öğrencinin biyografisi</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Aciklama" class="form-label">Notlar / Açıklama</label>
+                        <textarea asp-for="Aciklama" class="form-control" rows="3" placeholder="Öğrenci hakkında notlar veya açıklama..."></textarea>
+                        <span asp-validation-for="Aciklama" class="text-danger"></span>
+                        <small class="form-text text-muted">Opsiyonel - Öğrenci hakkında özel notlar</small>
+                    </div>
+
+                    <hr class="my-4" />
+                    <h5 class="mb-4 mt-3" style="color: var(--primary-700); font-weight: 600; border-bottom: 2px solid var(--primary-100); padding-bottom: 0.75rem;"><i class="fas fa-users me-2"></i>Veli Bilgileri</h5>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="VeliAdSoyad" class="form-label">Veli Ad Soyad</label>
+                            <input type="text" id="VeliAdSoyad" name="OgrenciDetay.VeliAdSoyad" class="form-control" placeholder="Veli adı ve soyadı" />
+                            <small class="form-text text-muted">Opsiyonel</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="VeliTelefonNumarasi" class="form-label">Veli Telefon Numarası</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                <input type="text" id="VeliTelefonNumarasi" name="OgrenciDetay.VeliTelefonNumarasi" class="form-control" placeholder="05301234567" maxlength="11" />
+                            </div>
+                            <small class="form-text text-muted">Opsiyonel - Format: 05301234567</small>
+                        </div>
+                    </div>
+
+                    <hr class="my-4" />
+                    <h5 class="mb-4 mt-3" style="color: var(--primary-700); font-weight: 600; border-bottom: 2px solid var(--primary-100); padding-bottom: 0.75rem;"><i class="fas fa-school me-2"></i>Okul Bilgileri</h5>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulAdi" class="form-label">Okul Adı</label>
+                            <input type="text" id="OkulAdi" name="OgrenciDetay.OkulAdi" class="form-control" placeholder="Okul adı" />
+                            <small class="form-text text-muted">Opsiyonel</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="Sinif" class="form-label">Sınıf</label>
+                            <input type="text" id="Sinif" name="OgrenciDetay.Sinif" class="form-control" placeholder="Örn: 5-A, 10/B" />
+                            <small class="form-text text-muted">Opsiyonel</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="OkulAdresi" class="form-label">Okul Adresi</label>
+                        <textarea id="OkulAdresi" name="OgrenciDetay.OkulAdresi" class="form-control" rows="2" placeholder="Okul adresi..."></textarea>
+                        <small class="form-text text-muted">Opsiyonel</small>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulHocasiAdSoyad" class="form-label">Okul Hocası Ad Soyad</label>
+                            <input type="text" id="OkulHocasiAdSoyad" name="OgrenciDetay.OkulHocasiAdSoyad" class="form-control" placeholder="Okul hocası adı ve soyadı" />
+                            <small class="form-text text-muted">Opsiyonel</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulHocasiTelefon" class="form-label">Okul Hocası Telefon</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                <input type="text" id="OkulHocasiTelefon" name="OgrenciDetay.OkulHocasiTelefon" class="form-control" placeholder="05301234567" maxlength="11" />
+                            </div>
+                            <small class="form-text text-muted">Opsiyonel - Format: 05301234567</small>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulGirisSaati" class="form-label"><i class="fas fa-clock me-1"></i>Okul Giriş Saati</label>
+                            <input type="time" id="OkulGirisSaati" name="OgrenciDetay.OkulGirisSaati" class="form-control" />
+                            <small class="form-text text-muted">Opsiyonel - Öğrencinin okula giriş saati</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulCikisSaati" class="form-label"><i class="fas fa-clock me-1"></i>Okul Çıkış Saati</label>
+                            <input type="time" id="OkulCikisSaati" name="OgrenciDetay.OkulCikisSaati" class="form-control" />
+                            <small class="form-text text-muted">Opsiyonel - Öğrencinin okuldan çıkış saati</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="SeansId" class="form-label"><i class="fas fa-clock me-2"></i>Seans</label>
+                        <select asp-for="SeansId" class="form-select" asp-items="ViewBag.Seanslar">
+                            <option value="">-- Seans Seçiniz --</option>
+                        </select>
+                        <span asp-validation-for="SeansId" class="text-danger"></span>
+                        <small class="form-text text-muted">Opsiyonel - Öğrencinin katılacağı seans</small>
+                    </div>
+
+                    <hr class="my-4" />
+                    <h5 class="mb-4 mt-3" style="color: var(--primary-700); font-weight: 600; border-bottom: 2px solid var(--primary-100); padding-bottom: 0.75rem;"><i class="fas fa-credit-card me-2"></i>Ödeme Bilgileri</h5>
+
+                    <div class="mb-3">
+                        <label asp-for="OdemePlanlariId" class="form-label"></label>
+                        <select asp-for="OdemePlanlariId" class="form-select" asp-items="ViewBag.OdemePlanlari">
+                            <option value="">-- Ödeme Planı Seçiniz --</option>
+                        </select>
+                        <span asp-validation-for="OdemePlanlariId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="IlkTaksitSonOdemeTarihi" class="form-label"></label>
+                        <input asp-for="IlkTaksitSonOdemeTarihi" type="date" class="form-control" />
+                        <span asp-validation-for="IlkTaksitSonOdemeTarihi" class="text-danger"></span>
+                        <small class="form-text text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Opsiyonel - Girilmezse kayıt tarihi kullanılır. Bu tarih, ilk taksitin son ödeme tarihidir.
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Biyografi" class="form-label"></label>
+                        <textarea asp-for="Biyografi" class="form-control" rows="5" placeholder="Öğrencinin biyografisi..."></textarea>
+                        <span asp-validation-for="Biyografi" class="text-danger"></span>
+                        <small class="form-text text-muted">Opsiyonel - Öğrencinin biyografisi</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Aciklama" class="form-label">Notlar / Açıklama</label>
+                        <textarea asp-for="Aciklama" class="form-control" rows="3" placeholder="Öğrenci hakkında notlar veya açıklama..."></textarea>
+                        <span asp-validation-for="Aciklama" class="text-danger"></span>
+                        <small class="form-text text-muted">Opsiyonel - Öğrenci hakkında özel notlar</small>
+                    </div>
+
+                    <hr class="my-4" />
+                    <h5 class="mb-4 mt-3" style="color: var(--primary-700); font-weight: 600; border-bottom: 2px solid var(--primary-100); padding-bottom: 0.75rem;"><i class="fas fa-users me-2"></i>Veli Bilgileri</h5>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="VeliAdSoyad" class="form-label">Veli Ad Soyad</label>
+                            <input type="text" id="VeliAdSoyad" name="OgrenciDetay.VeliAdSoyad" class="form-control" placeholder="Veli adı ve soyadı" />
+                            <small class="form-text text-muted">Opsiyonel</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="VeliTelefonNumarasi" class="form-label">Veli Telefon Numarası</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                <input type="text" id="VeliTelefonNumarasi" name="OgrenciDetay.VeliTelefonNumarasi" class="form-control" placeholder="05301234567" maxlength="11" />
+                            </div>
+                            <small class="form-text text-muted">Opsiyonel - Format: 05301234567</small>
+                        </div>
+                    </div>
+
+                    <hr class="my-4" />
+                    <h5 class="mb-4 mt-3" style="color: var(--primary-700); font-weight: 600; border-bottom: 2px solid var(--primary-100); padding-bottom: 0.75rem;"><i class="fas fa-school me-2"></i>Okul Bilgileri</h5>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulAdi" class="form-label">Okul Adı</label>
+                            <input type="text" id="OkulAdi" name="OgrenciDetay.OkulAdi" class="form-control" placeholder="Okul adı" />
+                            <small class="form-text text-muted">Opsiyonel</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="Sinif" class="form-label">Sınıf</label>
+                            <input type="text" id="Sinif" name="OgrenciDetay.Sinif" class="form-control" placeholder="Örn: 5-A, 10/B" />
+                            <small class="form-text text-muted">Opsiyonel</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="OkulAdresi" class="form-label">Okul Adresi</label>
+                        <textarea id="OkulAdresi" name="OgrenciDetay.OkulAdresi" class="form-control" rows="2" placeholder="Okul adresi..."></textarea>
+                        <small class="form-text text-muted">Opsiyonel</small>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulHocasiAdSoyad" class="form-label">Okul Hocası Ad Soyad</label>
+                            <input type="text" id="OkulHocasiAdSoyad" name="OgrenciDetay.OkulHocasiAdSoyad" class="form-control" placeholder="Okul hocası adı ve soyadı" />
+                            <small class="form-text text-muted">Opsiyonel</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulHocasiTelefon" class="form-label">Okul Hocası Telefon</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                <input type="text" id="OkulHocasiTelefon" name="OgrenciDetay.OkulHocasiTelefon" class="form-control" placeholder="05301234567" maxlength="11" />
+                            </div>
+                            <small class="form-text text-muted">Opsiyonel - Format: 05301234567</small>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulGirisSaati" class="form-label"><i class="fas fa-clock me-1"></i>Okul Giriş Saati</label>
+                            <input type="time" id="OkulGirisSaati" name="OgrenciDetay.OkulGirisSaati" class="form-control" />
+                            <small class="form-text text-muted">Opsiyonel - Öğrencinin okula giriş saati</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulCikisSaati" class="form-label"><i class="fas fa-clock me-1"></i>Okul Çıkış Saati</label>
+                            <input type="time" id="OkulCikisSaati" name="OgrenciDetay.OkulCikisSaati" class="form-control" />
+                            <small class="form-text text-muted">Opsiyonel - Öğrencinin okuldan çıkış saati</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="SeansId" class="form-label"><i class="fas fa-clock me-2"></i>Seans</label>
+                        <select asp-for="SeansId" class="form-select" asp-items="ViewBag.Seanslar">
+                            <option value="">-- Seans Seçiniz --</option>
+                        </select>
+                        <span asp-validation-for="SeansId" class="text-danger"></span>
+                        <small class="form-text text-muted">Opsiyonel - Öğrencinin katılacağı seans</small>
+                    </div>
+
+                    <hr class="my-4" />
+                    <h5 class="mb-4 mt-3" style="color: var(--primary-700); font-weight: 600; border-bottom: 2px solid var(--primary-100); padding-bottom: 0.75rem;"><i class="fas fa-credit-card me-2"></i>Ödeme Bilgileri</h5>
+
+                    <div class="mb-3">
+                        <label asp-for="OdemePlanlariId" class="form-label"></label>
+                        <select asp-for="OdemePlanlariId" class="form-select" asp-items="ViewBag.OdemePlanlari">
+                            <option value="">-- Ödeme Planı Seçiniz --</option>
+                        </select>
+                        <span asp-validation-for="OdemePlanlariId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="IlkTaksitSonOdemeTarihi" class="form-label"></label>
+                        <input asp-for="IlkTaksitSonOdemeTarihi" type="date" class="form-control" />
+                        <span asp-validation-for="IlkTaksitSonOdemeTarihi" class="text-danger"></span>
+                        <small class="form-text text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Opsiyonel - Girilmezse kayıt tarihi kullanılır. Bu tarih, ilk taksitin son ödeme tarihidir.
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Biyografi" class="form-label"></label>
+                        <textarea asp-for="Biyografi" class="form-control" rows="5" placeholder="Öğrencinin biyografisi..."></textarea>
+                        <span asp-validation-for="Biyografi" class="text-danger"></span>
+                        <small class="form-text text-muted">Opsiyonel - Öğrencinin biyografisi</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Aciklama" class="form-label">Notlar / Açıklama</label>
+                        <textarea asp-for="Aciklama" class="form-control" rows="3" placeholder="Öğrenci hakkında notlar veya açıklama..."></textarea>
+                        <span asp-validation-for="Aciklama" class="text-danger"></span>
+                        <small class="form-text text-muted">Opsiyonel - Öğrenci hakkında özel notlar</small>
+                    </div>
+
+                    <hr class="my-4" />
+                    <h5 class="mb-4 mt-3" style="color: var(--primary-700); font-weight: 600; border-bottom: 2px solid var(--primary-100); padding-bottom: 0.75rem;"><i class="fas fa-users me-2"></i>Veli Bilgileri</h5>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="VeliAdSoyad" class="form-label">Veli Ad Soyad</label>
+                            <input type="text" id="VeliAdSoyad" name="OgrenciDetay.VeliAdSoyad" class="form-control" placeholder="Veli adı ve soyadı" />
+                            <small class="form-text text-muted">Opsiyonel</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="VeliTelefonNumarasi" class="form-label">Veli Telefon Numarası</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                <input type="text" id="VeliTelefonNumarasi" name="OgrenciDetay.VeliTelefonNumarasi" class="form-control" placeholder="05301234567" maxlength="11" />
+                            </div>
+                            <small class="form-text text-muted">Opsiyonel - Format: 05301234567</small>
+                        </div>
+                    </div>
+
+                    <hr class="my-4" />
+                    <h5 class="mb-4 mt-3" style="color: var(--primary-700); font-weight: 600; border-bottom: 2px solid var(--primary-100); padding-bottom: 0.75rem;"><i class="fas fa-school me-2"></i>Okul Bilgileri</h5>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulAdi" class="form-label">Okul Adı</label>
+                            <input type="text" id="OkulAdi" name="OgrenciDetay.OkulAdi" class="form-control" placeholder="Okul adı" />
+                            <small class="form-text text-muted">Opsiyonel</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="Sinif" class="form-label">Sınıf</label>
+                            <input type="text" id="Sinif" name="OgrenciDetay.Sinif" class="form-control" placeholder="Örn: 5-A, 10/B" />
+                            <small class="form-text text-muted">Opsiyonel</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="OkulAdresi" class="form-label">Okul Adresi</label>
+                        <textarea id="OkulAdresi" name="OgrenciDetay.OkulAdresi" class="form-control" rows="2" placeholder="Okul adresi..."></textarea>
+                        <small class="form-text text-muted">Opsiyonel</small>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulHocasiAdSoyad" class="form-label">Okul Hocası Ad Soyad</label>
+                            <input type="text" id="OkulHocasiAdSoyad" name="OgrenciDetay.OkulHocasiAdSoyad" class="form-control" placeholder="Okul hocası adı ve soyadı" />
+                            <small class="form-text text-muted">Opsiyonel</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulHocasiTelefon" class="form-label">Okul Hocası Telefon</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                <input type="text" id="OkulHocasiTelefon" name="OgrenciDetay.OkulHocasiTelefon" class="form-control" placeholder="05301234567" maxlength="11" />
+                            </div>
+                            <small class="form-text text-muted">Opsiyonel - Format: 05301234567</small>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulGirisSaati" class="form-label"><i class="fas fa-clock me-1"></i>Okul Giriş Saati</label>
+                            <input type="time" id="OkulGirisSaati" name="OgrenciDetay.OkulGirisSaati" class="form-control" />
+                            <small class="form-text text-muted">Opsiyonel - Öğrencinin okula giriş saati</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulCikisSaati" class="form-label"><i class="fas fa-clock me-1"></i>Okul Çıkış Saati</label>
+                            <input type="time" id="OkulCikisSaati" name="OgrenciDetay.OkulCikisSaati" class="form-control" />
+                            <small class="form-text text-muted">Opsiyonel - Öğrencinin okuldan çıkış saati</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="SeansId" class="form-label"><i class="fas fa-clock me-2"></i>Seans</label>
+                        <select asp-for="SeansId" class="form-select" asp-items="ViewBag.Seanslar">
+                            <option value="">-- Seans Seçiniz --</option>
+                        </select>
+                        <span asp-validation-for="SeansId" class="text-danger"></span>
+                        <small class="form-text text-muted">Opsiyonel - Öğrencinin katılacağı seans</small>
+                    </div>
+
+                    <hr class="my-4" />
+                    <h5 class="mb-4 mt-3" style="color: var(--primary-700); font-weight: 600; border-bottom: 2px solid var(--primary-100); padding-bottom: 0.75rem;"><i class="fas fa-credit-card me-2"></i>Ödeme Bilgileri</h5>
+
+                    <div class="mb-3">
+                        <label asp-for="OdemePlanlariId" class="form-label"></label>
+                        <select asp-for="OdemePlanlariId" class="form-select" asp-items="ViewBag.OdemePlanlari">
+                            <option value="">-- Ödeme Planı Seçiniz --</option>
+                        </select>
+                        <span asp-validation-for="OdemePlanlariId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="IlkTaksitSonOdemeTarihi" class="form-label"></label>
+                        <input asp-for="IlkTaksitSonOdemeTarihi" type="date" class="form-control" />
+                        <span asp-validation-for="IlkTaksitSonOdemeTarihi" class="text-danger"></span>
+                        <small class="form-text text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Opsiyonel - Girilmezse kayıt tarihi kullanılır. Bu tarih, ilk taksitin son ödeme tarihidir.
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Biyografi" class="form-label"></label>
+                        <textarea asp-for="Biyografi" class="form-control" rows="5" placeholder="Öğrencinin biyografisi..."></textarea>
+                        <span asp-validation-for="Biyografi" class="text-danger"></span>
+                        <small class="form-text text-muted">Opsiyonel - Öğrencinin biyografisi</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Aciklama" class="form-label">Notlar / Açıklama</label>
+                        <textarea asp-for="Aciklama" class="form-control" rows="3" placeholder="Öğrenci hakkında notlar veya açıklama..."></textarea>
+                        <span asp-validation-for="Aciklama" class="text-danger"></span>
+                        <small class="form-text text-muted">Opsiyonel - Öğrenci hakkında özel notlar</small>
+                    </div>
+
+                    <hr class="my-4" />
+                    <h5 class="mb-4 mt-3" style="color: var(--primary-700); font-weight: 600; border-bottom: 2px solid var(--primary-100); padding-bottom: 0.75rem;"><i class="fas fa-users me-2"></i>Veli Bilgileri</h5>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="VeliAdSoyad" class="form-label">Veli Ad Soyad</label>
+                            <input type="text" id="VeliAdSoyad" name="OgrenciDetay.VeliAdSoyad" class="form-control" placeholder="Veli adı ve soyadı" />
+                            <small class="form-text text-muted">Opsiyonel</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="VeliTelefonNumarasi" class="form-label">Veli Telefon Numarası</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                <input type="text" id="VeliTelefonNumarasi" name="OgrenciDetay.VeliTelefonNumarasi" class="form-control" placeholder="05301234567" maxlength="11" />
+                            </div>
+                            <small class="form-text text-muted">Opsiyonel - Format: 05301234567</small>
+                        </div>
+                    </div>
+
+                    <hr class="my-4" />
+                    <h5 class="mb-4 mt-3" style="color: var(--primary-700); font-weight: 600; border-bottom: 2px solid var(--primary-100); padding-bottom: 0.75rem;"><i class="fas fa-school me-2"></i>Okul Bilgileri</h5>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulAdi" class="form-label">Okul Adı</label>
+                            <input type="text" id="OkulAdi" name="OgrenciDetay.OkulAdi" class="form-control" placeholder="Okul adı" />
+                            <small class="form-text text-muted">Opsiyonel</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="Sinif" class="form-label">Sınıf</label>
+                            <input type="text" id="Sinif" name="OgrenciDetay.Sinif" class="form-control" placeholder="Örn: 5-A, 10/B" />
+                            <small class="form-text text-muted">Opsiyonel</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="OkulAdresi" class="form-label">Okul Adresi</label>
+                        <textarea id="OkulAdresi" name="OgrenciDetay.OkulAdresi" class="form-control" rows="2" placeholder="Okul adresi..."></textarea>
+                        <small class="form-text text-muted">Opsiyonel</small>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulHocasiAdSoyad" class="form-label">Okul Hocası Ad Soyad</label>
+                            <input type="text" id="OkulHocasiAdSoyad" name="OgrenciDetay.OkulHocasiAdSoyad" class="form-control" placeholder="Okul hocası adı ve soyadı" />
+                            <small class="form-text text-muted">Opsiyonel</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulHocasiTelefon" class="form-label">Okul Hocası Telefon</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                <input type="text" id="OkulHocasiTelefon" name="OgrenciDetay.OkulHocasiTelefon" class="form-control" placeholder="05301234567" maxlength="11" />
+                            </div>
+                            <small class="form-text text-muted">Opsiyonel - Format: 05301234567</small>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulGirisSaati" class="form-label"><i class="fas fa-clock me-1"></i>Okul Giriş Saati</label>
+                            <input type="time" id="OkulGirisSaati" name="OgrenciDetay.OkulGirisSaati" class="form-control" />
+                            <small class="form-text text-muted">Opsiyonel - Öğrencinin okula giriş saati</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="OkulCikisSaati" class="form-label"><i class="fas fa-clock me-1"></i>Okul Çıkış Saati</label>
+                            <input type="time" id="OkulCikisSaati" name="OgrenciDetay.OkulCikisSaati" class="form-control" />
+                            <small class="form-text text-muted">Opsiyonel - Öğrencinin okuldan çıkış saati</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="SeansId" class="form-label"><i class="fas fa-clock me-2"></i>Seans</label>
+                        <select asp-for="SeansId" class="form-select" asp-items="ViewBag.Seanslar">
+                            <option value="">-- Seans Seçiniz --</option>
+                        </select>
+                        <span asp-validation-for="SeansId" class="text-danger"></span>
+                        <small class="form-text text-muted">Opsiyonel - Öğrencinin katılacağı seans</small>
+                    </div>
+
+                    <hr class="my-4" />
+                    <h5 class="mb-4 mt-3" style="color: var(--primary-700); font-weight: 600; border-bottom: 2px solid var(--primary-100); padding-bottom: 0.75rem;"><i class="fas fa-credit-card me-2"></i>Ödeme Bilgileri</h5>
+
+                    <div class="mb-3">
+                        <label asp-for="OdemePlanlariId" class="form-label"></label>
+                        <select asp-for="OdemePlanlariId" class="form-select" asp-items="ViewBag.OdemePlanlari">
+                            <option value="">-- Ödeme Planı Seçiniz --</option>
+                        </select>
+                        <span asp-validation-for="OdemePlanlariId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
                         <label asp-for="IlkTaksitSonOdemeTarihi" class="form-label"></label>
                         <input asp-for="IlkTaksitSonOdemeTarihi" type="date" class="form-control" />
                         <span asp-validation-for="IlkTaksitSonOdemeTarihi" class="text-danger"></span>
@@ -219,110 +798,6 @@
                     </div>
 
                     <hr class="my-4" />
-                    <h5 class="mb-4 mt-3" style="color: var(--primary-700); font-weight: 600; border-bottom: 2px solid var(--primary-100); padding-bottom: 0.75rem;"><i class="fas fa-boxes me-2"></i>Envanter Satışı</h5>
-                    <div class="alert alert-info" role="alert">
-                        <i class="fas fa-info-circle me-2"></i>
-                        Öğrenciye envanter satışı yapmak isterseniz "Envanter Ekle" butonuna tıklayarak yeni satır ekleyin ve bilgileri doldurun.
-                    </div>
-
-                    <div id="envanterSatisAlani" class="card">
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-hover table-sm" id="envanterTable">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th style="min-width: 180px;">
-                                                <i class="fas fa-box me-1"></i>Envanter
-                                            </th>
-                                            <th style="min-width: 80px;" class="text-center">
-                                                <i class="fas fa-sort-numeric-up me-1"></i>Adet
-                                            </th>
-                                            <th style="min-width: 150px;">
-                                                <i class="fas fa-calendar me-1"></i>Satış Tarihi
-                                            </th>
-                                            <th style="min-width: 120px;">
-                                                <i class="fa-solid fa-turkish-lira-sign me-1"></i>Ödenen Tutar
-                                            </th>
-                                            <th style="min-width: 120px;">
-                                                <i class="fa-solid fa-turkish-lira-sign me-1"></i>Kalan Tutar
-                                            </th>
-                                            <th style="min-width: 150px;">
-                                                <i class="fas fa-calendar-check me-1"></i>Kalan Tutar Tahsil Tarihi
-                                            </th>
-                                            <th style="min-width: 150px;">
-                                                <i class="fas fa-comment me-1"></i>Not
-                                            </th>
-                                            <th style="min-width: 80px;" class="text-center">
-                                                <i class="fas fa-trash me-1"></i>İşlem
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="envanterTbody">
-                                        <!-- Envanter satırları buraya eklenecek -->
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <button type="button" id="envanterEkleBtn" class="btn btn-success btn-sm mt-2">
-                                <i class="fas fa-plus me-1"></i>Envanter Ekle
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Envanter Satır Template -->
-                    <template id="envanterSatirTemplate">
-                        <tr class="envanter-satir">
-                            <td>
-                                <select name="EnvanterSatislari[{INDEX}].EnvanterId" class="form-select form-select-sm envanter-select" required style="min-width: 150px;" data-index="{INDEX}">
-                                    <option value="">-- Envanter Seçiniz --</option>
-                                    @if (ViewBag.Envanterler != null)
-                                    {
-                                        foreach (var item in (IEnumerable<SelectListItem>)ViewBag.Envanterler)
-                                        {
-                                            <option value="@item.Value" data-satis-fiyat="@(ViewBag.EnvanterFiyatlari != null && ViewBag.EnvanterFiyatlari.ContainsKey(long.Parse(item.Value)) ? ViewBag.EnvanterFiyatlari[long.Parse(item.Value)].ToString("F2", System.Globalization.CultureInfo.InvariantCulture) : "0")">@item.Text</option>
-                                        }
-                                    }
-                                </select>
-                            </td>
-                            <td class="text-center">
-                                <input type="number" name="EnvanterSatislari[{INDEX}].SatisAdet" value="1"
-                                       class="form-control form-control-sm text-center" min="1" required style="min-width: 60px;" />
-                            </td>
-                            <td>
-                                <input type="date" name="EnvanterSatislari[{INDEX}].SatisTarihi"
-                                       value="@DateTime.Now.ToString("yyyy-MM-dd")"
-                                       class="form-control form-control-sm" style="min-width: 130px;" />
-                            </td>
-                            <td>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text"><span style="font-family: Arial, sans-serif;">&#8378;</span></span>
-                                    <input type="number" name="EnvanterSatislari[{INDEX}].OdenenTutar" value="0"
-                                           class="form-control form-control-sm odenen-tutar-input" step="0.01" min="0" required style="min-width: 80px;" data-index="{INDEX}" />
-                                </div>
-                            </td>
-                            <td>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text"><span style="font-family: Arial, sans-serif;">&#8378;</span></span>
-                                    <input type="number" name="EnvanterSatislari[{INDEX}].KalanTutar" value="0"
-                                           class="form-control form-control-sm kalan-tutar-input" step="0.01" min="0" readonly style="min-width: 80px; background-color: #e9ecef;" />
-                                </div>
-                            </td>
-                            <td>
-                                <input type="date" name="EnvanterSatislari[{INDEX}].KalanTutarTahsilTarihi"
-                                       class="form-control form-control-sm kalan-tutar-tarih-input" style="min-width: 130px;" />
-                            </td>
-                            <td>
-                                <input type="text" name="EnvanterSatislari[{INDEX}].Aciklama"
-                                       class="form-control form-control-sm" placeholder="Not..." style="min-width: 100px;" />
-                            </td>
-                            <td class="text-center">
-                                <button type="button" class="btn btn-sm btn-danger sil-btn" title="Satırı Kaldır">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    </template>
-
                     <div class="d-flex flex-column flex-md-row justify-content-between gap-2 mt-4">
                         <a asp-action="Index" class="btn btn-secondary order-2 order-md-1">
                             <i class="fas fa-arrow-left me-1"></i><span class="d-none d-sm-inline">Listeye Dön</span><span class="d-sm-none">Geri</span>

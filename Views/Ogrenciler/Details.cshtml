@@ -258,7 +258,110 @@
                                 <span class="badge bg-danger">@Model.OgrenciDetay.OkulCikisSaati.Value.ToString(@"hh\:mm")</span>
                             </dd>
                         }
+
+                        @* Seans Bilgisi - Okul Bilgileri içinde *@
+                        @if (Model.Seans != null)
+                        {
+                            <dt class="col-sm-4">Seans</dt>
+                            <dd class="col-sm-8">
+                                <div class="card bg-light border-primary">
+                                    <div class="card-body p-3">
+                                        <h6 class="mb-2">
+                                            <i class="fas fa-clock me-1 text-primary"></i>@Model.Seans.SeansAdi
+                                        </h6>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <small class="text-muted d-block">Başlangıç Saati</small>
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-play me-1"></i>@Model.Seans.SeansBaslangicSaati.ToString(@"hh\:mm")
+                                                </span>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <small class="text-muted d-block">Bitiş Saati</small>
+                                                <span class="badge bg-danger">
+                                                    <i class="fas fa-stop me-1"></i>@Model.Seans.SeansBitisSaati.ToString(@"hh\:mm")
+                                                </span>
+                                            </div>
+                                        </div>
+                                        @if (Model.Seans.SeansKapasitesi.HasValue)
+                                        {
+                                            <div class="mt-2">
+                                                <small class="text-muted">Kapasite:</small>
+                                                <span class="badge bg-info ms-1">
+                                                    @(Model.Seans.SeansMevcudu ?? 0) / @Model.Seans.SeansKapasitesi
+                                                    <i class="fas fa-users ms-1"></i>
+                                                </span>
+                                                @{
+                                                    var dolulukOrani = Model.Seans.SeansKapasitesi.Value > 0
+                                                    ? (decimal)(Model.Seans.SeansMevcudu ?? 0) / Model.Seans.SeansKapasitesi.Value * 100
+                                                    : 0;
+                                                }
+                                                <small class="text-muted ms-1">(%@dolulukOrani.ToString("F0") dolu)</small>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </dd>
+                        }
                     </dl>
+                }
+
+                @if (Model.Seans != null)
+                {
+                    @if (Model.OgrenciDetay == null || (string.IsNullOrWhiteSpace(Model.OgrenciDetay.OkulAdi) &&
+                                    string.IsNullOrWhiteSpace(Model.OgrenciDetay.OkulAdresi) &&
+                                    string.IsNullOrWhiteSpace(Model.OgrenciDetay.Sinif) &&
+                                    string.IsNullOrWhiteSpace(Model.OgrenciDetay.OkulHocasiAdSoyad) &&
+                                    string.IsNullOrWhiteSpace(Model.OgrenciDetay.OkulHocasiTelefon) &&
+                                    !Model.OgrenciDetay.OkulGirisSaati.HasValue &&
+                                    !Model.OgrenciDetay.OkulCikisSaati.HasValue))
+                    {
+                        @* Okul bilgileri yoksa, Seans bilgisini ayrı bir bölüm olarak göster *@
+                        <hr class="my-4" />
+                        <h5 class="mb-3"><i class="fas fa-clock me-2"></i>Seans Bilgisi</h5>
+                        <dl class="row">
+                            <dt class="col-sm-4">Seans</dt>
+                            <dd class="col-sm-8">
+                                <div class="card bg-light border-primary">
+                                    <div class="card-body p-3">
+                                        <h6 class="mb-2">
+                                            <i class="fas fa-clock me-1 text-primary"></i>@Model.Seans.SeansAdi
+                                        </h6>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <small class="text-muted d-block">Başlangıç Saati</small>
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-play me-1"></i>@Model.Seans.SeansBaslangicSaati.ToString(@"hh\:mm")
+                                                </span>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <small class="text-muted d-block">Bitiş Saati</small>
+                                                <span class="badge bg-danger">
+                                                    <i class="fas fa-stop me-1"></i>@Model.Seans.SeansBitisSaati.ToString(@"hh\:mm")
+                                                </span>
+                                            </div>
+                                        </div>
+                                        @if (Model.Seans.SeansKapasitesi.HasValue)
+                                        {
+                                            <div class="mt-2">
+                                                <small class="text-muted">Kapasite:</small>
+                                                <span class="badge bg-info ms-1">
+                                                    @(Model.Seans.SeansMevcudu ?? 0) / @Model.Seans.SeansKapasitesi
+                                                    <i class="fas fa-users ms-1"></i>
+                                                </span>
+                                                @{
+                                                    var dolulukOrani2 = Model.Seans.SeansKapasitesi.Value > 0
+                                                    ? (decimal)(Model.Seans.SeansMevcudu ?? 0) / Model.Seans.SeansKapasitesi.Value * 100
+                                                    : 0;
+                                                }
+                                                <small class="text-muted ms-1">(%@dolulukOrani2.ToString("F0") dolu)</small>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </dd>
+                        </dl>
+                    }
                 }
 
                 <hr class="my-4" />

@@ -703,7 +703,7 @@ namespace StudentApp.Migrations
                     b.ToTable("Ogrenciler", (string)null);
                 });
 
-            modelBuilder.Entity("StudentApp.Models.Seanslar", b =>
+            modelBuilder.Entity("StudentApp.Models.SeansGunler", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -718,7 +718,43 @@ namespace StudentApp.Migrations
                         .HasColumnType("bit");
 
                     b.Property<long>("GunId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("GunId");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("SeansId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("SeansId");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GunId");
+
+                    b.HasIndex("SeansId", "GunId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_SeansGunler_SeansId_GunId");
+
+                    b.ToTable("SeansGunler", (string)null);
+                });
+
+            modelBuilder.Entity("StudentApp.Models.Seanslar", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Aciklama")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Aktif")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -744,8 +780,6 @@ namespace StudentApp.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("GunId");
 
                     b.ToTable("Seanslar", (string)null);
                 });
@@ -946,15 +980,25 @@ namespace StudentApp.Migrations
                     b.Navigation("Seans");
                 });
 
-            modelBuilder.Entity("StudentApp.Models.Seanslar", b =>
+            modelBuilder.Entity("StudentApp.Models.SeansGunler", b =>
                 {
                     b.HasOne("StudentApp.Models.Gunler", "Gun")
                         .WithMany()
                         .HasForeignKey("GunId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_SeansGunler_Gunler");
+
+                    b.HasOne("StudentApp.Models.Seanslar", "Seans")
+                        .WithMany("SeansGunler")
+                        .HasForeignKey("SeansId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_SeansGunler_Seanslar");
 
                     b.Navigation("Gun");
+
+                    b.Navigation("Seans");
                 });
 
             modelBuilder.Entity("StudentApp.Models.OgrenciBasarilari", b =>
@@ -967,6 +1011,11 @@ namespace StudentApp.Migrations
                     b.Navigation("OgrenciBasarilari");
 
                     b.Navigation("OgrenciDetay");
+                });
+
+            modelBuilder.Entity("StudentApp.Models.Seanslar", b =>
+                {
+                    b.Navigation("SeansGunler");
                 });
 #pragma warning restore 612, 618
         }

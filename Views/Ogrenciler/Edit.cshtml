@@ -197,6 +197,15 @@
                         </div>
                     </div>
 
+                    <div class="mb-3">
+                        <label asp-for="SeansId" class="form-label"><i class="fas fa-clock me-2"></i>Seans</label>
+                        <select asp-for="SeansId" class="form-select" asp-items="ViewBag.Seanslar">
+                            <option value="">-- Seans Seçiniz --</option>
+                        </select>
+                        <span asp-validation-for="SeansId" class="text-danger"></span>
+                        <small class="form-text text-muted">Opsiyonel - Öğrencinin katılacağı seans</small>
+                    </div>
+
                     <hr class="my-4" />
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="mb-0"><i class="fas fa-trophy me-2"></i>Başarıları Yönet</h5>

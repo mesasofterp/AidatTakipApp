@@ -19,12 +19,22 @@
      <div class="card-body">
     <h5 class="mb-3"><i class="fas fa-info-circle me-2"></i>Temel Bilgiler</h5>
   <dl class="row">
-        <dt class="col-sm-4">Gün</dt>
-            <dd class="col-sm-8">
-   <span class="badge bg-primary fs-6">
-  <i class="fas fa-calendar-day me-1"></i>@Model.Gun?.Gun
-     </span>
-     </dd>
+        <dt class="col-sm-4">Gün(ler)</dt>
+      <dd class="col-sm-8">
+        @if (Model.SeansGunler != null && Model.SeansGunler.Any())
+      {
+    foreach (var sg in Model.SeansGunler.Where(sg => !sg.IsDeleted && sg.Aktif).OrderBy(sg => sg.Gun.Id))
+      {
+ <span class="badge bg-primary fs-6 me-1 mb-1">
+       <i class="fas fa-calendar-day me-1"></i>@sg.Gun?.Gun
+ </span>
+    }
+    }
+else
+   {
+   <span class="text-muted">Gün bilgisi yok</span>
+       }
+   </dd>
 
         <dt class="col-sm-4">Seans Adý</dt>
       <dd class="col-sm-8">

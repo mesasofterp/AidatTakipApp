@@ -11,5 +11,7 @@ namespace StudentApp.Services
         Task<bool> DeleteSeansAsync(long id);
         Task<IEnumerable<Seanslar>> GetSeansByGunIdAsync(long gunId);
         Task<bool> CheckSeansKapasitesiAsync(long seansId);
+        Task UpdateSeansMevcuduAsync(long seansId, int delta);
+        Task RecalculateSeansMevcuduAsync(long seansId);
     }
 }
