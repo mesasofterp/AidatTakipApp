@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace StudentApp.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateOdemePlanlariStructure : Migration
+    public partial class erol : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -64,6 +64,39 @@ namespace StudentApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Envanterler",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EnvanterAdi = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Adet = table.Column<int>(type: "int", nullable: false),
+                    AlisFiyat = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    SatisFiyat = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    Aktif = table.Column<bool>(type: "bit", nullable: false),
+                    Version = table.Column<int>(type: "int", nullable: false),
+                    Aciklama = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Envanterler", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Gunler",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Gun = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Gunler", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "OdemePlanlari",
                 columns: table => new
                 {
@@ -96,6 +129,7 @@ namespace StudentApp.Migrations
                     CronIfadesi = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Aciklama = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     MesajSablonu = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    GorevCalismaGunuOfseti = table.Column<int>(type: "int", nullable: false),
                     OlusturmaTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
                     GuncellenmeTarihi = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
@@ -214,6 +248,34 @@ namespace StudentApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Seanslar",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SeansAdi = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    SeansBaslangicSaati = table.Column<TimeSpan>(type: "time", nullable: false),
+                    SeansBitisSaati = table.Column<TimeSpan>(type: "time", nullable: false),
+                    SeansKapasitesi = table.Column<int>(type: "int", nullable: true),
+                    SeansMevcudu = table.Column<int>(type: "int", nullable: true),
+                    GunId = table.Column<long>(type: "bigint", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    Aktif = table.Column<bool>(type: "bit", nullable: false),
+                    Version = table.Column<int>(type: "int", nullable: false),
+                    Aciklama = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Seanslar", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Seanslar_Gunler_GunId",
+                        column: x => x.GunId,
+                        principalTable: "Gunler",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Ogrenciler",
                 columns: table => new
                 {
@@ -229,9 +291,12 @@ namespace StudentApp.Migrations
                     Adres = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     KayitTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DogumTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IlkTaksitSonOdemeTarihi = table.Column<DateTime>(type: "datetime2", nullable: true),
                     SonSmsTarihi = table.Column<DateTime>(type: "datetime2", nullable: true),
                     OdemePlanlariId = table.Column<long>(type: "bigint", nullable: false),
                     CinsiyetId = table.Column<long>(type: "bigint", nullable: false),
+                    Biyografi = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SeansId = table.Column<long>(type: "bigint", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     Aktif = table.Column<bool>(type: "bit", nullable: false),
                     Version = table.Column<int>(type: "int", nullable: false),
@@ -250,6 +315,105 @@ namespace StudentApp.Migrations
                         name: "FK_Ogrenciler_OdemePlanlari_OdemePlanlariId",
                         column: x => x.OdemePlanlariId,
                         principalTable: "OdemePlanlari",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Ogrenciler_Seanslar_SeansId",
+                        column: x => x.SeansId,
+                        principalTable: "Seanslar",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OgrenciBasarilari",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OgrenciId = table.Column<long>(type: "bigint", nullable: false),
+                    Baslik = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Aciklama = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Turu = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Tarih = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    Aktif = table.Column<bool>(type: "bit", nullable: false),
+                    Version = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OgrenciBasarilari", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OgrenciBasarilari_Ogrenciler_OgrenciId",
+                        column: x => x.OgrenciId,
+                        principalTable: "Ogrenciler",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OgrenciDetay",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OgrenciId = table.Column<long>(type: "bigint", nullable: false),
+                    VeliAdSoyad = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    VeliTelefonNumarasi = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    OkulAdi = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    OkulAdresi = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
+                    Sinif = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    OkulHocasiAdSoyad = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    OkulHocasiTelefon = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    OkulGirisSaati = table.Column<TimeSpan>(type: "time", nullable: true),
+                    OkulCikisSaati = table.Column<TimeSpan>(type: "time", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    Aktif = table.Column<bool>(type: "bit", nullable: false),
+                    Version = table.Column<int>(type: "int", nullable: false),
+                    Aciklama = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OgrenciDetay", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OgrenciDetay_Ogrenciler_OgrenciId",
+                        column: x => x.OgrenciId,
+                        principalTable: "Ogrenciler",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OgrenciEnvanterSatis",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OgrenciId = table.Column<long>(type: "bigint", nullable: false),
+                    SatisTarihi = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    OdenenTutar = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    KalanTutar = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    KalanTutarTahsilTarihi = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    EnvanterId = table.Column<long>(type: "bigint", nullable: false),
+                    SatisAdet = table.Column<int>(type: "int", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    Aktif = table.Column<bool>(type: "bit", nullable: false),
+                    Version = table.Column<int>(type: "int", nullable: false),
+                    Aciklama = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OgrenciEnvanterSatis", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OgrenciEnvanterSatis_Envanterler_EnvanterId",
+                        column: x => x.EnvanterId,
+                        principalTable: "Envanterler",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_OgrenciEnvanterSatis_Ogrenciler_OgrenciId",
+                        column: x => x.OgrenciId,
+                        principalTable: "Ogrenciler",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -284,6 +448,36 @@ namespace StudentApp.Migrations
                         principalTable: "Ogrenciler",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OgrenciBasariMaclari",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BasariId = table.Column<long>(type: "bigint", nullable: false),
+                    RakipAdi = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Tur = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Kategori = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Skor = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Sonuc = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Tarih = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Lokasyon = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    Aktif = table.Column<bool>(type: "bit", nullable: false),
+                    Version = table.Column<int>(type: "int", nullable: false),
+                    Aciklama = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OgrenciBasariMaclari", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OgrenciBasariMaclari_OgrenciBasarilari_BasariId",
+                        column: x => x.BasariId,
+                        principalTable: "OgrenciBasarilari",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -326,6 +520,32 @@ namespace StudentApp.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_OgrenciBasarilari_OgrenciId",
+                table: "OgrenciBasarilari",
+                column: "OgrenciId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OgrenciBasariMaclari_BasariId",
+                table: "OgrenciBasariMaclari",
+                column: "BasariId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OgrenciDetay_OgrenciId",
+                table: "OgrenciDetay",
+                column: "OgrenciId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OgrenciEnvanterSatis_EnvanterId",
+                table: "OgrenciEnvanterSatis",
+                column: "EnvanterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OgrenciEnvanterSatis_OgrenciId",
+                table: "OgrenciEnvanterSatis",
+                column: "OgrenciId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Ogrenciler_CinsiyetId",
                 table: "Ogrenciler",
                 column: "CinsiyetId");
@@ -342,9 +562,19 @@ namespace StudentApp.Migrations
                 column: "OdemePlanlariId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Ogrenciler_SeansId",
+                table: "Ogrenciler",
+                column: "SeansId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OgrenciOdemeTakvimi_OgrenciId",
                 table: "OgrenciOdemeTakvimi",
                 column: "OgrenciId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Seanslar_GunId",
+                table: "Seanslar",
+                column: "GunId");
         }
 
         /// <inheritdoc />
@@ -366,6 +596,15 @@ namespace StudentApp.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "OgrenciBasariMaclari");
+
+            migrationBuilder.DropTable(
+                name: "OgrenciDetay");
+
+            migrationBuilder.DropTable(
+                name: "OgrenciEnvanterSatis");
+
+            migrationBuilder.DropTable(
                 name: "OgrenciOdemeTakvimi");
 
             migrationBuilder.DropTable(
@@ -378,6 +617,12 @@ namespace StudentApp.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
+                name: "OgrenciBasarilari");
+
+            migrationBuilder.DropTable(
+                name: "Envanterler");
+
+            migrationBuilder.DropTable(
                 name: "Ogrenciler");
 
             migrationBuilder.DropTable(
@@ -385,6 +630,12 @@ namespace StudentApp.Migrations
 
             migrationBuilder.DropTable(
                 name: "OdemePlanlari");
+
+            migrationBuilder.DropTable(
+                name: "Seanslar");
+
+            migrationBuilder.DropTable(
+                name: "Gunler");
         }
     }
 }

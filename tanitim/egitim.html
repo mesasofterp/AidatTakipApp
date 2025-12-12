@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eğitim & Detaylar - Ödeme Takip AsistanAI</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="egitim.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <img src="../wwwroot/images/fuemlogo.png" alt="Ödeme Takip AsistanAI Logo" class="logo-img">
+                    <span>Ödeme Takip AsistanAI</span>
+                </div>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="index.html" class="nav-link">Ana Sayfa</a></li>
+                    <li><a href="index.html#ozellikler" class="nav-link">Özellikler</a></li>
+                    <li><a href="egitim.html" class="nav-link active">Eğitim & Detaylar</a></li>
+                    <li><a href="index.html#iletisim" class="nav-link">İletişim</a></li>
+                </ul>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1 class="page-title">Eğitim & Detaylar</h1>
+            <p class="page-subtitle">Sistemin tüm özelliklerini öğrenin ve verimli kullanın</p>
+        </div>
+    </section>
+
+    <!-- Sidebar Navigation -->
+    <div class="training-wrapper">
+        <aside class="training-sidebar">
+            <div class="sidebar-sticky">
+                <h3 class="sidebar-title">Modüller</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="#ogrenci-yonetimi" class="sidebar-link">Öğrenci Yönetimi</a></li>
+                    <li><a href="#odeme-takibi" class="sidebar-link">Ödeme Takibi</a></li>
+                    <li><a href="#seans-yonetimi" class="sidebar-link">Seans Yönetimi</a></li>
+                    <li><a href="#basari-takibi" class="sidebar-link">Başarı Takibi</a></li>
+                    <li><a href="#envanter-yonetimi" class="sidebar-link">Envanter Yönetimi</a></li>
+                    <li><a href="#sms-bildirimleri" class="sidebar-link">SMS Bildirimleri</a></li>
+                    <li><a href="#raporlama" class="sidebar-link">Raporlama</a></li>
+                    <li><a href="#guvenlik" class="sidebar-link">Güvenlik & Yetkilendirme</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="training-content">
+            <!-- Öğrenci Yönetimi -->
+            <section id="ogrenci-yonetimi" class="module-section">
+                <div class="module-header">
+                    <div class="module-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div>
+                        <h2 class="module-title">Öğrenci Yönetimi</h2>
+                        <p class="module-subtitle">Öğrenci bilgilerini kaydetme, düzenleme ve takip etme</p>
+                    </div>
+                </div>
+
+                <div class="module-content">
+                    <div class="content-block">
+                        <h3>Yeni Öğrenci Ekleme</h3>
+                        <p>Öğrenci eklemek için "Öğrenciler" menüsünden "Yeni Ekle" butonuna tıklayın. Aşağıdaki bilgileri doldurun:</p>
+                        <ul class="feature-list">
+                            <li>Ad ve Soyad</li>
+                            <li>E-posta adresi (zorunlu)</li>
+                            <li>Telefon numarası</li>
+                            <li>TC Kimlik No</li>
+                            <li>Doğum tarihi</li>
+                            <li>Boy ve Kilo bilgileri</li>
+                            <li>Adres bilgisi</li>
+                            <li>Ödeme planı seçimi</li>
+                            <li>Cinsiyet bilgisi</li>
+                        </ul>
+                        <div class="image-container">
+                            <img src="images/egitim/ogrenci-ekleme.jpg" alt="Öğrenci Ekleme Ekranı" onerror="this.style.display='none';">
+                            <p class="image-caption">Öğrenci ekleme formu</p>
+                        </div>
+                    </div>
+
+                    <div class="content-block">
+                        <h3>Öğrenci Listesi ve Arama</h3>
+                        <p>Öğrenci listesinde arama yapabilir, filtreleme yapabilir ve sıralama yapabilirsiniz:</p>
+                        <ul class="feature-list">
+                            <li><strong>Arama:</strong> Ad, soyad veya e-posta ile arama yapın</li>
+                            <li><strong>Filtreleme:</strong> Cinsiyet, ödeme planı, yaş aralığı ve kayıt tarihi ile filtreleme</li>
+                            <li><strong>Sıralama:</strong> Ad, soyad, e-posta, doğum tarihi veya kayıt tarihine göre sıralama</li>
+                        </ul>
+                        <div class="image-container">
+                            <img src="images/egitim/ogrenci-liste.jpg" alt="Öğrenci Listesi" onerror="this.style.display='none';">
+                            <p class="image-caption">Öğrenci listesi ve filtreleme seçenekleri</p>
+                        </div>
+                    </div>
+
+                    <div class="content-block">
+                        <h3>Öğrenci Detay Sayfası</h3>
+                        <p>Öğrenci detay sayfasında şu bilgileri görüntüleyebilirsiniz:</p>
+                        <ul class="feature-list">
+                            <li>Kişisel bilgiler</li>
+                            <li>Ödeme geçmişi</li>
+                            <li>Başarı kayıtları</li>
+                            <li>Envanter satışları</li>
+                            <li>Veli bilgileri (varsa)</li>
+                        </ul>
+                        <div class="video-container">
+                            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            <p class="video-caption">Öğrenci yönetimi video eğitimi</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Ödeme Takibi -->
+            <section id="odeme-takibi" class="module-section">
+                <div class="module-header">
+                    <div class="module-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div>
+                        <h2 class="module-title">Ödeme Takibi</h2>
+                        <p class="module-subtitle">Ödeme planları, taksitler ve borç takibi</p>
+                    </div>
+                </div>
+
+                <div class="module-content">
+                    <div class="content-block">
+                        <h3>Ödeme Planı Oluşturma</h3>
+                        <p>Ödeme planları, öğrencilerin ödeme yapısını belirler. Yeni ödeme planı oluşturmak için:</p>
+                        <ol class="step-list">
+                            <li>"Ödeme Planları" menüsüne gidin</li>
+                            <li>"Yeni Ekle" butonuna tıklayın</li>
+                            <li>Kurs programı adını girin</li>
+                            <li>Toplam tutarı belirleyin</li>
+                            <li>Taksit sayısını seçin</li>
+                            <li>Kaydet butonuna tıklayın</li>
+                        </ol>
+                        <div class="image-container">
+                            <img src="images/egitim/odeme-plani.jpg" alt="Ödeme Planı Oluşturma" onerror="this.style.display='none';">
+                            <p class="image-caption">Ödeme planı oluşturma ekranı</p>
+                        </div>
+                    </div>
+
+                    <div class="content-block">
+                        <h3>Ödeme Kaydetme</h3>
+                        <p>Öğrenci ödemelerini kaydetmek için:</p>
+                        <ul class="feature-list">
+                            <li>Öğrenci detay sayfasına gidin</li>
+                            <li>"Ödeme Takvimi" sekmesine tıklayın</li>
+                            <li>İlgili taksit için "Ödeme Yap" butonuna tıklayın</li>
+                            <li>Ödeme tarihi ve tutarını girin</li>
+                            <li>Kaydet butonuna tıklayın</li>
+                        </ul>
+                        <div class="image-container">
+                            <img src="images/egitim/odeme-kayit.jpg" alt="Ödeme Kaydetme" onerror="this.style.display='none';">
+                            <p class="image-caption">Ödeme kaydetme işlemi</p>
+                        </div>
+                    </div>
+
+                    <div class="content-block">
+                        <h3>Borç Takibi</h3>
+                        <p>Sistem otomatik olarak borçları hesaplar ve gösterir:</p>
+                        <ul class="feature-list">
+                            <li>Geciken ödemeler kırmızı renkte gösterilir</li>
+                            <li>Vadesi yaklaşan ödemeler sarı renkte gösterilir</li>
+                            <li>Ödenen ödemeler yeşil renkte gösterilir</li>
+                            <li>Toplam borç tutarı her öğrenci için hesaplanır</li>
+                        </ul>
+                        <div class="video-container">
+                            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            <p class="video-caption">Ödeme takibi video eğitimi</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seans Yönetimi -->
+            <section id="seans-yonetimi" class="module-section">
+                <div class="module-header">
+                    <div class="module-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div>
+                        <h2 class="module-title">Seans Yönetimi</h2>
+                        <p class="module-subtitle">Seans planlama ve öğrenci atama</p>
+                    </div>
+                </div>
+
+                <div class="module-content">
+                    <div class="content-block">
+                        <h3>Seans Oluşturma</h3>
+                        <p>Yeni seans oluşturmak için:</p>
+                        <ol class="step-list">
+                            <li>"Seanslar" menüsüne gidin</li>
+                            <li>"Yeni Ekle" butonuna tıklayın</li>
+                            <li>Seans adını girin</li>
+                            <li>Başlangıç ve bitiş saatlerini belirleyin</li>
+                            <li>Seansın yapılacağı günleri seçin</li>
+                            <li>Kapasite bilgisini girin</li>
+                            <li>Kaydet butonuna tıklayın</li>
+                        </ol>
+                        <div class="image-container">
+                            <img src="images/egitim/seans-olusturma.jpg" alt="Seans Oluşturma" onerror="this.style.display='none';">
+                            <p class="image-caption">Seans oluşturma formu</p>
+                        </div>
+                    </div>
+
+                    <div class="content-block">
+                        <h3>Öğrenci Atama</h3>
+                        <p>Öğrencileri seanslara atamak için:</p>
+                        <ul class="feature-list">
+                            <li>Öğrenci düzenleme sayfasına gidin</li>
+                            <li>"Seans" alanından uygun seansı seçin</li>
+                            <li>Değişiklikleri kaydedin</li>
+                        </ul>
+                        <div class="image-container">
+                            <img src="images/egitim/seans-atama.jpg" alt="Öğrenci Seans Atama" onerror="this.style.display='none';">
+                            <p class="image-caption">Öğrenci seans atama işlemi</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Başarı Takibi -->
+            <section id="basari-takibi" class="module-section">
+                <div class="module-header">
+                    <div class="module-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div>
+                        <h2 class="module-title">Başarı Takibi</h2>
+                        <p class="module-subtitle">Öğrenci başarılarını kaydetme ve takip etme</p>
+                    </div>
+                </div>
+
+                <div class="module-content">
+                    <div class="content-block">
+                        <h3>Başarı Kaydı Ekleme</h3>
+                        <p>Öğrenci başarılarını kaydetmek için:</p>
+                        <ol class="step-list">
+                            <li>Öğrenci detay sayfasına gidin</li>
+                            <li>"Başarılar" sekmesine tıklayın</li>
+                            <li>"Yeni Başarı Ekle" butonuna tıklayın</li>
+                            <li>Başarı tarihini seçin</li>
+                            <li>Başarı açıklamasını girin</li>
+                            <li>Varsa müsabaka bilgilerini ekleyin</li>
+                            <li>Kaydet butonuna tıklayın</li>
+                        </ol>
+                        <div class="image-container">
+                            <img src="images/egitim/basari-kayit.jpg" alt="Başarı Kaydı" onerror="this.style.display='none';">
+                            <p class="image-caption">Başarı kaydı ekleme ekranı</p>
+                        </div>
+                    </div>
+
+                    <div class="content-block">
+                        <h3>Müsabaka Sonuçları</h3>
+                        <p>Müsabaka sonuçlarını kaydetmek için:</p>
+                        <ul class="feature-list">
+                            <li>Başarı kaydı oluştururken "Müsabaka Bilgileri" bölümünü doldurun</li>
+                            <li>Müsabaka adını girin</li>
+                            <li>Sıralama/pozisyon bilgisini ekleyin</li>
+                            <li>Ödül bilgisi varsa ekleyin</li>
+                        </ul>
+                        <div class="image-container">
+                            <img src="images/egitim/musabaka.jpg" alt="Müsabaka Sonuçları" onerror="this.style.display='none';">
+                            <p class="image-caption">Müsabaka sonuçları kayıt ekranı</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Envanter Yönetimi -->
+            <section id="envanter-yonetimi" class="module-section">
+                <div class="module-header">
+                    <div class="module-icon">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div>
+                        <h2 class="module-title">Envanter Yönetimi</h2>
+                        <p class="module-subtitle">Stok takibi ve envanter satışları</p>
+                    </div>
+                </div>
+
+                <div class="module-content">
+                    <div class="content-block">
+                        <h3>Envanter Ekleme</h3>
+                        <p>Yeni envanter eklemek için:</p>
+                        <ol class="step-list">
+                            <li>"Envanterler" menüsüne gidin</li>
+                            <li>"Yeni Ekle" butonuna tıklayın</li>
+                            <li>Envanter adını girin</li>
+                            <li>Stok adedini belirleyin</li>
+                            <li>Alış ve satış fiyatlarını girin</li>
+                            <li>Birim bilgisini seçin</li>
+                            <li>Kaydet butonuna tıklayın</li>
+                        </ol>
+                        <div class="image-container">
+                            <img src="images/egitim/envanter-ekleme.jpg" alt="Envanter Ekleme" onerror="this.style.display='none';">
+                            <p class="image-caption">Envanter ekleme formu</p>
+                        </div>
+                    </div>
+
+                    <div class="content-block">
+                        <h3>Envanter Satışı</h3>
+                        <p>Öğrencilere envanter satışı yapmak için:</p>
+                        <ul class="feature-list">
+                            <li>Öğrenci ekleme veya düzenleme sayfasında "Envanter Satışları" bölümünü kullanın</li>
+                            <li>Satılacak envanteri seçin</li>
+                            <li>Satış adedini girin</li>
+                            <li>Ödenen ve kalan tutarları belirleyin</li>
+                            <li>Satış tarihini seçin</li>
+                            <li>Sistem otomatik olarak stoktan düşer</li>
+                        </ul>
+                        <div class="image-container">
+                            <img src="images/egitim/envanter-satis.jpg" alt="Envanter Satışı" onerror="this.style.display='none';">
+                            <p class="image-caption">Envanter satış işlemi</p>
+                        </div>
+                    </div>
+
+                    <div class="content-block">
+                        <h3>Stok Takibi</h3>
+                        <p>Sistem otomatik olarak stok takibi yapar:</p>
+                        <ul class="feature-list">
+                            <li>Her satışta stok otomatik düşer</li>
+                            <li>Stok seviyesi anlık olarak görüntülenir</li>
+                            <li>Stok bitmek üzereyse uyarı gösterilir</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SMS Bildirimleri -->
+            <section id="sms-bildirimleri" class="module-section">
+                <div class="module-header">
+                    <div class="module-icon">
+                        <i class="fas fa-sms"></i>
+                    </div>
+                    <div>
+                        <h2 class="module-title">SMS Bildirimleri</h2>
+                        <p class="module-subtitle">Otomatik ve manuel SMS gönderimi</p>
+                    </div>
+                </div>
+
+                <div class="module-content">
+                    <div class="content-block">
+                        <h3>Zamanlayıcı Ayarları</h3>
+                        <p>Otomatik SMS gönderimi için zamanlayıcı ayarlarını yapın:</p>
+                        <ol class="step-list">
+                            <li>"Zamanlayıcı" menüsüne gidin</li>
+                            <li>Yeni zamanlayıcı oluşturun</li>
+                            <li>Gönderim günlerini seçin</li>
+                            <li>Gönderim saatini belirleyin</li>
+                            <li>Mesaj şablonunu oluşturun</li>
+                            <li>Zamanlayıcıyı aktif edin</li>
+                        </ol>
+                        <div class="image-container">
+                            <img src="images/egitim/sms-zamanlayici.jpg" alt="SMS Zamanlayıcı" onerror="this.style.display='none';">
+                            <p class="image-caption">SMS zamanlayıcı ayarları</p>
+                        </div>
+                    </div>
+
+                    <div class="content-block">
+                        <h3>Mesaj Şablonları</h3>
+                        <p>Mesaj şablonlarında kullanabileceğiniz değişkenler:</p>
+                        <ul class="feature-list">
+                            <li><code>[ÖĞRENCİ_ADI]</code> - Öğrenci adı</li>
+                            <li><code>[ÖĞRENCİ_SOYADI]</code> - Öğrenci soyadı</li>
+                            <li><code>[BORÇ_TUTARI]</code> - Borç tutarı</li>
+                            <li><code>[GEÇEN_GÜN]</code> - Geçen gün sayısı</li>
+                            <li><code>[REFERANS_TARIH]</code> - Referans tarih</li>
+                        </ul>
+                        <div class="code-block">
+                            <pre>Sayın [ÖĞRENCİ_ADI] [ÖĞRENCİ_SOYADI], 
+ödemeniz [REFERANS_TARIH] tarihinden beri 
+yapılmamıştır. Borç tutarınız: [BORÇ_TUTARI] TL
+Lütfen ödemenizi yapınız.</pre>
+                        </div>
+                    </div>
+
+                    <div class="content-block">
+                        <h3>Toplu SMS Gönderimi</h3>
+                        <p>Birden fazla öğrenciye aynı anda SMS göndermek için:</p>
+                        <ul class="feature-list">
+                            <li>Öğrenci listesinde göndermek istediğiniz öğrencileri seçin</li>
+                            <li>"Seçili Öğrencilere SMS Gönder" butonuna tıklayın</li>
+                            <li>Sistem otomatik olarak mesajları gönderir</li>
+                        </ul>
+                        <div class="image-container">
+                            <img src="images/egitim/toplu-sms.jpg" alt="Toplu SMS Gönderimi" onerror="this.style.display='none';">
+                            <p class="image-caption">Toplu SMS gönderim ekranı</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Raporlama -->
+            <section id="raporlama" class="module-section">
+                <div class="module-header">
+                    <div class="module-icon">
+                        <i class="fas fa-file-excel"></i>
+                    </div>
+                    <div>
+                        <h2 class="module-title">Raporlama</h2>
+                        <p class="module-subtitle">Excel ve PDF formatında rapor oluşturma</p>
+                    </div>
+                </div>
+
+                <div class="module-content">
+                    <div class="content-block">
+                        <h3>Excel Raporu Oluşturma</h3>
+                        <p>Öğrenci listesini Excel formatında dışa aktarmak için:</p>
+                        <ol class="step-list">
+                            <li>Öğrenci listesinde raporlamak istediğiniz öğrencileri seçin</li>
+                            <li>"Seçili Öğrencileri Excel'e Aktar" butonuna tıklayın</li>
+                            <li>Excel dosyası otomatik olarak indirilir</li>
+                        </ol>
+                        <div class="image-container">
+                            <img src="images/egitim/excel-rapor.jpg" alt="Excel Raporu" onerror="this.style.display='none';">
+                            <p class="image-caption">Excel raporu oluşturma</p>
+                        </div>
+                    </div>
+
+                    <div class="content-block">
+                        <h3>PDF Raporu Oluşturma</h3>
+                        <p>PDF formatında rapor oluşturmak için:</p>
+                        <ul class="feature-list">
+                            <li>Öğrenci listesinde raporlamak istediğiniz öğrencileri seçin</li>
+                            <li>"Seçili Öğrencileri PDF'e Aktar" butonuna tıklayın</li>
+                            <li>PDF dosyası otomatik olarak indirilir</li>
+                        </ul>
+                        <div class="image-container">
+                            <img src="images/egitim/pdf-rapor.jpg" alt="PDF Raporu" onerror="this.style.display='none';">
+                            <p class="image-caption">PDF raporu oluşturma</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Güvenlik -->
+            <section id="guvenlik" class="module-section">
+                <div class="module-header">
+                    <div class="module-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div>
+                        <h2 class="module-title">Güvenlik & Yetkilendirme</h2>
+                        <p class="module-subtitle">Kullanıcı yönetimi ve yetki kontrolü</p>
+                    </div>
+                </div>
+
+                <div class="module-content">
+                    <div class="content-block">
+                        <h3>Kullanıcı Oluşturma</h3>
+                        <p>Yeni kullanıcı oluşturmak için:</p>
+                        <ol class="step-list">
+                            <li>Admin panelinden "Kullanıcılar" menüsüne gidin</li>
+                            <li>"Yeni Kullanıcı" butonuna tıklayın</li>
+                            <li>Kullanıcı bilgilerini girin</li>
+                            <li>E-posta ve şifre belirleyin</li>
+                            <li>Yetkilerini atayın</li>
+                            <li>Kaydet butonuna tıklayın</li>
+                        </ol>
+                    </div>
+
+                    <div class="content-block">
+                        <h3>Sayfa Yetkilendirme</h3>
+                        <p>Sistem sayfa bazlı yetkilendirme kullanır:</p>
+                        <ul class="feature-list">
+                            <li>Her sayfa için ayrı yetki tanımlanabilir</li>
+                            <li>Kullanıcılar sadece yetkili oldukları sayfalara erişebilir</li>
+                            <li>Yetkisiz sayfalara erişim engellenir</li>
+                        </ul>
+                        <div class="image-container">
+                            <img src="images/egitim/yetkilendirme.jpg" alt="Yetkilendirme" onerror="this.style.display='none';">
+                            <p class="image-caption">Kullanıcı yetkilendirme ekranı</p>
+                        </div>
+                    </div>
+
+                    <div class="content-block">
+                        <h3>Güvenlik Özellikleri</h3>
+                        <ul class="feature-list">
+                            <li>Şifreler güvenli şekilde saklanır</li>
+                            <li>Oturum yönetimi ile güvenli giriş</li>
+                            <li>Veri yedekleme sistemi</li>
+                            <li>Lisans kontrolü</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <img src="../wwwroot/images/fuemlogo.png" alt="Ödeme Takip AsistanAI Logo" class="footer-logo-img">
+                        <span>Ödeme Takip AsistanAI</span>
+                    </div>
+                    <p class="footer-description">
+                        Spor salonu yönetimi için en kapsamlı çözüm. 
+                        İşlerinizi kolaylaştırın, zaman kazanın.
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Hızlı Linkler</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Ana Sayfa</a></li>
+                        <li><a href="index.html#ozellikler">Özellikler</a></li>
+                        <li><a href="egitim.html">Eğitim & Detaylar</a></li>
+                        <li><a href="index.html#iletisim">İletişim</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Ödeme Takip AsistanAI. Tüm hakları saklıdır.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="egitim.js"></script>
+</body>
+</html>
+

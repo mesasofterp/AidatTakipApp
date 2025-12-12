@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ödeme Takip AsistanAI - Spor Salonu Yönetim Sistemi</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <img src="../wwwroot/images/fuemlogo.png" alt="Ödeme Takip AsistanAI Logo" class="logo-img">
+                    <span>Ödeme Takip AsistanAI</span>
+                </div>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="#anasayfa" class="nav-link">Ana Sayfa</a></li>
+                    <li><a href="#ozellikler" class="nav-link">Özellikler</a></li>
+                    <li><a href="#nasil-calisir" class="nav-link">Nasıl Çalışır</a></li>
+                    <li><a href="egitim.html" class="nav-link">Eğitim & Detaylar</a></li>
+                    <li><a href="#iletisim" class="nav-link">İletişim</a></li>
+                </ul>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="anasayfa" class="hero">
+        <div class="hero-background">
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    Spor Salonu Yönetimi<br>
+                    <span class="highlight">Artık Çok Daha Kolay</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Öğrenci takibi, ödeme yönetimi, seans planlama ve daha fazlası tek bir platformda.
+                    Spor salonunuzu dijitalleştirin ve işlerinizi kolaylaştırın.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#ozellikler" class="btn btn-primary">Özellikleri Keşfet</a>
+                    <a href="egitim.html" class="btn btn-secondary">Eğitim & Detaylar</a>
+                    <a href="#iletisim" class="btn btn-secondary">Demo İste</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">1000+</div>
+                        <div class="stat-label">Mutlu Kullanıcı</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">50+</div>
+                        <div class="stat-label">Spor Salonu</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">Destek</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="ozellikler" class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Güçlü Özellikler</h2>
+                <p class="section-subtitle">Spor salonunuzu yönetmek için ihtiyacınız olan her şey</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card" data-module="ogrenci">
+                    <div class="feature-image">
+                        <img src="images/modul-ogrenci.jpg" alt="Öğrenci Yönetimi" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="feature-icon" style="display:none;">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <h3 class="feature-title">Öğrenci Yönetimi</h3>
+                    <p class="feature-description">
+                        Öğrenci bilgilerini kolayca kaydedin, düzenleyin ve takip edin. 
+                        Detaylı profil bilgileri, fotoğraf yükleme ve arama özellikleri.
+                    </p>
+                    <a href="egitim.html#ogrenci-yonetimi" class="feature-link">Detayları Gör <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card" data-module="odeme">
+                    <div class="feature-image">
+                        <img src="images/modul-odeme.jpg" alt="Ödeme Takibi" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="feature-icon" style="display:none;">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                    </div>
+                    <h3 class="feature-title">Ödeme Takibi</h3>
+                    <p class="feature-description">
+                        Ödeme planlarını oluşturun, taksitleri takip edin ve ödeme geçmişini görüntüleyin. 
+                        Otomatik ödeme hatırlatmaları ile borç takibi.
+                    </p>
+                    <a href="egitim.html#odeme-takibi" class="feature-link">Detayları Gör <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card" data-module="seans">
+                    <div class="feature-image">
+                        <img src="images/modul-seans.jpg" alt="Seans Yönetimi" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="feature-icon" style="display:none;">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                    <h3 class="feature-title">Seans Yönetimi</h3>
+                    <p class="feature-description">
+                        Seansları planlayın, öğrencileri seanslara atayın ve günlük programları yönetin. 
+                        Esnek seans saatleri ve kapasite yönetimi.
+                    </p>
+                    <a href="egitim.html#seans-yonetimi" class="feature-link">Detayları Gör <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card" data-module="basari">
+                    <div class="feature-image">
+                        <img src="images/modul-basari.jpg" alt="Başarı Takibi" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="feature-icon" style="display:none;">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                    </div>
+                    <h3 class="feature-title">Başarı Takibi</h3>
+                    <p class="feature-description">
+                        Öğrencilerin başarılarını kaydedin, müsabaka sonuçlarını takip edin ve 
+                        ilerlemelerini görselleştirin.
+                    </p>
+                    <a href="egitim.html#basari-takibi" class="feature-link">Detayları Gör <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card" data-module="envanter">
+                    <div class="feature-image">
+                        <img src="images/modul-envanter.jpg" alt="Envanter Yönetimi" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="feature-icon" style="display:none;">
+                            <i class="fas fa-box"></i>
+                        </div>
+                    </div>
+                    <h3 class="feature-title">Envanter Yönetimi</h3>
+                    <p class="feature-description">
+                        Spor malzemelerini takip edin, stok kontrolü yapın ve satış işlemlerini kaydedin. 
+                        Otomatik stok uyarıları.
+                    </p>
+                    <a href="egitim.html#envanter-yonetimi" class="feature-link">Detayları Gör <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card" data-module="sms">
+                    <div class="feature-image">
+                        <img src="images/modul-sms.jpg" alt="SMS Bildirimleri" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="feature-icon" style="display:none;">
+                            <i class="fas fa-sms"></i>
+                        </div>
+                    </div>
+                    <h3 class="feature-title">SMS Bildirimleri</h3>
+                    <p class="feature-description">
+                        Ödeme hatırlatmaları, seans bilgilendirmeleri ve özel mesajlar gönderin. 
+                        Toplu SMS gönderimi ile zaman kazanın.
+                    </p>
+                    <a href="egitim.html#sms-bildirimleri" class="feature-link">Detayları Gör <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card" data-module="rapor">
+                    <div class="feature-image">
+                        <img src="images/modul-rapor.jpg" alt="Raporlama" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="feature-icon" style="display:none;">
+                            <i class="fas fa-file-excel"></i>
+                        </div>
+                    </div>
+                    <h3 class="feature-title">Raporlama</h3>
+                    <p class="feature-description">
+                        Detaylı raporlar oluşturun, Excel ve PDF formatında dışa aktarın. 
+                        Finansal raporlar ve öğrenci istatistikleri.
+                    </p>
+                    <a href="egitim.html#raporlama" class="feature-link">Detayları Gör <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card" data-module="guvenlik">
+                    <div class="feature-image">
+                        <img src="images/modul-guvenlik.jpg" alt="Güvenlik" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="feature-icon" style="display:none;">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                    </div>
+                    <h3 class="feature-title">Güvenlik</h3>
+                    <p class="feature-description">
+                        Kullanıcı yetkilendirme sistemi, güvenli veri saklama ve yedekleme. 
+                        Verileriniz güvende.
+                    </p>
+                    <a href="egitim.html#guvenlik" class="feature-link">Detayları Gör <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="nasil-calisir" class="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Nasıl Çalışır?</h2>
+                <p class="section-subtitle">3 basit adımda başlayın</p>
+            </div>
+            <div class="steps">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Kayıt Olun</h3>
+                        <p class="step-description">
+                            Hemen kayıt olun ve hesabınızı oluşturun. 
+                            Kısa bir kurulum süreci ile başlayın.
+                        </p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Öğrencilerinizi Ekleyin</h3>
+                        <p class="step-description">
+                            Öğrenci bilgilerini sisteme girin, ödeme planlarını oluşturun 
+                            ve seansları ayarlayın.
+                        </p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Yönetmeye Başlayın</h3>
+                        <p class="step-description">
+                            Artık her şey hazır! Ödemeleri takip edin, seansları yönetin 
+                            ve raporları görüntüleyin.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="iletisim" class="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">İletişime Geçin</h2>
+                <p class="section-subtitle">Sorularınız mı var? Bizimle iletişime geçin</p>
+            </div>
+            <div class="contact-wrapper">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h4>Telefon</h4>
+                            <p>+90 (555) 123 45 67</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h4>E-posta</h4>
+                            <p>info@fittakip.com</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h4>Adres</h4>
+                            <p>İstanbul, Türkiye</p>
+                        </div>
+                    </div>
+                </div>
+                <form class="contact-form" id="contactForm">
+                    <div class="form-group">
+                        <input type="text" id="name" name="name" placeholder="Adınız Soyadınız" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="email" name="email" placeholder="E-posta Adresiniz" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="tel" id="phone" name="phone" placeholder="Telefon Numaranız">
+                    </div>
+                    <div class="form-group">
+                        <textarea id="message" name="message" rows="5" placeholder="Mesajınız" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-paper-plane"></i> Mesaj Gönder
+                    </button>
+                    <div class="form-message" id="formMessage"></div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <img src="../wwwroot/images/fuemlogo.png" alt="Ödeme Takip AsistanAI Logo" class="footer-logo-img">
+                        <span>Ödeme Takip AsistanAI</span>
+                    </div>
+                    <p class="footer-description">
+                        Spor salonu yönetimi için en kapsamlı çözüm. 
+                        İşlerinizi kolaylaştırın, zaman kazanın.
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Hızlı Linkler</h4>
+                    <ul class="footer-links">
+                        <li><a href="#anasayfa">Ana Sayfa</a></li>
+                        <li><a href="#ozellikler">Özellikler</a></li>
+                        <li><a href="#nasil-calisir">Nasıl Çalışır</a></li>
+                        <li><a href="egitim.html">Eğitim & Detaylar</a></li>
+                        <li><a href="#iletisim">İletişim</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Özellikler</h4>
+                    <ul class="footer-links">
+                        <li><a href="#ozellikler">Öğrenci Yönetimi</a></li>
+                        <li><a href="#ozellikler">Ödeme Takibi</a></li>
+                        <li><a href="#ozellikler">Seans Yönetimi</a></li>
+                        <li><a href="#ozellikler">Raporlama</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Sosyal Medya</h4>
+                    <div class="social-links">
+                        <a href="#" class="social-link" aria-label="Facebook">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 FitTakip. Tüm hakları saklıdır.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
+

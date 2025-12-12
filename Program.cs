@@ -11,14 +11,17 @@ using System.Globalization;
 var builder = WebApplication.CreateBuilder(args);
 string keyPath = Path.Combine(builder.Environment.ContentRootPath, "App_Data", "public.key");
 string licPath = Path.Combine(builder.Environment.ContentRootPath, "App_Data", "license.lic");
-
-if (!LicenseManager.CheckLicense(keyPath, licPath, out string failReason))
+builder.WebHost.ConfigureKestrel(options =>
 {
-    Console.ForegroundColor = ConsoleColor.Red;
-    Console.WriteLine("❌ Lisans geçersiz: " + failReason);
-    Console.ResetColor();
-    return; // Uygulamayı başlatma
-}
+    options.ListenAnyIP(2961); // t�m IP�lerde 2961�i dinle
+});
+//if (!LicenseManager.CheckLicense(keyPath, licPath, out string failReason))
+//{
+//    Console.ForegroundColor = ConsoleColor.Red;
+//    Console.WriteLine("❌ Lisans geçersiz: " + failReason);
+//    Console.ResetColor();
+//    return; // Uygulamayı başlatma
+//}
 
 // Tarih formatını ayarla - Türkiye lokalizasyonu
 var cultureInfo = new CultureInfo("tr-TR");
