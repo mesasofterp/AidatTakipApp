@@ -415,9 +415,9 @@
                                 <input type="hidden" name="EnvanterSatislari[{INDEX}].SilinecekMi" value="false" class="silinecek-input" />
                                 <select name="EnvanterSatislari[{INDEX}].EnvanterId" class="form-select form-select-sm envanter-select" required style="min-width: 150px;" data-index="{INDEX}">
                                     <option value="">-- Envanter Seçiniz --</option>
-                                    @if (ViewBag.Envanterler != null)
+                                    @if (ViewBag.EnvanterlerSelectList != null)
                                     {
-                                        foreach (var item in (IEnumerable<SelectListItem>)ViewBag.Envanterler)
+                                        foreach (var item in (IEnumerable<SelectListItem>)ViewBag.EnvanterlerSelectList)
                                         {
                                             <option value="@item.Value" data-satis-fiyat="@(ViewBag.EnvanterFiyatlari != null && ViewBag.EnvanterFiyatlari.ContainsKey(long.Parse(item.Value)) ? ViewBag.EnvanterFiyatlari[long.Parse(item.Value)].ToString("F2", System.Globalization.CultureInfo.InvariantCulture) : "0")">@item.Text</option>
                                         }

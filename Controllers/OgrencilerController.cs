@@ -923,9 +923,10 @@ namespace StudentApp.Controllers
             ViewBag.Cinsiyetler = new SelectList(cinsiyetler, "Id", "Cinsiyet");
 
             var envanterler = await _envanterlerService.GetActiveAsync();
-            ViewBag.Envanterler = new SelectList(envanterler, "Id", "EnvanterAdi");
+            ViewBag.EnvanterlerSelectList = new SelectList(envanterler, "Id", "EnvanterAdi");
+            ViewBag.Envanterler = envanterler; // Raw liste olarak da ekle
 
-            var seanslar = await _seanslarService.GetAllSeanslarAsync();
+          var seanslar = await _seanslarService.GetAllSeanslarAsync();
   ViewBag.Seanslar = new SelectList(seanslar, "Id", "SeansAdi");
         }
 
