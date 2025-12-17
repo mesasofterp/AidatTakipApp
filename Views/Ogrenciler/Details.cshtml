@@ -166,6 +166,8 @@
 
                 @if (Model.OgrenciDetay != null && (!string.IsNullOrWhiteSpace(Model.OgrenciDetay.VeliAdSoyad) ||
                                 !string.IsNullOrWhiteSpace(Model.OgrenciDetay.VeliTelefonNumarasi) ||
+                                !string.IsNullOrWhiteSpace(Model.OgrenciDetay.Veli2AdSoyad) ||
+                                !string.IsNullOrWhiteSpace(Model.OgrenciDetay.Veli2TelefonNumarasi) ||
                                 !string.IsNullOrWhiteSpace(Model.OgrenciDetay.OkulAdi) ||
                                 !string.IsNullOrWhiteSpace(Model.OgrenciDetay.OkulAdresi) ||
                                 !string.IsNullOrWhiteSpace(Model.OgrenciDetay.Sinif) ||
@@ -191,6 +193,24 @@
                             <dd class="col-sm-8">
                                 <a href="tel:@Model.OgrenciDetay.VeliTelefonNumarasi" class="text-decoration-none">
                                     <i class="fas fa-phone me-1"></i>@Model.OgrenciDetay.VeliTelefonNumarasi
+                                </a>
+                            </dd>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(Model.OgrenciDetay.Veli2AdSoyad))
+                        {
+                            <dt class="col-sm-4">2. Veli Ad Soyad</dt>
+                            <dd class="col-sm-8">
+                                <i class="fas fa-user me-1"></i>@Model.OgrenciDetay.Veli2AdSoyad
+                            </dd>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(Model.OgrenciDetay.Veli2TelefonNumarasi))
+                        {
+                            <dt class="col-sm-4">2. Veli Telefon Numarası</dt>
+                            <dd class="col-sm-8">
+                                <a href="tel:@Model.OgrenciDetay.Veli2TelefonNumarasi" class="text-decoration-none">
+                                    <i class="fas fa-phone me-1"></i>@Model.OgrenciDetay.Veli2TelefonNumarasi
                                 </a>
                             </dd>
                         }

@@ -116,21 +116,37 @@
  <hr class="my-4" />
      <h5 class="mb-4 mt-3" style="color: var(--primary-700); font-weight: 600; border-bottom: 2px solid var(--primary-100); padding-bottom: 0.75rem;"><i class="fas fa-users me-2"></i>Veli Bilgileri</h5>
 
-      <div class="row">
+  <div class="row">
    <div class="col-md-6 mb-3">
-         <label for="VeliAdSoyad" class="form-label">Veli Ad Soyad</label>
-           <input type="text" id="VeliAdSoyad" name="OgrenciDetay.VeliAdSoyad" class="form-control" placeholder="Veli adý ve soyadý" />
+    <label for="VeliAdSoyad" class="form-label">Veli Ad Soyad</label>
+     <input type="text" id="VeliAdSoyad" name="OgrenciDetay.VeliAdSoyad" class="form-control" placeholder="Veli adý ve soyadý" />
          <small class="form-text text-muted">Opsiyonel</small>
     </div>
-    <div class="col-md-6 mb-3">
+      <div class="col-md-6 mb-3">
  <label for="VeliTelefonNumarasi" class="form-label">Veli Telefon Numarasý</label>
-   <div class="input-group">
-    <span class="input-group-text"><i class="fas fa-phone"></i></span>
-    <input type="text" id="VeliTelefonNumarasi" name="OgrenciDetay.VeliTelefonNumarasi" class="form-control" placeholder="05301234567" maxlength="11" />
-   </div>
-  <small class="form-text text-muted">Opsiyonel - Format: 05301234567</small>
+    <div class="input-group">
+         <span class="input-group-text"><i class="fas fa-phone"></i></span>
+   <input type="text" id="VeliTelefonNumarasi" name="OgrenciDetay.VeliTelefonNumarasi" class="form-control" placeholder="05301234567" maxlength="11" />
           </div>
-           </div>
+   <small class="form-text text-muted">Opsiyonel - Format: 05301234567</small>
+ </div>
+    </div>
+
+  <div class="row">
+         <div class="col-md-6 mb-3">
+         <label for="Veli2AdSoyad" class="form-label">2. Veli Ad Soyad</label>
+ <input type="text" id="Veli2AdSoyad" name="OgrenciDetay.Veli2AdSoyad" class="form-control" placeholder="2. Veli adý ve soyadý" />
+    <small class="form-text text-muted">Opsiyonel</small>
+    </div>
+<div class="col-md-6 mb-3">
+         <label for="Veli2TelefonNumarasi" class="form-label">2. Veli Telefon Numarasý</label>
+      <div class="input-group">
+   <span class="input-group-text"><i class="fas fa-phone"></i></span>
+        <input type="text" id="Veli2TelefonNumarasi" name="OgrenciDetay.Veli2TelefonNumarasi" class="form-control" placeholder="05301234567" maxlength="11" />
+ </div>
+ <small class="form-text text-muted">Opsiyonel - Format: 05301234567</small>
+    </div>
+ </div>
 
       <hr class="my-4" />
          <h5 class="mb-4 mt-3" style="color: var(--primary-700); font-weight: 600; border-bottom: 2px solid var(--primary-100); padding-bottom: 0.75rem;"><i class="fas fa-school me-2"></i>Okul Bilgileri</h5>
@@ -326,162 +342,40 @@
             }
 
       // Telefon numarasý input mask
-            const telefonInput = document.getElementById('telefonInput');
-      const veliTelefonInput = document.getElementById('VeliTelefonNumarasi');
-            const okulHocasiTelefonInput = document.getElementById('OkulHocasiTelefon');
+     const telefonInput = document.getElementById('telefonInput');
+       const veliTelefonInput = document.getElementById('VeliTelefonNumarasi');
+       const okulHocasiTelefonInput = document.getElementById('OkulHocasiTelefon');
+       const veli2TelefonInput = document.getElementById('Veli2TelefonNumarasi');
 
- function applyPhoneMask(input) {
-                if (!input) return;
-                input.addEventListener('input', function(e) {
-         let value = e.target.value.replace(/\D/g, '');
+  function applyPhoneMask(input) {
+   if (!input) return;
+    input.addEventListener('input', function(e) {
+   let value = e.target.value.replace(/\D/g, '');
+       if (value.length > 11) {
+     value = value.substring(0, 11);
+   }
+        if (value.length > 0 && value.charAt(0) !== '0') {
+       value = '0' + value.substring(0, 10);
+         }
+    e.target.value = value;
+ });
+     input.addEventListener('paste', function(e) {
+  setTimeout(function() {
+    let value = input.value.replace(/\D/g, '');
    if (value.length > 11) {
         value = value.substring(0, 11);
-     }
-  if (value.length > 0 && value.charAt(0) !== '0') {
-       value = '0' + value.substring(0, 10);
-            }
-     e.target.value = value;
-             });
-     input.addEventListener('paste', function(e) {
-      setTimeout(function() {
-            let value = input.value.replace(/\D/g, '');
-      if (value.length > 11) {
-    value = value.substring(0, 11);
-    }
-                if (value.length > 0 && value.charAt(0) !== '0') {
-    value = '0' + value.substring(0, 10);
+   }
+           if (value.length > 0 && value.charAt(0) !== '0') {
+        value = '0' + value.substring(0, 10);
          }
-      input.value = value;
-                    }, 0);
-     });
- }
+   input.value = value;
+   }, 0);
+ });
+    }
 
-         applyPhoneMask(telefonInput);
-   applyPhoneMask(veliTelefonInput);
+    applyPhoneMask(telefonInput);
+         applyPhoneMask(veliTelefonInput);
    applyPhoneMask(okulHocasiTelefonInput);
-
-            // Envanter Tablosu Ýþlemleri
-       const tbody = document.getElementById('envanterTbody');
-          const envanterEkleBtn = document.getElementById('envanterEkleBtn');
-      const envanterSatirTemplate = document.getElementById('envanterSatirTemplate');
-         let envanterIndex = 0;
-
-   // Envanter satýrý ekle
-     if (envanterEkleBtn && envanterSatirTemplate && tbody) {
-         envanterEkleBtn.addEventListener('click', function() {
-  try {
- const templateContent = envanterSatirTemplate.content.cloneNode(true);
-      const templateHTML = templateContent.querySelector('tr').outerHTML;
-       const yeniSatir = templateHTML.replace(/{INDEX}/g, envanterIndex);
-
-        tbody.insertAdjacentHTML('beforeend', yeniSatir);
-
-   // Yeni eklenen satýra event listener'larý ekle
-    const yeniRow = tbody.lastElementChild;
- setupEnvanterListeners(yeniRow, envanterIndex);
-
-envanterIndex++;
-
-        // Yeni eklenen satýrýn sil butonunu dinle
-         guncelSilButonlari();
-     } catch (error) {
-        console.error('Satýr eklenirken hata:', error);
-       alert('Satýr eklenirken bir hata oluþtu: ' + error.message);
-        }
-     });
-     }
-
-            // Envanter seçimi ve ödenen tutar deðiþimlerini dinle
- function setupEnvanterListeners(row, index) {
-  const envanterSelect = row.querySelector('.envanter-select');
-    const odenenTutarInput = row.querySelector('.odenen-tutar-input');
-      const kalanTutarInput = row.querySelector('.kalan-tutar-input');
-            const kalanTutarTarihInput = row.querySelector('.kalan-tutar-tarih-input');
-
-    if (envanterSelect) {
- envanterSelect.addEventListener('change', function() {
-    const selectedOption = this.options[this.selectedIndex];
-      const satisFiyat = parseFloat(selectedOption.getAttribute('data-satis-fiyat')) || 0;
-
-    // Otomatik olarak satýþ fiyatýný ödenen tutar alanýna yerleþtir
-       if (odenenTutarInput) {
-  odenenTutarInput.value = satisFiyat.toFixed(2);
-         hesaplaKalanTutar(row);
-        }
-         });
-      }
-
-   if (odenenTutarInput) {
-  odenenTutarInput.addEventListener('input', function() {
-      hesaplaKalanTutar(row);
-     });
-       }
-       }
-
-  // Kalan tutarý hesapla
-  function hesaplaKalanTutar(row) {
-  const envanterSelect = row.querySelector('.envanter-select');
-   const odenenTutarInput = row.querySelector('.odenen-tutar-input');
-      const kalanTutarInput = row.querySelector('.kalan-tutar-input');
-  const kalanTutarTarihInput = row.querySelector('.kalan-tutar-tarih-input');
-
-     if (!envanterSelect || !odenenTutarInput || !kalanTutarInput) return;
-
-     const selectedOption = envanterSelect.options[envanterSelect.selectedIndex];
-      const satisFiyat = parseFloat(selectedOption.getAttribute('data-satis-fiyat')) || 0;
-        const odenenTutar = parseFloat(odenenTutarInput.value) || 0;
-
- const kalanTutar = Math.max(0, satisFiyat - odenenTutar);
-    kalanTutarInput.value = kalanTutar.toFixed(2);
-
-          // Kalan tutar varsa tarihi aktif et, yoksa temizle
-     if (kalanTutarTarihInput) {
-       if (kalanTutar > 0) {
-  kalanTutarTarihInput.removeAttribute('disabled');
-      kalanTutarTarihInput.style.backgroundColor = '';
-        } else {
-  kalanTutarTarihInput.value = '';
-         kalanTutarTarihInput.setAttribute('disabled', 'disabled');
- kalanTutarTarihInput.style.backgroundColor = '#e9ecef';
- }
-      }
-            }
-
-     // Sil butonlarýný güncelle
-      function guncelSilButonlari() {
-        document.querySelectorAll('.sil-btn').forEach(btn => {
-       btn.removeEventListener('click', silHandler);
-          btn.addEventListener('click', silHandler);
-  });
-      }
-
-  function silHandler(e) {
-     const row = e.target.closest('tr');
-  if (row && confirm('Bu satýrý kaldýrmak istediðinizden emin misiniz?')) {
-         row.remove();
-      // Index'leri yeniden düzenle
-    yenidenIndexle();
-     }
- }
-
-      // Satýr index'lerini yeniden düzenle
-   function yenidenIndexle() {
-         const rows = tbody.querySelectorAll('tr');
-  rows.forEach((row, index) => {
-  row.querySelectorAll('[name]').forEach(input => {
-         const name = input.getAttribute('name');
-      if (name) {
-   const newName = name.replace(/\[\d+\]/, `[${index}]`);
-   input.setAttribute('name', newName);
-           }
-        });
-        // data-index özelliðini güncelle
-   row.querySelectorAll('[data-index]').forEach(element => {
-            element.setAttribute('data-index', index);
-        });
-      });
-  envanterIndex = rows.length;
-}
-        });
-  </script>
+     applyPhoneMask(veli2TelefonInput);
+    </script>
 }

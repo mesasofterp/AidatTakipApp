@@ -46,6 +46,13 @@ namespace StudentApp.Models
         [Display(Name = "Okul Çıkış Saati")]
         [DataType(DataType.Time)]
         public TimeSpan? OkulCikisSaati { get; set; }
+        [StringLength(200, ErrorMessage = "Veli Ad Soyad 200 karakterden fazla olamaz")]
+        [Display(Name = "Veli Ad Soyad")]
+        public string? Veli2AdSoyad { get; set; }
+
+        [StringLength(20, ErrorMessage = "Veli Telefon Numarası 20 karakterden fazla olamaz")]
+        [Display(Name = "Veli Telefon Numarası")]
+        public string? Veli2TelefonNumarasi { get; set; }
 
         [ValidateNever]
         public Ogrenciler Ogrenci { get; set; }
