@@ -5,7 +5,7 @@
 namespace StudentApp.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateSeanslarWithGunRelationship : Migration
+    public partial class erol2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

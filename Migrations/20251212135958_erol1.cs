@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace StudentApp.Migrations
 {
     /// <inheritdoc />
-    public partial class erol : Migration
+    public partial class erol1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -115,6 +115,27 @@ namespace StudentApp.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_OdemePlanlari", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Seanslar",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SeansAdi = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    SeansBaslangicSaati = table.Column<TimeSpan>(type: "time", nullable: false),
+                    SeansBitisSaati = table.Column<TimeSpan>(type: "time", nullable: false),
+                    SeansKapasitesi = table.Column<int>(type: "int", nullable: true),
+                    SeansMevcudu = table.Column<int>(type: "int", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    Aktif = table.Column<bool>(type: "bit", nullable: false),
+                    Version = table.Column<int>(type: "int", nullable: false),
+                    Aciklama = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Seanslar", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -248,34 +269,6 @@ namespace StudentApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Seanslar",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SeansAdi = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    SeansBaslangicSaati = table.Column<TimeSpan>(type: "time", nullable: false),
-                    SeansBitisSaati = table.Column<TimeSpan>(type: "time", nullable: false),
-                    SeansKapasitesi = table.Column<int>(type: "int", nullable: true),
-                    SeansMevcudu = table.Column<int>(type: "int", nullable: true),
-                    GunId = table.Column<long>(type: "bigint", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    Aktif = table.Column<bool>(type: "bit", nullable: false),
-                    Version = table.Column<int>(type: "int", nullable: false),
-                    Aciklama = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Seanslar", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Seanslar_Gunler_GunId",
-                        column: x => x.GunId,
-                        principalTable: "Gunler",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Ogrenciler",
                 columns: table => new
                 {
@@ -323,6 +316,36 @@ namespace StudentApp.Migrations
                         principalTable: "Seanslar",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SeansGunler",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    GunId = table.Column<long>(type: "bigint", nullable: false),
+                    SeansId = table.Column<long>(type: "bigint", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    Aktif = table.Column<bool>(type: "bit", nullable: false),
+                    Version = table.Column<int>(type: "int", nullable: false),
+                    Aciklama = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SeansGunler", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SeansGunler_Gunler",
+                        column: x => x.GunId,
+                        principalTable: "Gunler",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_SeansGunler_Seanslar",
+                        column: x => x.SeansId,
+                        principalTable: "Seanslar",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -572,9 +595,15 @@ namespace StudentApp.Migrations
                 column: "OgrenciId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Seanslar_GunId",
-                table: "Seanslar",
+                name: "IX_SeansGunler_GunId",
+                table: "SeansGunler",
                 column: "GunId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SeansGunler_SeansId_GunId",
+                table: "SeansGunler",
+                columns: new[] { "SeansId", "GunId" },
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -608,6 +637,9 @@ namespace StudentApp.Migrations
                 name: "OgrenciOdemeTakvimi");
 
             migrationBuilder.DropTable(
+                name: "SeansGunler");
+
+            migrationBuilder.DropTable(
                 name: "ZamanlayiciAyarlar");
 
             migrationBuilder.DropTable(
@@ -623,6 +655,9 @@ namespace StudentApp.Migrations
                 name: "Envanterler");
 
             migrationBuilder.DropTable(
+                name: "Gunler");
+
+            migrationBuilder.DropTable(
                 name: "Ogrenciler");
 
             migrationBuilder.DropTable(
@@ -633,9 +668,6 @@ namespace StudentApp.Migrations
 
             migrationBuilder.DropTable(
                 name: "Seanslar");
-
-            migrationBuilder.DropTable(
-                name: "Gunler");
         }
     }
 }
