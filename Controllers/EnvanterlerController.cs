@@ -118,7 +118,7 @@ namespace StudentApp.Controllers
                 try
                 {
                     await _envanterlerService.CreateAsync(envanter);
-                    TempData["SuccessMessage"] = "Envanter ba�ar�yla olu�turuldu.";
+                    TempData["SuccessMessage"] = "Envanter başarıyla olu�turuldu.";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
@@ -153,7 +153,7 @@ namespace StudentApp.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Envanter d�zenleme sayfas� y�klenirken hata olu�tu. ID: {Id}", id);
+                _logger.LogError(ex, "Envanter düzenleme sayfası yüklenirken hata oluştu. ID: {Id}", id);
                 TempData["ErrorMessage"] = "Envanter y�klenirken bir hata olu�tu.";
                 return RedirectToAction(nameof(Index));
             }
@@ -175,7 +175,7 @@ namespace StudentApp.Controllers
                 try
                 {
                     await _envanterlerService.UpdateAsync(envanter);
-                    TempData["SuccessMessage"] = "Envanter ba�ar�yla g�ncellendi.";
+                    TempData["SuccessMessage"] = "Envanter başarıyla güncellendi.";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException)
@@ -214,7 +214,7 @@ namespace StudentApp.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Envanter silme sayfas� y�klenirken hata olu�tu. ID: {Id}", id);
+                _logger.LogError(ex, "Envanter silme sayfası yüklenirken hata oluştu. ID: {Id}", id);
                 TempData["ErrorMessage"] = "Envanter y�klenirken bir hata olu�tu.";
                 return RedirectToAction(nameof(Index));
             }
@@ -232,7 +232,7 @@ namespace StudentApp.Controllers
 
                 if (result)
                 {
-                    TempData["SuccessMessage"] = "Envanter ba�ar�yla silindi.";
+                    TempData["SuccessMessage"] = "Envanter başarıyla silindi.";
                 }
                 else
                 {
