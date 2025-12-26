@@ -189,72 +189,41 @@ if (taksit.TaksitNo.HasValue)
 
   public async Task<decimal> GetKalanBorcAsync(long ogrenciId)
     {
-        // En son taksitteki kalan borcu al (TaksitNo'ya göre sýralý, en büyük numara)
-     var sonTaksit = await _context.OgrenciOdemeTakvimi
-   .Where(o => o.OgrenciId == ogrenciId && !o.IsDeleted)
-            .OrderByDescending(o => o.TaksitNo ?? 0)
-      .ThenByDescending(o => o.Id)
-       .FirstOrDefaultAsync();
-
-        if (sonTaksit == null)
- return 0;
-
-  // Eðer son taksit ödendiyse, kalan borç bu taksitin BorcTutari - OdenenTutar
-    if (sonTaksit.Odendi)
-      {
-     return Math.Max(0, sonTaksit.BorcTutari - sonTaksit.OdenenTutar);
- }
-
-    // Eðer son taksit ödenmemiþse, bu taksitin BorcTutari'yi döndür
-        return sonTaksit.BorcTutari;
+      // Öðrencinin ödenmemiþ taksitlerinin toplamýný hesapla
+        return await _context.OgrenciOdemeTakvimi
+   .Where(o => o.OgrenciId == ogrenciId && !o.IsDeleted && !o.Odendi && o.TaksitTutari.HasValue)
+     .SumAsync(o => o.TaksitTutari.Value);
     }
 
     public async Task<decimal> GetToplamKalanBorcAsync()
     {
-     // Aktif öðrencileri getir
-        var ogrencilerWithData = await _context.Ogrenciler
-            .Where(o => !o.IsDeleted && o.Aktif)
-     .Select(o => o.Id)
-            .ToListAsync();
-
-        decimal toplamBorc = 0;
-
-        foreach (var ogrenciId in ogrencilerWithData)
-        {
-            // Öðrencinin tüm ödenmemiþ taksitlerinin taksit tutarlarýný topla
-    var odenmemisTaksitlerToplamý = await _context.OgrenciOdemeTakvimi
-            .Where(o => o.OgrenciId == ogrenciId && 
-        !o.IsDeleted && 
-       !o.Odendi)  // Ödenmemiþ taksitler
- .SumAsync(o => o.TaksitTutari ?? 0);
-
-            toplamBorc += odenmemisTaksitlerToplamý;
-}
-
-        return toplamBorc;
+        // Aktif öðrencilerin tüm ödenmemiþ taksitlerinin toplamý
+        return await _context.OgrenciOdemeTakvimi
+  .Include(o => o.Ogrenci)
+         .Where(o => !o.IsDeleted && 
+          !o.Odendi && 
+                o.TaksitTutari.HasValue &&
+           o.Ogrenci != null && 
+       !o.Ogrenci.IsDeleted && 
+o.Ogrenci.Aktif)
+       .SumAsync(o => o.TaksitTutari.Value);
     }
 
     /// <summary>
     /// Öðrencinin tüm ödeme kayýtlarý için kalan borcu kronolojik sýrayla yeniden hesaplar
+ /// BorcTutari = Öðrencinin ödenmemiþ tüm taksitlerinin tutarlarýnýn toplamý
     /// </summary>
     public async Task RecalculateKalanBorcForOgrenciAsync(long ogrenciId)
     {
         // Öðrenciyi ve ödeme planýný getir
-        var ogrenci = await _context.Ogrenciler
-            .Include(o => o.OdemePlanlari)
+  var ogrenci = await _context.Ogrenciler
+     .Include(o => o.OdemePlanlari)
    .FirstOrDefaultAsync(o => o.Id == ogrenciId && !o.IsDeleted);
 
       if (ogrenci == null)
-            return;
+       return;
 
- // Baþlangýç borcu = Toplam Tutar (ödeme planýndan)
-  decimal baslangicBorc = 0;
-        if (ogrenci.OdemePlanlari != null && !ogrenci.OdemePlanlari.IsDeleted)
-   {
-       baslangicBorc = ogrenci.OdemePlanlari.ToplamTutar;
-   }
-
-        // Tüm taksitleri TaksitNo'ya göre sýrala (ödeme tarihi deðil, taksit sýrasýna göre)
+ // Tüm taksitleri TaksitNo'ya göre sýrala (ödeme tarihi deðil, taksit sýrasýna göre)
         var taksitler = await _context.OgrenciOdemeTakvimi
       .Where(o => o.OgrenciId == ogrenciId && !o.IsDeleted)
       .OrderBy(o => o.TaksitNo ?? 0)
@@ -265,23 +234,19 @@ if (taksit.TaksitNo.HasValue)
  if (!taksitler.Any())
  return;
 
-        decimal kalanBorc = baslangicBorc;
+        // Ödenmemiþ taksitlerin toplam tutarýný hesapla
+      decimal odenmemisTaksitlerToplami = taksitler
+  .Where(t => !t.Odendi && t.TaksitTutari.HasValue)
+            .Sum(t => t.TaksitTutari.Value);
 
- // Her taksiti sýrayla iþle
+  // Her taksit için kalan borç = Ödenmemiþ taksitlerin toplamý
         foreach (var taksit in taksitler)
         {
-    // Bu taksitten ÖNCE kalan borç
-       taksit.BorcTutari = kalanBorc;
-   
-      // Bu taksit ödendiyse, borcdan düþ
-   if (taksit.Odendi && taksit.OdenenTutar > 0)
-     {
-    kalanBorc = Math.Max(0, kalanBorc - taksit.OdenenTutar);
-            }
-     }
+      taksit.BorcTutari = odenmemisTaksitlerToplami;
+  }
 
         // Deðiþiklikleri kaydet
-   await _context.SaveChangesAsync();
+await _context.SaveChangesAsync();
     }
 
         /// <summary>

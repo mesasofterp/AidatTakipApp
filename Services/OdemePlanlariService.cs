@@ -134,48 +134,38 @@ namespace StudentApp.Services
 
       /// <summary>
         /// Öðrencinin tüm ödeme kayýtlarý için kalan borcu kronolojik sýrayla yeniden hesaplar
-   /// </summary>
+   /// BorcTutari = Öðrencinin ödenmemiþ tüm taksitlerinin tutarlarýnýn toplamý
+        /// </summary>
         private async Task RecalculateKalanBorcForOgrenciAsync(long ogrenciId)
-        {
-            // Öðrenciyi ve ödeme planýný getir
+  {
+      // Öðrenciyi ve ödeme planýný getir
           var ogrenci = await _context.Ogrenciler
   .Include(o => o.OdemePlanlari)
      .FirstOrDefaultAsync(o => o.Id == ogrenciId && !o.IsDeleted);
 
-      if (ogrenci == null)
+   if (ogrenci == null)
         return;
-
- // Baþlangýç borcu = Toplam Tutar (ödeme planýndan)
-         decimal baslangicBorc = 0;
-       if (ogrenci.OdemePlanlari != null && !ogrenci.OdemePlanlari.IsDeleted)
-    {
-                baslangicBorc = ogrenci.OdemePlanlari.ToplamTutar;
-         }
 
  // Tüm taksitleri TaksitNo'ya göre sýrala
     var taksitler = await _context.OgrenciOdemeTakvimi
  .Where(o => o.OgrenciId == ogrenciId && !o.IsDeleted)
       .OrderBy(o => o.TaksitNo ?? 0)
    .ThenBy(o => o.Id)
-            .ToListAsync();
+       .ToListAsync();
 
      // Eðer hiç taksit yoksa, iþlem yapma
-     if (!taksitler.Any())
-                return;
+ if (!taksitler.Any())
+         return;
 
-decimal kalanBorc = baslangicBorc;
+        // Ödenmemiþ taksitlerin toplam tutarýný hesapla
+      decimal odenmemisTaksitlerToplami = taksitler
+                .Where(t => !t.Odendi && t.TaksitTutari.HasValue)
+ .Sum(t => t.TaksitTutari.Value);
 
-          // Her taksiti sýrayla iþle
- foreach (var taksit in taksitler)
-  {
-      // Bu taksitte ÖNCE kalan borç
-    taksit.BorcTutari = kalanBorc;
-
-        // Sadece ödenen taksitler için borcu düþ
-       if (taksit.Odendi && taksit.OdenenTutar > 0)
+        // Her taksit için kalan borç = Ödenmemiþ taksitlerin toplamý
+     foreach (var taksit in taksitler)
      {
-   kalanBorc = Math.Max(0, kalanBorc - taksit.OdenenTutar);
-       }
+   taksit.BorcTutari = odenmemisTaksitlerToplami;
     }
 
  // Deðiþiklikleri kaydet

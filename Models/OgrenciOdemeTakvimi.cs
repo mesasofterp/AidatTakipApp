@@ -36,9 +36,9 @@ namespace StudentApp.Models
 
         [Required(ErrorMessage = "Borç tutarı zorunludur")]
         [Range(0, double.MaxValue, ErrorMessage = "Borç tutarı negatif olamaz")]
-    [Display(Name = "Kalan Borç")]
-        [DisplayFormat(DataFormatString = "{0:C2}", ApplyFormatInEditMode = false)]
-        public decimal BorcTutari { get; set; }
+    [Display(Name = "Toplam Kalan Borç")]
+    [DisplayFormat(DataFormatString = "{0:C2}", ApplyFormatInEditMode = false)]
+      public decimal BorcTutari { get; set; }
 
         [Display(Name = "Taksit Numarası")]
   public int? TaksitNo { get; set; }
