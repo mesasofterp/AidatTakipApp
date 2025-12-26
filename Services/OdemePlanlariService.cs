@@ -168,23 +168,18 @@ decimal kalanBorc = baslangicBorc;
           // Her taksiti sýrayla iþle
  foreach (var taksit in taksitler)
   {
-      // Bu taksitten ÖNCE kalan borç
-          taksit.BorcTutari = kalanBorc;
+      // Bu taksitte ÖNCE kalan borç
+    taksit.BorcTutari = kalanBorc;
 
-        // Bu taksit ödendiyse, borcdan düþ
+        // Sadece ödenen taksitler için borcu düþ
        if (taksit.Odendi && taksit.OdenenTutar > 0)
      {
-       kalanBorc = Math.Max(0, kalanBorc - taksit.OdenenTutar);
-             }
-   else if (!taksit.Odendi && taksit.TaksitTutari.HasValue)
-        {
-            // Ödenmemiþse, taksit tutarýný borcdan düþ (gelecek borç hesabý için)
-     kalanBorc = Math.Max(0, kalanBorc - taksit.TaksitTutari.Value);
+   kalanBorc = Math.Max(0, kalanBorc - taksit.OdenenTutar);
        }
     }
 
  // Deðiþiklikleri kaydet
-            await _context.SaveChangesAsync();
+      await _context.SaveChangesAsync();
 }
 
     public async Task<bool> DeleteOdemePlaniAsync(long id)
