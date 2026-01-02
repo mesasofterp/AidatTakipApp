@@ -131,68 +131,117 @@ public async Task<OgrenciUyelikDondurma?> UpdateAsync(OgrenciUyelikDondurma dond
         public async Task<bool> IptalEtAsync(long id, string kullaniciAdi, string iptalNedeni)
         {
          var dondurma = await _context.OgrenciUyelikDondurma
-       .FirstOrDefaultAsync(d => d.Id == id && !d.IsDeleted);
+      .FirstOrDefaultAsync(d => d.Id == id && !d.IsDeleted);
 
-    if (dondurma == null)
-     return false;
+            if (dondurma == null)
+        return false;
 
-     dondurma.Status = DondurmaStatusEnum.IptalEdildi;
-  dondurma.IptalTarihi = DateTime.Now;
-          dondurma.IptalEdenKullanici = kullaniciAdi;
-         dondurma.IptalNedeni = iptalNedeni;
-     dondurma.Version++;
+         // Dondurma iptal edildiðinde, ödeme tarihleri ayarlandýysa geri al
+            if (dondurma.OdemeTarihleriAyarlandi && dondurma.Status == DondurmaStatusEnum.Aktif)
+            {
+        await OdemeTarihleriniGeriAlAsync(id);
+   }
 
-         await _context.SaveChangesAsync();
+      dondurma.Status = DondurmaStatusEnum.IptalEdildi;
+            dondurma.IptalTarihi = DateTime.Now;
+    dondurma.IptalEdenKullanici = kullaniciAdi;
+            dondurma.IptalNedeni = iptalNedeni;
+  dondurma.Version++;
 
-      _logger.LogInformation("Üyelik dondurma iptal edildi. ID: {Id}, Ýptal Eden: {Kullanici}", id, kullaniciAdi);
+     await _context.SaveChangesAsync();
 
-          return true;
+    _logger.LogInformation("Üyelik dondurma iptal edildi. ID: {Id}, Ýptal Eden: {Kullanici}", id, kullaniciAdi);
+
+            return true;
+        }
+
+      /// <summary>
+        /// Dondurma iptal edildiðinde ödeme tarihlerini geri alýr
+     /// </summary>
+ private async Task<bool> OdemeTarihleriniGeriAlAsync(long dondurmaId)
+ {
+   var dondurma = await _context.OgrenciUyelikDondurma
+       .FirstOrDefaultAsync(d => d.Id == dondurmaId && !d.IsDeleted);
+
+     if (dondurma == null || !dondurma.OdemeTarihleriAyarlandi)
+         return false;
+
+         // Ödenmemiþ taksitleri getir
+var odenmemisTaksitler = await _context.OgrenciOdemeTakvimi
+ .Where(t => t.OgrenciId == dondurma.OgrenciId && 
+     !t.Odendi && 
+ !t.IsDeleted &&
+   t.SonOdemeTarihi.HasValue)
+    .OrderBy(t => t.TaksitNo)
+ .ToListAsync();
+
+       if (!odenmemisTaksitler.Any())
+          {
+       _logger.LogInformation("Öðrencinin ödenmemiþ taksiti yok. Öðrenci ID: {OgrenciId}", dondurma.OgrenciId);
+ return true;
   }
 
+   int kaydirilanGunSayisi = dondurma.KaydirilanGunSayisi;
+
+      // Her ödenmemiþ taksitin son ödeme tarihini geri al (negatif kaydýrma)
+    foreach (var taksit in odenmemisTaksitler)
+  {
+     taksit.SonOdemeTarihi = taksit.SonOdemeTarihi.Value.AddDays(-kaydirilanGunSayisi);
+    taksit.Version++;
+    }
+
+            await _context.SaveChangesAsync();
+
+         _logger.LogInformation("Dondurma iptal edildi. Öðrencinin {TaksitSayisi} adet taksit tarihi {GunSayisi} gün geri alýndý. Öðrenci ID: {OgrenciId}",
+       odenmemisTaksitler.Count, kaydirilanGunSayisi, dondurma.OgrenciId);
+
+         return true;
+   }
+
         /// <summary>
- /// Öðrencinin ödenmemiþ taksitlerinin son ödeme tarihlerini dondurma süresince kaydýrýr
-        /// </summary>
+        /// Öðrencinin ödenmemiþ taksitlerinin son ödeme tarihlerini dondurma süresince kaydýrýr
+  /// </summary>
         public async Task<bool> OdemeTarihleriniAyarlaAsync(long dondurmaId)
-{
-        var dondurma = await _context.OgrenciUyelikDondurma
-               .FirstOrDefaultAsync(d => d.Id == dondurmaId && !d.IsDeleted);
+  {
+      var dondurma = await _context.OgrenciUyelikDondurma
+       .FirstOrDefaultAsync(d => d.Id == dondurmaId && !d.IsDeleted);
 
-      if (dondurma == null)
-           return false;
+ if (dondurma == null)
+      return false;
 
-       // Ödenmemiþ taksitleri getir
-       var odenmemisTaksitler = await _context.OgrenciOdemeTakvimi
-   .Where(t => t.OgrenciId == dondurma.OgrenciId && 
-     !t.Odendi && 
-     !t.IsDeleted &&
-     t.SonOdemeTarihi.HasValue)
-        .OrderBy(t => t.TaksitNo)
-     .ToListAsync();
+            // Ödenmemiþ taksitleri getir
+            var odenmemisTaksitler = await _context.OgrenciOdemeTakvimi
+              .Where(t => t.OgrenciId == dondurma.OgrenciId &&
+   !t.Odendi &&
+           !t.IsDeleted &&
+         t.SonOdemeTarihi.HasValue)
+            .OrderBy(t => t.TaksitNo)
+            .ToListAsync();
 
-          if (!odenmemisTaksitler.Any())
-      {
-_logger.LogInformation("Öðrencinin ödenmemiþ taksiti yok. Öðrenci ID: {OgrenciId}", dondurma.OgrenciId);
-           dondurma.OdemeTarihleriAyarlandi = true;
-     await _context.SaveChangesAsync();
-      return true;
-          }
+if (!odenmemisTaksitler.Any())
+            {
+   _logger.LogInformation("Öðrencinin ödenmemiþ taksiti yok. Öðrenci ID: {OgrenciId}", dondurma.OgrenciId);
+          dondurma.OdemeTarihleriAyarlandi = true;
+ await _context.SaveChangesAsync();
+        return true;
+ }
 
         int kaydirilanGunSayisi = dondurma.KaydirilanGunSayisi;
 
-      // Her ödenmemiþ taksitin son ödeme tarihini kaydýr
+         // Her ödenmemiþ taksitin son ödeme tarihini kaydýr
           foreach (var taksit in odenmemisTaksitler)
-    {
-      taksit.SonOdemeTarihi = taksit.SonOdemeTarihi.Value.AddDays(kaydirilanGunSayisi);
-   taksit.Version++;
-            }
+         {
+     taksit.SonOdemeTarihi = taksit.SonOdemeTarihi.Value.AddDays(kaydirilanGunSayisi);
+    taksit.Version++;
+        }
 
-        dondurma.OdemeTarihleriAyarlandi = true;
-       await _context.SaveChangesAsync();
+            dondurma.OdemeTarihleriAyarlandi = true;
+ await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Öðrencinin {TaksitSayisi} adet taksit tarihi {GunSayisi} gün kaydýrýldý. Öðrenci ID: {OgrenciId}",
-    odenmemisTaksitler.Count, kaydirilanGunSayisi, dondurma.OgrenciId);
+          _logger.LogInformation("Öðrencinin {TaksitSayisi} adet taksit tarihi {GunSayisi} gün kaydýrýldý. Öðrenci ID: {OgrenciId}",
+                odenmemisTaksitler.Count, kaydirilanGunSayisi, dondurma.OgrenciId);
 
-   return true;
+     return true;
         }
     }
 }
