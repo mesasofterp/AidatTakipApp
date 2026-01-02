@@ -128,25 +128,28 @@
             @if (User?.Identity?.IsAuthenticated == true)
             {
                 <!-- Öğrenci Yönetimi -->
-                <button class="accordion @(IsActive("Ogrenciler") ? "active" : "")">
+                <button class="accordion @(IsActive("Ogrenciler") || IsActive("OgrenciUyelikYenileme") ? "active" : "")">
                     <i class="fas fa-users me-2"></i> Öğrenci Yönetimi
                     <i class="fas fa-chevron-down ms-auto toggle-icon"></i>
                 </button>
-                <div class="panel @(IsActive("Ogrenciler") ? "active" : "")">
+                <div class="panel @(IsActive("Ogrenciler") || IsActive("OgrenciUyelikYenileme") ? "active" : "")">
                     <a class="nav-link @(IsActive("Ogrenciler", "Index") ? "active" : "")" asp-controller="Ogrenciler" asp-action="Index">
                         <i class="fas fa-users me-2"></i>Öğrenciler
                     </a>
                     <a class="nav-link @(IsActive("Ogrenciler", "Create") ? "active" : "")" asp-controller="Ogrenciler" asp-action="Create">
                         <i class="fas fa-user-plus me-2"></i>Yeni Öğrenci
                     </a>
+                    <a class="nav-link @(IsActive("OgrenciUyelikYenileme") ? "active" : "")" asp-controller="OgrenciUyelikYenileme" asp-action="YenilenebilirOgrenciler">
+                        <i class="fas fa-sync-alt me-2"></i>Üyelik Yenileme
+                    </a>
                 </div>
 
                 <!-- Ödeme Yönetimi -->
-                <button class="accordion @(IsActive("OdemePlanlari") || IsActive("OgrenciOdemeTakvimi") || IsActive("OgrenciUyelikYenileme") ? "active" : "")">
+                <button class="accordion @(IsActive("OdemePlanlari") || IsActive("OgrenciOdemeTakvimi") ? "active" : "")">
                     <i class="fas fa-calendar-alt me-2"></i> Ödeme Yönetimi
                     <i class="fas fa-chevron-down ms-auto toggle-icon"></i>
                 </button>
-                <div class="panel @(IsActive("OdemePlanlari") || IsActive("OgrenciOdemeTakvimi") || IsActive("OgrenciUyelikYenileme") ? "active" : "")">
+                <div class="panel @(IsActive("OdemePlanlari") || IsActive("OgrenciOdemeTakvimi") ? "active" : "")">
                     <a class="nav-link @(IsActive("OdemePlanlari", "Index") ? "active" : "")" asp-controller="OdemePlanlari" asp-action="Index">
                         <i class="fas fa-calendar-alt me-2"></i>Ödeme Planları
                     </a>
@@ -155,9 +158,6 @@
                     </a>
                     <a class="nav-link @(IsActive("OgrenciOdemeTakvimi") ? "active" : "")" asp-controller="OgrenciOdemeTakvimi" asp-action="Index">
                         <i class="fas fa-money-check-alt me-2"></i>Ödeme Takvimleri
-                    </a>
-                    <a class="nav-link @(IsActive("OgrenciUyelikYenileme") ? "active" : "")" asp-controller="OgrenciUyelikYenileme" asp-action="YenilenebilirOgrenciler">
-                        <i class="fas fa-sync-alt me-2"></i>Üyelik Yenileme
                     </a>
                 </div>
 
