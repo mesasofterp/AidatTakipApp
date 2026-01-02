@@ -1,0 +1,135 @@
+@model StudentApp.Models.OgrenciUyelikDondurma
+
+@{
+    ViewData["Title"] = "Üyelik Dondurma";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+<h4><i class="fas fa-pause-circle me-2"></i>Yeni Üyelik Dondurma</h4>
+    </div>
+   <div class="card-body">
+              <div class="alert alert-info">
+          <i class="fas fa-info-circle me-2"></i>
+       <strong>Öðrenci:</strong> @ViewBag.OgrenciAdi
+</div>
+
+     <div class="alert alert-warning">
+   <i class="fas fa-exclamation-triangle me-2"></i>
+         <strong>Önemli:</strong> Üyelik dondurulduðunda, öðrencinin tüm ödenmemiþ taksitlerinin 
+     son ödeme tarihleri otomatik olarak dondurma süresi kadar ileri kaydýrýlacaktýr.
+           </div>
+
+         <form asp-action="Create" method="post">
+   @Html.AntiForgeryToken()
+        <input asp-for="OgrenciId" type="hidden" />
+ 
+          <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+        <div class="mb-3">
+              <label asp-for="BaslangicTarihi" class="form-label"></label>
+    <input asp-for="BaslangicTarihi" type="date" class="form-control" id="baslangicTarihi" />
+       <span asp-validation-for="BaslangicTarihi" class="text-danger"></span>
+           </div>
+
+       <div class="mb-3">
+ <label asp-for="BitisTarihi" class="form-label"></label>
+        <input asp-for="BitisTarihi" type="date" class="form-control" id="bitisTarihi" />
+       <span asp-validation-for="BitisTarihi" class="text-danger"></span>
+        </div>
+
+         <div class="alert alert-secondary" id="sureHesap" style="display: none;">
+   <h6><i class="fas fa-calculator me-1"></i>Dondurma Süresi</h6>
+    <p class="mb-0"><strong>Toplam Gün:</strong> <span id="toplamGun">0</span> gün</p>
+       <small class="text-muted">Ödeme tarihleri bu kadar gün ileri kaydýrýlacak</small>
+     </div>
+
+       <div class="mb-3">
+         <label asp-for="Sebep" class="form-label"></label>
+              <select asp-for="Sebep" class="form-select" id="sebepSelect">
+              <option value="">-- Sebep Seçiniz --</option>
+<option value="Hastalýk">Hastalýk</option>
+     <option value="Memleket">Memleket / Tatil</option>
+ <option value="Ýþ / Okul">Ýþ / Okul Yoðunluðu</option>
+  <option value="Sakatlýk">Sakatlýk / Yaralanma</option>
+   <option value="Ekonomik">Ekonomik Nedenler</option>
+     <option value="Diðer">Diðer</option>
+      </select>
+           <span asp-validation-for="Sebep" class="text-danger"></span>
+        </div>
+
+     <div class="mb-3">
+      <label asp-for="Aciklama" class="form-label"></label>
+      <textarea asp-for="Aciklama" class="form-control" rows="4" 
+   placeholder="Dondurma sebebi hakkýnda detaylý açýklama..."></textarea>
+   <span asp-validation-for="Aciklama" class="text-danger"></span>
+       <small class="form-text text-muted">Opsiyonel - Dondurma hakkýnda ek bilgiler</small>
+                </div>
+
+     <div class="d-flex justify-content-between mt-4">
+  <a asp-action="Index" asp-route-ogrenciId="@Model.OgrenciId" class="btn btn-secondary">
+      <i class="fas fa-arrow-left me-1"></i>Ýptal
+        </a>
+     <button type="submit" class="btn btn-warning">
+     <i class="fas fa-pause me-1"></i>Üyeliði Dondur
+           </button>
+        </div>
+                </form>
+            </div>
+      </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function hesaplaSure() {
+      var baslangic = document.getElementById('baslangicTarihi').value;
+            var bitis = document.getElementById('bitisTarihi').value;
+     
+         if (baslangic && bitis) {
+        var baslangicDate = new Date(baslangic);
+          var bitisDate = new Date(bitis);
+            
+    if (bitisDate > baslangicDate) {
+         var fark = Math.floor((bitisDate - baslangicDate) / (1000 * 60 * 60 * 24)) + 1;
+        document.getElementById('toplamGun').textContent = fark;
+          document.getElementById('sureHesap').style.display = 'block';
+    } else {
+document.getElementById('sureHesap').style.display = 'none';
+     }
+        } else {
+  document.getElementById('sureHesap').style.display = 'none';
+            }
+        }
+
+        document.getElementById('baslangicTarihi').addEventListener('change', hesaplaSure);
+        document.getElementById('bitisTarihi').addEventListener('change', hesaplaSure);
+
+   // Sayfa yüklendiðinde hesapla
+  window.addEventListener('DOMContentLoaded', hesaplaSure);
+
+        // Sebep seçildiðinde açýklama alanýna örnek metin ekle
+        document.getElementById('sebepSelect').addEventListener('change', function() {
+       var aciklama = document.querySelector('textarea[name="Aciklama"]');
+     var sebep = this.value;
+     
+         if (sebep && !aciklama.value) {
+  var ornekMetin = {
+   'Hastalýk': 'Öðrenci hastalýk nedeniyle',
+           'Memleket': 'Öðrenci memleket / tatil nedeniyle',
+   'Ýþ / Okul': 'Öðrenci iþ / okul yoðunluðu nedeniyle',
+         'Sakatlýk': 'Öðrenci sakatlýk / yaralanma nedeniyle',
+                'Ekonomik': 'Öðrenci ekonomik nedenlerle',
+         'Diðer': ''
+       };
+         
+                if (ornekMetin[sebep]) {
+aciklama.value = ornekMetin[sebep] + ' üyeliðini geçici olarak dondurmak istemiþtir.';
+       }
+        }
+        });
+    </script>
+}

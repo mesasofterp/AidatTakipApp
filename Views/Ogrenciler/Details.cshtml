@@ -468,6 +468,152 @@
                     </div>
                 }
 
+                <hr class="my-4" />
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">
+                        <i class="fas fa-pause-circle me-2"></i>Üyelik Dondurma
+                    </h5>
+                    <div>
+                        <a asp-controller="OgrenciUyelikDondurma" asp-action="Index" asp-route-ogrenciId="@Model.Id" class="btn btn-sm btn-info me-2">
+                            <i class="fas fa-list me-1"></i>Tüm Kayıtlar
+                        </a>
+                        <a asp-controller="OgrenciUyelikDondurma" asp-action="Create" asp-route-ogrenciId="@Model.Id" class="btn btn-sm btn-warning">
+                            <i class="fas fa-pause me-1"></i>Yeni Dondurma
+                        </a>
+                    </div>
+                </div>
+
+                @{
+                    // Controller'dan dondurma bilgilerini al (eklenmesi gerekecek)
+                    var aktifDondurma = ViewBag.AktifDondurma as StudentApp.Models.OgrenciUyelikDondurma;
+                    var dondurmaGecmisi = ViewBag.DondurmaGecmisi as List<StudentApp.Models.OgrenciUyelikDondurma> ?? new List<StudentApp.Models.OgrenciUyelikDondurma>();
+                }
+
+                @if (aktifDondurma != null)
+                {
+                    var kalanGun = (aktifDondurma.BitisTarihi - DateTime.Today).Days;
+                    var toplamGun = (aktifDondurma.BitisTarihi - aktifDondurma.BaslangicTarihi).Days + 1;
+                    var gecenGun = (DateTime.Today - aktifDondurma.BaslangicTarihi).Days;
+
+                    <div class="alert alert-warning border-warning">
+                        <div class="d-flex align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="alert-heading">
+                                    <i class="fas fa-pause-circle me-2"></i>
+                                    <strong>Üyelik Şu Anda Dondurulmuş Durumda</strong>
+                                </h6>
+                                <hr class="my-2" />
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p class="mb-2">
+                                            <i class="fas fa-calendar-alt me-1"></i>
+                                            <strong>Başlangıç:</strong> @aktifDondurma.BaslangicTarihi.ToString("dd.MM.yyyy")
+                                        </p>
+                                        <p class="mb-2">
+                                            <i class="fas fa-calendar-check me-1"></i>
+                                            <strong>Bitiş:</strong> @aktifDondurma.BitisTarihi.ToString("dd.MM.yyyy")
+                                        </p>
+                                        <p class="mb-2">
+                                            <i class="fas fa-hourglass-half me-1"></i>
+                                            <strong>Toplam Süre:</strong> <span class="badge bg-info">@toplamGun gün</span>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="mb-2">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            <strong>Sebep:</strong> @aktifDondurma.Sebep
+                                        </p>
+                                        @if (kalanGun > 0)
+                                        {
+                                            <p class="mb-2">
+                                                <i class="fas fa-clock me-1"></i>
+                                                <strong>Kalan Süre:</strong> <span class="badge bg-warning text-dark">@kalanGun gün</span>
+                                            </p>
+                                        }
+                                        else
+                                        {
+                                            <p class="mb-2">
+                                                <i class="fas fa-check-circle me-1 text-success"></i>
+                                                <strong>Dondurma süresi bugün sona eriyor</strong>
+                                            </p>
+                                        }
+                                        @if (aktifDondurma.OdemeTarihleriAyarlandi)
+                                        {
+                                            <p class="mb-0">
+                                                <i class="fas fa-calendar-check me-1 text-success"></i>
+                                                <strong>Ödeme Tarihleri:</strong> @aktifDondurma.KaydirilanGunSayisi gün kaydırıldı
+                                            </p>
+                                        }
+                                    </div>
+                                </div>
+                                @if (!string.IsNullOrWhiteSpace(aktifDondurma.Aciklama))
+                                {
+                                    <hr class="my-2" />
+                                    <p class="mb-0">
+                                        <i class="fas fa-comment me-1"></i>
+                                        <strong>Açıklama:</strong> @aktifDondurma.Aciklama
+                                    </p>
+                                }
+                            </div>
+                            <div class="ms-3">
+                                <a asp-controller="OgrenciUyelikDondurma" asp-action="Details" asp-route-id="@aktifDondurma.Id" class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye me-1"></i>Detay
+                                </a>
+                            </div>
+                        </div>
+
+                        @* İlerleme Çubuğu *@
+                        <div class="mt-3">
+                            @{
+                                var ilerleme = toplamGun > 0 ? (decimal)gecenGun / toplamGun * 100 : 0;
+                                if (ilerleme > 100) ilerleme = 100;
+                            }
+                            <div class="progress" style="height: 25px;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" style="width: @ilerleme.ToString("F0")%"
+                                     aria-valuenow="@ilerleme.ToString("F0")" aria-valuemin="0" aria-valuemax="100">
+                                    %@ilerleme.ToString("F0") tamamlandı (@gecenGun / @toplamGun gün)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    @if (dondurmaGecmisi.Any())
+                    {
+                        var sonDondurma = dondurmaGecmisi.First();
+                        <div class="card border-secondary mb-3">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">
+                                            <i class="fas fa-history me-2 text-secondary"></i>
+                                            Son Dondurma Kaydı
+                                        </h6>
+                                        <p class="mb-0 text-muted small">
+                                            @sonDondurma.BaslangicTarihi.ToString("dd.MM.yyyy") - @sonDondurma.BitisTarihi.ToString("dd.MM.yyyy")
+                                            (@sonDondurma.Sebep)
+                                            <span class="badge bg-@(sonDondurma.Status == StudentApp.Models.DondurmaStatusEnum.Tamamlandi ? "success" : sonDondurma.Status == StudentApp.Models.DondurmaStatusEnum.IptalEdildi ? "danger" : "secondary") ms-2">
+                                                @sonDondurma.Status.ToString()
+                                            </span>
+                                        </p>
+                                    </div>
+                                    <a asp-controller="OgrenciUyelikDondurma" asp-action="Index" asp-route-ogrenciId="@Model.Id" class="btn btn-sm btn-outline-secondary ms-3">
+                                        <i class="fas fa-list me-1"></i>Tüm Kayıtlar (@dondurmaGecmisi.Count)
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-light border">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Henüz üyelik dondurma kaydı bulunmamaktadır.
+                        </div>
+                    }
+                }
+
                 @if (envanterSatislari.Any())
                 {
                     <hr class="my-4" />

@@ -24,6 +24,7 @@ namespace StudentApp.Data
         public DbSet<Gunler> Gunler { get; set; }
         public DbSet<Seanslar> Seanslar { get; set; }
         public DbSet<SeansGunler> SeansGunler { get; set; }
+        public DbSet<OgrenciUyelikDondurma> OgrenciUyelikDondurma { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -36,13 +37,13 @@ namespace StudentApp.Data
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.OgrenciAdi).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.OgrenciSoyadi).IsRequired().HasMaxLength(50);
-                entity.Property(e => e.Email).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Email).HasMaxLength(100); // Email artýk opsiyonel
                 entity.Property(e => e.Telefon).HasMaxLength(20);
                 entity.Property(e => e.TCNO).HasMaxLength(11);
                 entity.Property(e => e.Adres).HasMaxLength(500);
                 entity.Property(e => e.Biyografi).HasColumnType("nvarchar(max)");
                 entity.Property(e => e.Kilo).HasColumnType("decimal(5,2)");
-                entity.HasIndex(e => e.Email).IsUnique();
+                // Unique index kaldýrýldý - email nullable olduðunda sorun çýkarabilir
 
                 // Foreign key relationships
                 entity.HasOne(e => e.Cinsiyet)
@@ -270,6 +271,28 @@ namespace StudentApp.Data
                     .HasConstraintName("FK_SeansGunler_Gunler");
             });
 
+            // Configure OgrenciUyelikDondurma entity
+            modelBuilder.Entity<OgrenciUyelikDondurma>(entity =>
+            {
+                entity.ToTable("OgrenciUyelikDondurma");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.BaslangicTarihi).IsRequired();
+                entity.Property(e => e.BitisTarihi).IsRequired();
+                entity.Property(e => e.Sebep).IsRequired().HasMaxLength(500);
+                entity.Property(e => e.Aciklama).HasMaxLength(2000);
+                entity.Property(e => e.Status).IsRequired();
+                entity.Property(e => e.OdemeTarihleriAyarlandi).IsRequired();
+                entity.Property(e => e.KaydirilanGunSayisi).IsRequired();
+                entity.Property(e => e.IptalTarihi);
+                entity.Property(e => e.IptalEdenKullanici).HasMaxLength(100);
+                entity.Property(e => e.IptalNedeni).HasMaxLength(500);
+
+                // Foreign key relationship
+                entity.HasOne(e => e.Ogrenci)
+                    .WithMany()
+                    .HasForeignKey(e => e.OgrenciId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
         }
     }
 }

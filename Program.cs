@@ -69,6 +69,7 @@ builder.Services.AddScoped<IEnvanterlerService, EnvanterlerService>();
 builder.Services.AddScoped<IPagePermissionService, PagePermissionService>();
 builder.Services.AddScoped<ISeanslarService, SeanslarService>();
 builder.Services.AddScoped<IGunlerService, GunlerService>();
+builder.Services.AddScoped<IOgrenciUyelikDondurmaService, OgrenciUyelikDondurmaService>();
 
 // Add Daily Task Service and SMS Service
 builder.Services.AddScoped<IGunlukZamanlayiciService, GunlukZamanlayiciService>();

@@ -17,11 +17,10 @@ namespace StudentApp.Models
         [Display(Name = "Soyad")]
         public string OgrenciSoyadi { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "E-posta alanı zorunludur")]
         [EmailAddress(ErrorMessage = "Geçersiz e-posta adresi")]
         [StringLength(100, ErrorMessage = "E-posta 100 karakterden fazla olamaz")]
         [Display(Name = "E-posta")]
-        public string Email { get; set; } = string.Empty;
+        public string? Email { get; set; }
 
         [RegularExpression(@"^(0)(\d{3})(\d{3})(\d{2})(\d{2})$", ErrorMessage = "Telefon numarası 0xxx xxx xx xx formatında olmalıdır (örn: 05301234567)")]
         [StringLength(11, MinimumLength = 11, ErrorMessage = "Telefon numarası 11 haneli olmalıdır")]

@@ -71,7 +71,7 @@ namespace StudentApp.Controllers
                     ogrenciler = ogrenciler.Where(o =>
                       o.OgrenciAdi.ToLower().Contains(searchTerm) ||
                             o.OgrenciSoyadi.ToLower().Contains(searchTerm) ||
-            o.Email.ToLower().Contains(searchTerm)
+      (o.Email != null && o.Email.ToLower().Contains(searchTerm))
                      );
                 }
 
@@ -363,39 +363,57 @@ namespace StudentApp.Controllers
         [PageAuthorize("Ogrenciler.Details")]
         public async Task<IActionResult> Details(long id)
         {
-            var ogrenci = await _context.Ogrenciler
+  var ogrenci = await _context.Ogrenciler
   .Include(s => s.Cinsiyet)
-       .Include(s => s.OdemePlanlari)
+     .Include(s => s.OdemePlanlari)
    .Include(s => s.OgrenciDetay)
      .Include(s => s.Seans)
-          .Where(s => !s.IsDeleted && s.Id == id)
+ .Where(s => !s.IsDeleted && s.Id == id)
      .FirstOrDefaultAsync();
 
           if (ogrenci == null)
       {
-                return NotFound();
-         }
+      return NotFound();
+   }
 
   // Öğrencinin başarılarını getir
-            var basarilar = await _context.OgrenciBasarilari
-                .Where(b => b.OgrenciId == id && !b.IsDeleted)
+    var basarilar = await _context.OgrenciBasarilari
+       .Where(b => b.OgrenciId == id && !b.IsDeleted)
                 .OrderByDescending(b => b.Tarih)
-                .ThenByDescending(b => b.Id)
-                .ToListAsync();
+ .ThenByDescending(b => b.Id)
+     .ToListAsync();
 
             ViewBag.Basarilar = basarilar;
 
-            // Öğrencinin envanter satışlarını getir
-            var envanterSatislari = await _context.OgrenciEnvanterSatis
-                .Include(e => e.Envanter)
-                .Where(e => e.OgrenciId == id && !e.IsDeleted)
-                .OrderByDescending(e => e.SatisTarihi)
-                .ToListAsync();
+      // Öğrencinin envanter satışlarını getir
+ var envanterSatislari = await _context.OgrenciEnvanterSatis
+      .Include(e => e.Envanter)
+            .Where(e => e.OgrenciId == id && !e.IsDeleted)
+     .OrderByDescending(e => e.SatisTarihi)
+            .ToListAsync();
 
             ViewBag.EnvanterSatislari = envanterSatislari;
             ViewBag.ToplamEnvanterHarcama = envanterSatislari.Sum(e => e.OdenenTutar);
 
-            return View(ogrenci);
+   // Öğrencinin üyelik dondurma bilgilerini getir
+var aktifDondurma = await _context.OgrenciUyelikDondurma
+       .Where(d => d.OgrenciId == id && 
+     d.Status == StudentApp.Models.DondurmaStatusEnum.Aktif && 
+              !d.IsDeleted)
+          .FirstOrDefaultAsync();
+
+       ViewBag.AktifDondurma = aktifDondurma;
+
+ // Son 5 dondurma kaydını getir
+      var dondurmaGecmisi = await _context.OgrenciUyelikDondurma
+       .Where(d => d.OgrenciId == id && !d.IsDeleted)
+  .OrderByDescending(d => d.BaslangicTarihi)
+ .Take(5)
+       .ToListAsync();
+
+    ViewBag.DondurmaGecmisi = dondurmaGecmisi;
+
+    return View(ogrenci);
         }
 
         // GET: Student/Edit/5

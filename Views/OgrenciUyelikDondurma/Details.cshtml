@@ -1,0 +1,155 @@
+@model StudentApp.Models.OgrenciUyelikDondurma
+
+@{
+    ViewData["Title"] = "Dondurma Detaylarý";
+    var sure = (Model.BitisTarihi - Model.BaslangicTarihi).Days + 1;
+    var durumClass = Model.Status switch
+    {
+        StudentApp.Models.DondurmaStatusEnum.Aktif => "warning",
+        StudentApp.Models.DondurmaStatusEnum.Tamamlandi => "success",
+        StudentApp.Models.DondurmaStatusEnum.IptalEdildi => "danger",
+   _ => "secondary"
+    };
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+  <div class="card">
+        <div class="card-header bg-@durumClass text-white">
+                <h4><i class="fas fa-pause-circle me-2"></i>Üyelik Dondurma Detaylarý</h4>
+    </div>
+   <div class="card-body">
+   @if (Model.Ogrenci != null)
+    {
+            <div class="alert alert-info">
+         <i class="fas fa-user me-2"></i>
+       <strong>Öðrenci:</strong> 
+  <a asp-controller="Ogrenciler" asp-action="Details" asp-route-id="@Model.OgrenciId">
+       @Model.Ogrenci.OgrenciAdi @Model.Ogrenci.OgrenciSoyadi
+     </a>
+   </div>
+        }
+
+            <dl class="row">
+    <dt class="col-sm-4">Durum</dt>
+     <dd class="col-sm-8">
+      <span class="badge bg-@durumClass fs-6">
+           @Model.Status.ToString()
+                </span>
+           </dd>
+
+            <dt class="col-sm-4">Baþlangýç Tarihi</dt>
+                 <dd class="col-sm-8">
+               <i class="fas fa-calendar me-1"></i>
+       @Model.BaslangicTarihi.ToString("dd MMMM yyyy, dddd")
+           </dd>
+
+    <dt class="col-sm-4">Bitiþ Tarihi</dt>
+     <dd class="col-sm-8">
+       <i class="fas fa-calendar me-1"></i>
+   @Model.BitisTarihi.ToString("dd MMMM yyyy, dddd")
+       </dd>
+
+                    <dt class="col-sm-4">Toplam Süre</dt>
+    <dd class="col-sm-8">
+  <span class="badge bg-info fs-6">@sure gün</span>
+             </dd>
+
+     <dt class="col-sm-4">Sebep</dt>
+        <dd class="col-sm-8">
+                <strong>@Model.Sebep</strong>
+         </dd>
+
+  @if (!string.IsNullOrWhiteSpace(Model.Aciklama))
+       {
+         <dt class="col-sm-4">Açýklama</dt>
+     <dd class="col-sm-8">
+         @Model.Aciklama
+       </dd>
+              }
+
+        <dt class="col-sm-4">Ödeme Tarihleri</dt>
+      <dd class="col-sm-8">
+    @if (Model.OdemeTarihleriAyarlandi)
+         {
+   <span class="badge bg-success">
+             <i class="fas fa-check-circle me-1"></i>Ayarlandý
+    </span>
+   <br/>
+        <small class="text-muted">Tüm taksit tarihleri @Model.KaydirilanGunSayisi gün ileri kaydýrýldý</small>
+   }
+         else
+         {
+     <span class="badge bg-secondary">
+<i class="fas fa-times-circle me-1"></i>Ayarlanmadý
+</span>
+   }
+      </dd>
+
+   @if (Model.Status == StudentApp.Models.DondurmaStatusEnum.IptalEdildi)
+   {
+   <dt class="col-sm-12"><hr /></dt>
+       <dt class="col-sm-12"><h5 class="text-danger">Ýptal Bilgileri</h5></dt>
+
+ <dt class="col-sm-4">Ýptal Tarihi</dt>
+      <dd class="col-sm-8">
+                @if (Model.IptalTarihi.HasValue)
+             {
+    <i class="fas fa-calendar me-1"></i>
+        @Model.IptalTarihi.Value.ToString("dd MMMM yyyy HH:mm")
+ }
+               </dd>
+
+<dt class="col-sm-4">Ýptal Eden</dt>
+   <dd class="col-sm-8">
+ @Model.IptalEdenKullanici
+     </dd>
+
+     @if (!string.IsNullOrWhiteSpace(Model.IptalNedeni))
+             {
+         <dt class="col-sm-4">Ýptal Nedeni</dt>
+          <dd class="col-sm-8">
+       @Model.IptalNedeni
+        </dd>
+  }
+         }
+
+        <dt class="col-sm-12"><hr /></dt>
+
+         <dt class="col-sm-4">Kayýt Durumu</dt>
+    <dd class="col-sm-8">
+      @if (Model.Aktif)
+  {
+      <span class="badge bg-success">
+          <i class="fas fa-check-circle me-1"></i>Aktif
+          </span>
+             }
+      else
+       {
+   <span class="badge bg-secondary">
+       <i class="fas fa-ban me-1"></i>Pasif
+             </span>
+    }
+          </dd>
+      </dl>
+
+  <div class="d-flex justify-content-between mt-4">
+   <a asp-action="Index" asp-route-ogrenciId="@Model.OgrenciId" class="btn btn-secondary">
+           <i class="fas fa-arrow-left me-1"></i>Geri
+                    </a>
+      <div>
+  @if (Model.Status == StudentApp.Models.DondurmaStatusEnum.Aktif)
+      {
+         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">
+       <i class="fas fa-edit me-1"></i>Düzenle
+     </a>
+            }
+        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+       <i class="fas fa-trash me-1"></i>Sil
+         </a>
+        </div>
+      </div>
+  </div>
+        </div>
+  </div>
+</div>

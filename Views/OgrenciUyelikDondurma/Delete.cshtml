@@ -1,0 +1,99 @@
+@model StudentApp.Models.OgrenciUyelikDondurma
+
+@{
+    ViewData["Title"] = "Dondurma Kaydýný Sil";
+    var sure = (Model.BitisTarihi - Model.BaslangicTarihi).Days + 1;
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+     <div class="card">
+      <div class="card-header bg-danger text-white">
+  <h4><i class="fas fa-exclamation-triangle me-2"></i>Dondurma Kaydýný Sil</h4>
+ </div>
+     <div class="card-body">
+           <div class="alert alert-danger" role="alert">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+         <strong>Uyarý!</strong> Bu dondurma kaydýný silmek istediðinizden emin misiniz?
+    </div>
+
+     @if (Model.Ogrenci != null)
+       {
+          <div class="alert alert-info">
+   <i class="fas fa-user me-2"></i>
+          <strong>Öðrenci:</strong> @Model.Ogrenci.OgrenciAdi @Model.Ogrenci.OgrenciSoyadi
+         </div>
+       }
+
+    <dl class="row">
+    <dt class="col-sm-4">Durum</dt>
+         <dd class="col-sm-8">
+  <span class="badge bg-@(Model.Status == StudentApp.Models.DondurmaStatusEnum.Aktif ? "warning" : "secondary") fs-6">
+      @Model.Status.ToString()
+    </span>
+         </dd>
+
+   <dt class="col-sm-4">Baþlangýç Tarihi</dt>
+   <dd class="col-sm-8">
+     <i class="fas fa-calendar me-1"></i>
+      @Model.BaslangicTarihi.ToString("dd.MM.yyyy")
+    </dd>
+
+     <dt class="col-sm-4">Bitiþ Tarihi</dt>
+       <dd class="col-sm-8">
+    <i class="fas fa-calendar me-1"></i>
+      @Model.BitisTarihi.ToString("dd.MM.yyyy")
+     </dd>
+
+    <dt class="col-sm-4">Toplam Süre</dt>
+     <dd class="col-sm-8">
+        <span class="badge bg-info">@sure gün</span>
+      </dd>
+
+        <dt class="col-sm-4">Sebep</dt>
+       <dd class="col-sm-8">
+       @Model.Sebep
+      </dd>
+
+  @if (!string.IsNullOrWhiteSpace(Model.Aciklama))
+       {
+        <dt class="col-sm-4">Açýklama</dt>
+      <dd class="col-sm-8">
+       @Model.Aciklama
+     </dd>
+       }
+
+     <dt class="col-sm-4">Ödeme Tarihleri</dt>
+       <dd class="col-sm-8">
+          @if (Model.OdemeTarihleriAyarlandi)
+        {
+  <span class="badge bg-success">Ayarlandý (@Model.KaydirilanGunSayisi gün)</span>
+      }
+  else
+     {
+       <span class="badge bg-secondary">Ayarlanmadý</span>
+   }
+      </dd>
+   </dl>
+
+     @if (Model.OdemeTarihleriAyarlandi)
+   {
+       <div class="alert alert-warning">
+      <i class="fas fa-info-circle me-2"></i>
+  <strong>Not:</strong> Bu dondurma silindiðinde, daha önce ayarlanmýþ ödeme tarihleri 
+     otomatik olarak eski haline DÖNMEYECEK. Gerekirse ödeme takvimini manuel olarak düzenlemeniz gerekebilir.
+  </div>
+        }
+
+      <form asp-action="Delete" method="post" class="d-flex justify-content-between">
+         <a asp-action="Index" asp-route-ogrenciId="@Model.OgrenciId" class="btn btn-secondary">
+ <i class="fas fa-arrow-left me-1"></i>Ýptal
+       </a>
+        <button type="submit" class="btn btn-danger">
+    <i class="fas fa-trash me-1"></i>Dondurma Kaydýný Sil
+       </button>
+  </form>
+    </div>
+        </div>
+    </div>
+</div>

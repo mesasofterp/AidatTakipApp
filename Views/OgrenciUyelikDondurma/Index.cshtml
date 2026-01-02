@@ -1,0 +1,212 @@
+@model IEnumerable<StudentApp.Models.OgrenciUyelikDondurma>
+
+@{
+    ViewData["Title"] = "Üyelik Dondurma Kayýtlarý";
+    var ogrenciAdi = ViewBag.OgrenciAdi as string;
+    var ogrenciId = ViewBag.OgrenciId as long?;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2><i class="fas fa-pause-circle me-2"></i>Üyelik Dondurma Kayýtlarý</h2>
+     @if (!string.IsNullOrEmpty(ogrenciAdi))
+        {
+        <p class="text-muted mb-0">
+           <i class="fas fa-user me-1"></i>@ogrenciAdi
+        </p>
+        }
+    </div>
+    <div>
+     @if (ogrenciId.HasValue)
+        {
+   <a asp-controller="Ogrenciler" asp-action="Details" asp-route-id="@ogrenciId" class="btn btn-secondary me-2">
+    <i class="fas fa-arrow-left me-1"></i>Öðrenciye Dön
+            </a>
+            <a asp-action="Create" asp-route-ogrenciId="@ogrenciId" class="btn btn-warning">
+            <i class="fas fa-pause me-1"></i>Yeni Dondurma
+        </a>
+        }
+        else
+        {
+            <a asp-controller="Ogrenciler" asp-action="Index" class="btn btn-primary">
+         <i class="fas fa-users me-1"></i>Öðrenci Seç
+ </a>
+  }
+    </div>
+</div>
+
+@if (Model.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-hover">
+     <thead class="table-light">
+                <tr>
+  @if (!ogrenciId.HasValue)
+            {
+       <th>Öðrenci</th>
+           }
+        <th>Baþlangýç</th>
+            <th>Bitiþ</th>
+           <th>Süre</th>
+         <th>Sebep</th>
+       <th>Durum</th>
+        <th>Ödeme Tarihleri</th>
+      <th class="text-center">Ýþlemler</th>
+         </tr>
+  </thead>
+            <tbody>
+    @foreach (var item in Model)
+    {
+            var sure = (item.BitisTarihi - item.BaslangicTarihi).Days + 1;
+        var durumClass = item.Status switch
+      {
+ StudentApp.Models.DondurmaStatusEnum.Aktif => "success",
+  StudentApp.Models.DondurmaStatusEnum.Tamamlandi => "secondary",
+     StudentApp.Models.DondurmaStatusEnum.IptalEdildi => "danger",
+                    _ => "secondary"
+     };
+     var durumIcon = item.Status switch
+      {
+    StudentApp.Models.DondurmaStatusEnum.Aktif => "pause-circle",
+      StudentApp.Models.DondurmaStatusEnum.Tamamlandi => "check-circle",
+              StudentApp.Models.DondurmaStatusEnum.IptalEdildi => "times-circle",
+ _ => "question-circle"
+ };
+
+            <tr class="@(item.Status == StudentApp.Models.DondurmaStatusEnum.Aktif ? "table-warning" : "")">
+   @if (!ogrenciId.HasValue)
+          {
+   <td>
+@if (item.Ogrenci != null)
+           {
+            <a asp-action="Index" asp-route-ogrenciId="@item.OgrenciId" class="text-decoration-none">
+      <i class="fas fa-user me-1"></i>@item.Ogrenci.OgrenciAdi @item.Ogrenci.OgrenciSoyadi
+                 </a>
+     }
+      </td>
+          }
+           <td>
+           <i class="fas fa-calendar me-1"></i>
+       @item.BaslangicTarihi.ToString("dd.MM.yyyy")
+        </td>
+        <td>
+      <i class="fas fa-calendar me-1"></i>
+     @item.BitisTarihi.ToString("dd.MM.yyyy")
+     </td>
+          <td>
+            <span class="badge bg-info">@sure gün</span>
+   </td>
+        <td>
+  <small>@item.Sebep</small>
+   </td>
+             <td>
+      <span class="badge bg-@durumClass">
+     <i class="fas fa-@durumIcon me-1"></i>@item.Status.ToString()
+      </span>
+</td>
+                <td>
+              @if (item.OdemeTarihleriAyarlandi)
+       {
+                 <span class="badge bg-success">
+              <i class="fas fa-check me-1"></i>Ayarlandý (@item.KaydirilanGunSayisi gün)
+  </span>
+     }
+ else
+                {
+           <span class="badge bg-secondary">
+          <i class="fas fa-times me-1"></i>Ayarlanmadý
+   </span>
+            }
+     </td>
+     <td class="text-center">
+     <div class="btn-group" role="group">
+   <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info" title="Detaylar">
+    <i class="fas fa-eye"></i>
+         </a>
+  
+   @if (item.Status == StudentApp.Models.DondurmaStatusEnum.Aktif)
+        {
+     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning" title="Düzenle">
+      <i class="fas fa-edit"></i>
+    </a>
+      
+               <button type="button" class="btn btn-sm btn-outline-danger" title="Ýptal Et"
+      data-bs-toggle="modal" data-bs-target="#iptalModal@(item.Id)">
+       <i class="fas fa-ban"></i>
+       </button>
+    
+       @if (!item.OdemeTarihleriAyarlandi)
+         {
+   <form asp-action="TarihleriYenidenAyarla" method="post" class="d-inline">
+                 @Html.AntiForgeryToken()
+             <input type="hidden" name="id" value="@item.Id" />
+   <button type="submit" class="btn btn-sm btn-outline-primary" title="Tarihleri Ayarla">
+  <i class="fas fa-calendar-check"></i>
+     </button>
+       </form>
+         }
+    }
+         
+   <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Sil">
+       <i class="fas fa-trash"></i>
+         </a>
+      </div>
+         </td>
+     </tr>
+        
+        <!-- Ýptal Modal -->
+ <div class="modal fade" id="iptalModal@(item.Id)" tabindex="-1" aria-hidden="true">
+     <div class="modal-dialog">
+        <div class="modal-content">
+  <div class="modal-header">
+            <h5 class="modal-title">Dondurma Ýptali</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+       <form asp-action="IptalEt" method="post">
+     @Html.AntiForgeryToken()
+             <input type="hidden" name="id" value="@item.Id" />
+       <div class="modal-body">
+        <div class="mb-3">
+    <label class="form-label">Ýptal Nedeni</label>
+   <textarea name="iptalNedeni" class="form-control" rows="3" required></textarea>
+    </div>
+  </div>
+     <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Vazgeç</button>
+    <button type="submit" class="btn btn-danger">Ýptal Et</button>
+     </div>
+          </form>
+  </div>
+      </div>
+</div>
+       }
+    </tbody>
+</table>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="fas fa-pause-circle fa-3x text-muted mb-3"></i>
+        <h4 class="text-muted">Dondurma kaydý bulunamadý</h4>
+        @if (ogrenciId.HasValue)
+        {
+<p class="text-muted">Bu öðrenci için henüz üyelik dondurma kaydý oluþturulmamýþ.</p>
+            <a asp-action="Create" asp-route-ogrenciId="@ogrenciId" class="btn btn-warning">
+ <i class="fas fa-pause me-1"></i>Ýlk Dondurma Kaydýný Oluþtur
+            </a>
+        }
+        else
+        {
+   <p class="text-muted">Hiç dondurma kaydý bulunmuyor.</p>
+    }
+    </div>
+}
+
+@section Styles {
+    <style>
+      .table-warning {
+  background-color: #fff3cd !important;
+        }
+    </style>
+}

@@ -620,6 +620,68 @@ namespace StudentApp.Migrations
                     b.ToTable("OgrenciOdemeTakvimi", (string)null);
                 });
 
+            modelBuilder.Entity("StudentApp.Models.OgrenciUyelikDondurma", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Aciklama")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<bool>("Aktif")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("BaslangicTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("BitisTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("IptalEdenKullanici")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("IptalNedeni")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("IptalTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("KaydirilanGunSayisi")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("OdemeTarihleriAyarlandi")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("OgrenciId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Sebep")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OgrenciId");
+
+                    b.ToTable("OgrenciUyelikDondurma", (string)null);
+                });
+
             modelBuilder.Entity("StudentApp.Models.Ogrenciler", b =>
                 {
                     b.Property<long>("Id")
@@ -651,7 +713,6 @@ namespace StudentApp.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -700,9 +761,6 @@ namespace StudentApp.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CinsiyetId");
-
-                    b.HasIndex("Email")
-                        .IsUnique();
 
                     b.HasIndex("OdemePlanlariId");
 
@@ -952,6 +1010,17 @@ namespace StudentApp.Migrations
                 });
 
             modelBuilder.Entity("StudentApp.Models.OgrenciOdemeTakvimi", b =>
+                {
+                    b.HasOne("StudentApp.Models.Ogrenciler", "Ogrenci")
+                        .WithMany()
+                        .HasForeignKey("OgrenciId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Ogrenci");
+                });
+
+            modelBuilder.Entity("StudentApp.Models.OgrenciUyelikDondurma", b =>
                 {
                     b.HasOne("StudentApp.Models.Ogrenciler", "Ogrenci")
                         .WithMany()
