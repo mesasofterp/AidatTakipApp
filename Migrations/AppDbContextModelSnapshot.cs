@@ -682,6 +682,78 @@ namespace StudentApp.Migrations
                     b.ToTable("OgrenciUyelikDondurma", (string)null);
                 });
 
+            modelBuilder.Entity("StudentApp.Models.OgrenciUyelikYenileme", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Aciklama")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Aktif")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Durum")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("EskiDonemKalanBorc")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("EskiDonemToplamTutar")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<long>("EskiOdemePlaniId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("IndirimAciklama")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal?>("IndirimTutari")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("OgrenciId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("OtomatikYenileme")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("YeniDonemToplamTutar")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<long>("YeniOdemePlaniId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("YenilemeBaslangicTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("YenilemeTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("YenileyenKullanici")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EskiOdemePlaniId");
+
+                    b.HasIndex("OgrenciId");
+
+                    b.HasIndex("YeniOdemePlaniId");
+
+                    b.ToTable("OgrenciUyelikYenileme", (string)null);
+                });
+
             modelBuilder.Entity("StudentApp.Models.Ogrenciler", b =>
                 {
                     b.Property<long>("Id")
@@ -1029,6 +1101,33 @@ namespace StudentApp.Migrations
                         .IsRequired();
 
                     b.Navigation("Ogrenci");
+                });
+
+            modelBuilder.Entity("StudentApp.Models.OgrenciUyelikYenileme", b =>
+                {
+                    b.HasOne("StudentApp.Models.OdemePlanlari", "EskiOdemePlani")
+                        .WithMany()
+                        .HasForeignKey("EskiOdemePlaniId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("StudentApp.Models.Ogrenciler", "Ogrenci")
+                        .WithMany()
+                        .HasForeignKey("OgrenciId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("StudentApp.Models.OdemePlanlari", "YeniOdemePlani")
+                        .WithMany()
+                        .HasForeignKey("YeniOdemePlaniId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("EskiOdemePlani");
+
+                    b.Navigation("Ogrenci");
+
+                    b.Navigation("YeniOdemePlani");
                 });
 
             modelBuilder.Entity("StudentApp.Models.Ogrenciler", b =>

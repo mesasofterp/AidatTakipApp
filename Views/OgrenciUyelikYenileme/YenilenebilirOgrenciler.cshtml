@@ -1,0 +1,314 @@
+@model IEnumerable<StudentApp.Services.OgrenciYenilemeBilgi>
+
+@{
+ ViewData["Title"] = "Yenilenebilir Öðrenciler";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+   <div class="col-12">
+    <div class="d-flex justify-content-between align-items-center">
+     <div>
+<h2><i class="fas fa-sync-alt me-2"></i>Üyelik Yenileme</h2>
+         <p class="text-muted mb-0">Dönem sonu yaklaþan veya tamamlanan öðrencilerin üyeliklerini yenileyin</p>
+    </div>
+    <div>
+        <a asp-controller="OgrenciUyelikYenileme" asp-action="Index" class="btn btn-secondary">
+     <i class="fas fa-list me-1"></i>Yenileme Geçmiþi
+    </a>
+      </div>
+            </div>
+    </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center py-5">
+       <i class="fas fa-info-circle fa-3x mb-3"></i>
+      <h4>Yenilenebilir Öðrenci Bulunamadý</h4>
+            <p class="mb-0">Þu anda yenileme için uygun öðrenci bulunmamaktadýr.</p>
+      <small class="text-muted">
+   Öðrencilerin en az %80'inin taksitlerini tamamlamýþ veya tüm ödemelerini yapmýþ olmasý gerekmektedir.
+   </small>
+        </div>
+    }
+    else
+    {
+        <div class="row mb-3">
+            <div class="col-md-12">
+      <div class="card bg-light">
+         <div class="card-body">
+    <div class="row align-items-center">
+   <div class="col-md-6">
+                 <h5 class="mb-2">
+       <i class="fas fa-users me-2 text-primary"></i>
+          Toplam <strong>@Model.Count()</strong> öðrenci yenilenebilir
+       </h5>
+         <small class="text-muted">
+       <i class="fas fa-check-circle text-success me-1"></i>
+         @Model.Count(o => o.TumTaksitlerOdendi) öðrenci tüm taksitleri tamamladý
+   </small>
+      </div>
+ <div class="col-md-6 text-md-end">
+        <div class="form-check form-check-inline mb-0">
+      <input class="form-check-input" type="checkbox" id="selectAllChk" />
+ <label class="form-check-label fw-bold" for="selectAllChk">
+      Tümünü Seç
+        </label>
+        </div>
+  </div>
+          </div>
+         </div>
+    </div>
+            </div>
+        </div>
+
+        <!-- Toplu Yenileme Formu -->
+     <form asp-action="TopluYenile" method="post" id="topluYenilemeForm">
+     @Html.AntiForgeryToken()
+            
+   <div class="card mb-4 border-primary">
+     <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+       <i class="fas fa-list-check me-2"></i>Toplu Yenileme
+   </h5>
+      </div>
+ <div class="card-body">
+               <div class="row align-items-end">
+        <div class="col-md-8">
+                   <label class="form-label fw-bold">
+     <i class="fas fa-calendar-alt me-1"></i>Yeni Ödeme Planý Seçin
+       </label>
+           <select name="yeniOdemePlaniId" id="yeniOdemePlaniSelect" class="form-select form-select-lg" required>
+     <option value="">-- Ödeme Planý Seçiniz --</option>
+   @foreach (var plan in (IEnumerable<SelectListItem>)ViewBag.OdemePlanlari)
+           {
+          <option value="@plan.Value">@plan.Text</option>
+    }
+ </select>
+               <small class="text-muted">
+          <i class="fas fa-info-circle me-1"></i>
+Seçilen tüm öðrenciler bu ödeme planýna göre yenilenecektir
+       </small>
+               </div>
+      <div class="col-md-4">
+          <button type="submit" class="btn btn-primary btn-lg w-100" id="topluYenileBtn">
+          <i class="fas fa-sync-alt me-2"></i>Seçilenleri Yenile
+       <span class="badge bg-white text-primary ms-2" id="secilenSayisi">0</span>
+           </button>
+            </div>
+       </div>
+     </div>
+          </div>
+
+            <!-- Öðrenci Listesi -->
+         <div class="table-responsive">
+<table class="table table-hover table-bordered bg-white">
+            <thead class="table-light">
+<tr>
+       <th style="width: 50px;" class="text-center">
+   <i class="fas fa-check-square"></i>
+        </th>
+            <th>Öðrenci</th>
+       <th>Mevcut Ödeme Planý</th>
+           <th class="text-center">Ýlerleme</th>
+          <th class="text-end">Toplam Ödenen</th>
+        <th class="text-end">Kalan Borç</th>
+       <th class="text-center">Son Ödeme Tarihi</th>
+        <th class="text-center">Kalan Gün</th>
+             <th class="text-center">Durum</th>
+  <th class="text-center">Ýþlem</th>
+            </tr>
+        </thead>
+            <tbody>
+     @foreach (var ogrenci in Model.OrderBy(o => o.KalanGun))
+{
+       var ilerlemeYuzde = ogrenci.ToplamTaksitSayisi > 0 
+    ? (decimal)ogrenci.TamamlananTaksitSayisi / ogrenci.ToplamTaksitSayisi * 100 
+             : 0;
+    var progressClass = ilerlemeYuzde >= 100 ? "bg-success" : ilerlemeYuzde >= 80 ? "bg-warning" : "bg-info";
+  var kalanGunClass = ogrenci.KalanGun <= 0 ? "text-danger" : ogrenci.KalanGun <= 7 ? "text-warning" : "text-success";
+
+                 <tr>
+            <td class="text-center">
+      <input type="checkbox" 
+             name="selectedIds" 
+       value="@ogrenci.OgrenciId" 
+           class="form-check-input ogrenci-checkbox" />
+     </td>
+         <td>
+ <strong>@ogrenci.OgrenciAdSoyad</strong>
+   </td>
+     <td>
+    <span class="badge bg-secondary">@ogrenci.OdemePlaniAdi</span>
+          </td>
+         <td>
+       <div class="progress" style="height: 25px;">
+        <div class="progress-bar @progressClass" 
+   role="progressbar" 
+        style="width: @ilerlemeYuzde.ToString("F0")%"
+    aria-valuenow="@ilerlemeYuzde.ToString("F0")" 
+         aria-valuemin="0" 
+     aria-valuemax="100">
+    @ogrenci.TamamlananTaksitSayisi / @ogrenci.ToplamTaksitSayisi
+   (@ilerlemeYuzde.ToString("F0")%)
+         </div>
+       </div>
+              </td>
+     <td class="text-end">
+<strong class="text-success"><span style="font-family: Arial, sans-serif;">&#8378;</span> @ogrenci.ToplamOdenen.ToString("N2")</strong>
+     </td>
+   <td class="text-end">
+                @if (ogrenci.KalanBorc > 0)
+     {
+          <strong class="text-danger"><span style="font-family: Arial, sans-serif;">&#8378;</span> @ogrenci.KalanBorc.ToString("N2")</strong>
+      }
+          else
+  {
+    <span class="text-muted">-</span>
+       }
+  </td>
+   <td class="text-center">
+   @if (ogrenci.SonOdemeTarihi.HasValue)
+ {
+     <span>@ogrenci.SonOdemeTarihi.Value.ToString("dd.MM.yyyy")</span>
+          }
+      else
+       {
+ <span class="text-muted">-</span>
+          }
+   </td>
+        <td class="text-center">
+     @if (ogrenci.KalanGun > 0)
+          {
+       <span class="badge @kalanGunClass">
+               <i class="fas fa-clock me-1"></i>@ogrenci.KalanGun gün
+       </span>
+       }
+else if (ogrenci.KalanGun == 0)
+               {
+                  <span class="badge bg-warning">
+      <i class="fas fa-exclamation-triangle me-1"></i>Bugün
+           </span>
+        }
+       else
+             {
+              <span class="badge bg-danger">
+   <i class="fas fa-times-circle me-1"></i>@Math.Abs(ogrenci.KalanGun) gün geçti
+     </span>
+               }
+  </td>
+   <td class="text-center">
+           @if (ogrenci.TumTaksitlerOdendi)
+    {
+             <span class="badge bg-success">
+        <i class="fas fa-check-circle me-1"></i>Tamamlandý
+  </span>
+    }
+             else
+     {
+         <span class="badge bg-info">
+          <i class="fas fa-percentage me-1"></i>%@ilerlemeYuzde.ToString("F0")
+              </span>
+   }
+         </td>
+            <td class="text-center">
+     <a asp-action="Create" asp-route-ogrenciId="@ogrenci.OgrenciId" 
+     class="btn btn-sm btn-warning" 
+              title="Üyeliði Yenile">
+                  <i class="fas fa-sync-alt"></i> Yenile
+        </a>
+       </td>
+    </tr>
+    }
+</tbody>
+       </table>
+ </div>
+ </form>
+    }
+</div>
+
+@section Scripts {
+    <script>
+   $(document).ready(function() {
+            // Tümünü seç/kaldýr
+       $('#selectAllChk').on('change', function() {
+     $('.ogrenci-checkbox').prop('checked', this.checked);
+                updateSecilenSayisi();
+            });
+
+    // Checkbox deðiþimini dinle
+         $('.ogrenci-checkbox').on('change', function() {
+      updateSecilenSayisi();
+      
+      // Tümü seçiliyse "Tümünü Seç" checkbox'ýný iþaretle
+     var toplamCheckbox = $('.ogrenci-checkbox').length;
+      var secilenCheckbox = $('.ogrenci-checkbox:checked').length;
+    $('#selectAllChk').prop('checked', toplamCheckbox === secilenCheckbox);
+       });
+
+            // Seçilen sayýsýný güncelle
+     function updateSecilenSayisi() {
+     var secilen = $('.ogrenci-checkbox:checked').length;
+       $('#secilenSayisi').text(secilen);
+        
+         // Hiç seçili yoksa butonu devre dýþý býrak
+        $('#topluYenileBtn').prop('disabled', secilen === 0);
+       }
+
+            // Sayfa yüklendiðinde güncelle
+ updateSecilenSayisi();
+
+         // Form submit kontrolü
+            $('#topluYenilemeForm').on('submit', function(e) {
+    var secilenSayisi = $('.ogrenci-checkbox:checked').length;
+  var odemePlani = $('#yeniOdemePlaniSelect').val();
+
+        if (secilenSayisi === 0) {
+ e.preventDefault();
+      alert('Lütfen en az bir öðrenci seçin.');
+        return false;
+    }
+
+             if (!odemePlani) {
+          e.preventDefault();
+         alert('Lütfen bir ödeme planý seçin.');
+     return false;
+         }
+
+        var onay = confirm(`${secilenSayisi} öðrencinin üyeliðini yenilemek istediðinizden emin misiniz?\n\nBu iþlem geri alýnamaz ve yeni taksitler oluþturulacaktýr.`);
+           if (!onay) {
+            e.preventDefault();
+   return false;
+}
+
+      // Butonu devre dýþý býrak ve yükleniyor göster
+       $('#topluYenileBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Yenileniyor...');
+    });
+      });
+    </script>
+}
+
+@section Styles {
+    <style>
+        .progress {
+    border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+        }
+
+  .table-hover tbody tr:hover {
+     background-color: #f8f9fa;
+    }
+
+        .ogrenci-checkbox {
+            cursor: pointer;
+  width: 20px;
+        height: 20px;
+        }
+
+        #topluYenileBtn:disabled {
+   opacity: 0.6;
+            cursor: not-allowed;
+        }
+    </style>
+}

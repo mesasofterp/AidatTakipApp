@@ -142,11 +142,11 @@
                 </div>
 
                 <!-- Ödeme Yönetimi -->
-                <button class="accordion @(IsActive("OdemePlanlari") || IsActive("OgrenciOdemeTakvimi") ? "active" : "")">
+                <button class="accordion @(IsActive("OdemePlanlari") || IsActive("OgrenciOdemeTakvimi") || IsActive("OgrenciUyelikYenileme") ? "active" : "")">
                     <i class="fas fa-calendar-alt me-2"></i> Ödeme Yönetimi
                     <i class="fas fa-chevron-down ms-auto toggle-icon"></i>
                 </button>
-                <div class="panel @(IsActive("OdemePlanlari") || IsActive("OgrenciOdemeTakvimi") ? "active" : "")">
+                <div class="panel @(IsActive("OdemePlanlari") || IsActive("OgrenciOdemeTakvimi") || IsActive("OgrenciUyelikYenileme") ? "active" : "")">
                     <a class="nav-link @(IsActive("OdemePlanlari", "Index") ? "active" : "")" asp-controller="OdemePlanlari" asp-action="Index">
                         <i class="fas fa-calendar-alt me-2"></i>Ödeme Planları
                     </a>
@@ -155,6 +155,9 @@
                     </a>
                     <a class="nav-link @(IsActive("OgrenciOdemeTakvimi") ? "active" : "")" asp-controller="OgrenciOdemeTakvimi" asp-action="Index">
                         <i class="fas fa-money-check-alt me-2"></i>Ödeme Takvimleri
+                    </a>
+                    <a class="nav-link @(IsActive("OgrenciUyelikYenileme") ? "active" : "")" asp-controller="OgrenciUyelikYenileme" asp-action="YenilenebilirOgrenciler">
+                        <i class="fas fa-sync-alt me-2"></i>Üyelik Yenileme
                     </a>
                 </div>
 

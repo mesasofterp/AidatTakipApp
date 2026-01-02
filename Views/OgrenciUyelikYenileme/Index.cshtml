@@ -1,0 +1,189 @@
+@model IEnumerable<StudentApp.Models.OgrenciUyelikYenileme>
+
+@{
+    ViewData["Title"] = "Üyelik Yenileme Geçmiþi";
+    var ogrenciAdi = ViewBag.OgrenciAdi as string;
+ var ogrenciId = ViewBag.OgrenciId as long?;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+ <h2><i class="fas fa-history me-2"></i>Üyelik Yenileme Geçmiþi</h2>
+        @if (!string.IsNullOrEmpty(ogrenciAdi))
+   {
+  <p class="text-muted mb-0">
+  <i class="fas fa-user me-1"></i>@ogrenciAdi
+      </p>
+  }
+ </div>
+ <div>
+  @if (ogrenciId.HasValue)
+{
+        <a asp-controller="Ogrenciler" asp-action="Details" asp-route-id="@ogrenciId" class="btn btn-secondary me-2">
+        <i class="fas fa-arrow-left me-1"></i>Öðrenciye Dön
+   </a>
+   }
+        <a asp-action="YenilenebilirOgrenciler" class="btn btn-primary">
+     <i class="fas fa-sync-alt me-1"></i>Yenilenebilir Öðrenciler
+   </a>
+ </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info text-center py-5">
+        <i class="fas fa-info-circle fa-3x mb-3"></i>
+        <h4>Yenileme Kaydý Bulunamadý</h4>
+ <p class="mb-0">
+       @if (ogrenciId.HasValue)
+       {
+     <span>Bu öðrenci için henüz yenileme kaydý bulunmamaktadýr.</span>
+   }
+   else
+     {
+     <span>Henüz hiç yenileme iþlemi yapýlmamýþtýr.</span>
+      }
+     </p>
+  </div>
+}
+else
+{
+ <div class="card mb-3">
+ <div class="card-body">
+      <div class="row">
+ <div class="col-md-3">
+      <div class="text-center">
+        <h6 class="text-muted">Toplam Yenileme</h6>
+  <h3 class="text-primary">@Model.Count()</h3>
+   </div>
+      </div>
+<div class="col-md-3">
+     <div class="text-center">
+  <h6 class="text-muted">Aktif Yenilemeler</h6>
+  <h3 class="text-success">@Model.Count(y => y.Durum == StudentApp.Models.YenilemeDurumuEnum.Aktif)</h3>
+     </div>
+    </div>
+   <div class="col-md-3">
+         <div class="text-center">
+     <h6 class="text-muted">Tamamlanan</h6>
+  <h3 class="text-info">@Model.Count(y => y.Durum == StudentApp.Models.YenilemeDurumuEnum.Tamamlandi)</h3>
+  </div>
+     </div>
+        <div class="col-md-3">
+  <div class="text-center">
+    <h6 class="text-muted">Ýptal Edilen</h6>
+       <h3 class="text-danger">@Model.Count(y => y.Durum == StudentApp.Models.YenilemeDurumuEnum.IptalEdildi)</h3>
+    </div>
+   </div>
+      </div>
+ </div>
+ </div>
+
+ <div class="table-responsive">
+   <table class="table table-hover table-bordered bg-white">
+    <thead class="table-light">
+    <tr>
+ @if (!ogrenciId.HasValue)
+  {
+    <th>Öðrenci</th>
+ }
+    <th>Yenileme Tarihi</th>
+        <th>Eski Ödeme Planý</th>
+<th>Yeni Ödeme Planý</th>
+       <th class="text-end">Eski Dönem Tutar</th>
+      <th class="text-end">Yeni Dönem Tutar</th>
+       <th class="text-end">Taþýnan Borç</th>
+  <th class="text-end">Ýndirim</th>
+  <th class="text-center">Yenileyen</th>
+ <th class="text-center">Durum</th>
+      <th class="text-center">Ýþlem</th>
+ </tr>
+     </thead>
+   <tbody>
+     @foreach (var yenileme in Model)
+  {
+    <tr>
+        @if (!ogrenciId.HasValue)
+   {
+       <td>
+      <strong>@yenileme.Ogrenci.OgrenciAdi @yenileme.Ogrenci.OgrenciSoyadi</strong>
+   </td>
+   }
+      <td>
+ <i class="fas fa-calendar-alt me-1"></i>
+        @yenileme.YenilemeTarihi.ToString("dd.MM.yyyy HH:mm")
+   </td>
+     <td>
+<span class="badge bg-secondary">
+     @yenileme.EskiOdemePlani.KursProgrami
+      </span>
+ </td>
+<td>
+    <span class="badge bg-primary">
+     @yenileme.YeniOdemePlani.KursProgrami
+        </span>
+ </td>
+  <td class="text-end">
+   <span class="text-muted"><span style="font-family: Arial, sans-serif;">&#8378;</span> @yenileme.EskiDonemToplamTutar.ToString("N2")</span>
+       </td>
+    <td class="text-end">
+    <strong class="text-success"><span style="font-family: Arial, sans-serif;">&#8378;</span> @yenileme.YeniDonemToplamTutar.ToString("N2")</strong>
+     </td>
+    <td class="text-end">
+     @if (yenileme.EskiDonemKalanBorc > 0)
+    {
+      <span class="text-danger"><span style="font-family: Arial, sans-serif;">&#8378;</span> @yenileme.EskiDonemKalanBorc.ToString("N2")</span>
+     }
+     else
+    {
+  <span class="text-muted">-</span>
+ }
+  </td>
+ <td class="text-end">
+       @if (yenileme.IndirimTutari.HasValue && yenileme.IndirimTutari.Value > 0)
+      {
+    <span class="badge bg-warning text-dark" title="@yenileme.IndirimAciklama">
+ <i class="fas fa-tag me-1"></i><span style="font-family: Arial, sans-serif;">&#8378;</span> @yenileme.IndirimTutari.Value.ToString("N2")
+        </span>
+    }
+   else
+ {
+      <span class="text-muted">-</span>
+    }
+      </td>
+        <td class="text-center">
+       <small>@yenileme.YenileyenKullanici</small>
+  </td>
+     <td class="text-center">
+  @switch (yenileme.Durum)
+   {
+        case StudentApp.Models.YenilemeDurumuEnum.Aktif:
+         <span class="badge bg-success">
+        <i class="fas fa-check-circle me-1"></i>Aktif
+        </span>
+    break;
+    case StudentApp.Models.YenilemeDurumuEnum.Tamamlandi:
+  <span class="badge bg-info">
+      <i class="fas fa-flag-checkered me-1"></i>Tamamlandý
+    </span>
+      break;
+   case StudentApp.Models.YenilemeDurumuEnum.IptalEdildi:
+  <span class="badge bg-danger">
+   <i class="fas fa-times-circle me-1"></i>Ýptal
+    </span>
+       break;
+        }
+  </td>
+ <td class="text-center">
+    <a asp-action="Details" asp-route-id="@yenileme.Id" 
+class="btn btn-sm btn-info" 
+          title="Detaylarý Görüntüle">
+   <i class="fas fa-eye"></i>
+      </a>
+     </td>
+   </tr>
+    }
+       </tbody>
+  </table>
+    </div>
+}

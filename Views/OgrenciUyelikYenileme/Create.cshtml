@@ -1,0 +1,331 @@
+@model StudentApp.Models.OgrenciUyelikYenileme
+@using StudentApp.Services
+
+@{
+    ViewData["Title"] = "Üyelik Yenileme";
+    var durum = ViewBag.UyelikDurum as UyelikDurumBilgi;
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+  <div class="col-md-10">
+     <div class="card shadow-lg border-0">
+     <div class="card-header bg-warning">
+            <h4 class="mb-0 text-dark">
+   <i class="fas fa-sync-alt me-2"></i>Üyelik Yenileme
+ </h4>
+    </div>
+    <div class="card-body">
+   @if (durum != null)
+         {
+     <!-- Öðrenci Bilgileri -->
+    <div class="alert alert-info">
+       <h5 class="alert-heading">
+   <i class="fas fa-user me-2"></i>@durum.OgrenciAdSoyad
+      </h5>
+    <hr />
+           <div class="row">
+       <div class="col-md-6">
+       <p class="mb-2">
+    <strong>Mevcut Ödeme Planý:</strong>
+    @if (durum.MevcutOdemePlani != null)
+       {
+ <span class="badge bg-secondary ms-2">@durum.MevcutOdemePlani.KursProgrami</span>
+     }
+   else
+      {
+    <span class="text-muted">Belirtilmemiþ</span>
+         }
+      </p>
+        <p class="mb-2">
+           <strong>Toplam Taksit:</strong> @durum.ToplamTaksitSayisi adet
+      </p>
+    <p class="mb-2">
+    <strong>Ödenen Taksit:</strong> 
+      <span class="badge bg-success">@durum.OdenenTaksitSayisi adet</span>
+       </p>
+       </div>
+   <div class="col-md-6">
+        <p class="mb-2">
+       <strong>Toplam Ödenen:</strong>
+         <span class="text-success fw-bold"><span style="font-family: Arial, sans-serif;">&#8378;</span> @durum.ToplamOdenen.ToString("N2")</span>
+   </p>
+  <p class="mb-2">
+<strong>Kalan Borç:</strong>
+   @if (durum.KalanBorc > 0)
+  {
+         <span class="text-danger fw-bold"><span style="font-family: Arial, sans-serif;">&#8378;</span> @durum.KalanBorc.ToString("N2")</span>
+           }
+else
+         {
+    <span class="text-success fw-bold">Yok</span>
+      }
+   </p>
+  @if (durum.SonOdemeTarihi.HasValue)
+                  {
+      <p class="mb-2">
+   <strong>Son Ödeme:</strong> @durum.SonOdemeTarihi.Value.ToString("dd.MM.yyyy")
+       </p>
+      }
+    </div>
+      </div>
+
+    @if (durum.KalanBorc > 0)
+       {
+       <div class="alert alert-warning mb-0 mt-3">
+      <i class="fas fa-exclamation-triangle me-2"></i>
+    <strong>Dikkat:</strong> Eski dönem kalan borcu (<span style="font-family: Arial, sans-serif;">&#8378;</span>@durum.KalanBorc.ToString("N2")) yeni dönem ilk taksitine eklenecektir.
+        </div>
+       }
+         </div>
+
+       <hr class="my-4" />
+
+      <!-- Yenileme Formu -->
+          <form asp-action="Create" method="post" id="yenilemeForm">
+     @Html.AntiForgeryToken()
+    <input type="hidden" name="ogrenciId" value="@Model.OgrenciId" />
+
+     <div class="row">
+          <div class="col-md-12 mb-3">
+ <label class="form-label fw-bold">
+ <i class="fas fa-calendar-alt me-1"></i>
+      Yeni Ödeme Planý Seçin
+       <span class="text-danger">*</span>
+       </label>
+     <select name="yeniOdemePlaniId" id="yeniOdemePlaniId" class="form-select form-select-lg" required>
+    <option value="">-- Ödeme Planý Seçiniz --</option>
+         @foreach (var plan in (IEnumerable<SelectListItem>)ViewBag.OdemePlanlari)
+            {
+         <option value="@plan.Value">@plan.Text</option>
+      }
+     </select>
+    <small class="form-text text-muted">
+       <i class="fas fa-info-circle me-1"></i>
+      Öðrenci bu ödeme planýna göre yeni dönem için kaydedilecektir
+       </small>
+     </div>
+        </div>
+
+    <!-- Ödeme Planý Detaylarý (AJAX ile yüklenecek) -->
+       <div id="planDetayContainer" style="display: none;" class="mb-4">
+     <div class="card bg-light">
+      <div class="card-body">
+        <h6 class="card-title">
+       <i class="fas fa-info-circle me-2"></i>Seçilen Plan Detaylarý
+     </h6>
+  <div class="row" id="planDetay">
+             <!-- AJAX ile doldurulacak -->
+         </div>
+     </div>
+    </div>
+          </div>
+
+         <hr class="my-3" />
+
+         <div class="row">
+       <div class="col-md-6 mb-3">
+           <label class="form-label fw-bold">
+<i class="fas fa-percent me-1"></i>
+    Ýndirim Tutarý (Opsiyonel)
+    </label>
+           <div class="input-group">
+    <span class="input-group-text">?</span>
+      <input type="number" 
+      name="indirimTutari" 
+      id="indirimTutari"
+      class="form-control" 
+     step="0.01" 
+             min="0"
+       placeholder="0.00" />
+       </div>
+   <small class="form-text text-muted">
+         <i class="fas fa-tag me-1"></i>
+    Varsa öðrenciye uygulanan indirim tutarýný girin
+          </small>
+   </div>
+     <div class="col-md-6 mb-3">
+  <label class="form-label fw-bold">
+            <i class="fas fa-comment me-1"></i>
+          Ýndirim Açýklamasý
+       </label>
+ <input type="text" 
+    name="indirimAciklama" 
+         id="indirimAciklama"
+ class="form-control" 
+    placeholder="Örn: Erken kayýt indirimi" />
+      <small class="form-text text-muted">
+        Ýndirim sebebini belirtin
+       </small>
+ </div>
+          </div>
+
+      <!-- Özet Bilgiler -->
+       <div class="card border-primary mb-4">
+    <div class="card-header bg-primary text-white">
+       <h6 class="mb-0">
+  <i class="fas fa-calculator me-2"></i>Yenileme Özeti
+    </h6>
+     </div>
+         <div class="card-body">
+             <div class="row">
+  <div class="col-md-4">
+       <div class="text-center p-3 border rounded">
+   <small class="text-muted d-block">Eski Dönem Toplam</small>
+          <h5 class="mb-0"><span style="font-family: Arial, sans-serif;">&#8378;</span> @((durum.MevcutOdemePlani?.ToplamTutar ?? 0).ToString("N2"))</h5>
+     </div>
+    </div>
+        <div class="col-md-4">
+      <div class="text-center p-3 border rounded bg-light">
+       <small class="text-muted d-block">Taþýnan Borç</small>
+         <h5 class="mb-0 text-danger"><span style="font-family: Arial, sans-serif;">&#8378;</span> @durum.KalanBorc.ToString("N2")</h5>
+ </div>
+      </div>
+      <div class="col-md-4">
+         <div class="text-center p-3 border rounded bg-success text-white">
+  <small class="d-block">Toplam Ödendi</small>
+ <h5 class="mb-0"><span style="font-family: Arial, sans-serif;">&#8378;</span> @durum.ToplamOdenen.ToString("N2")</h5>
+   </div>
+ </div>
+     </div>
+  <div class="row mt-3" id="yeniDonemOzet" style="display: none;">
+  <div class="col-md-12">
+       <div class="alert alert-success mb-0">
+         <div class="row">
+     <div class="col-md-6">
+       <strong>Yeni Dönem Toplam Tutar:</strong>
+      <span id="yeniDonemToplam">-</span>
+    </div>
+  <div class="col-md-6">
+   <strong>Ýndirimli Tutar:</strong>
+  <span id="indirimlitutir">-</span>
+      </div>
+       </div>
+     </div>
+       </div>
+        </div>
+         </div>
+     </div>
+
+ <div class="alert alert-warning">
+           <i class="fas fa-exclamation-triangle me-2"></i>
+     <strong>Önemli Bilgilendirme:</strong>
+    <ul class="mb-0 mt-2">
+      <li>Yenileme iþlemi geri alýnamaz</li>
+      <li>Öðrencinin mevcut ödeme planý yeni seçilen plan ile deðiþtirilecek</li>
+ <li>Eski dönem kalan borç varsa yeni dönem ilk taksitine eklenecek</li>
+   <li>Yeni dönem için otomatik taksitler oluþturulacak</li>
+    </ul>
+    </div>
+
+     <div class="d-flex justify-content-between mt-4">
+       <a asp-action="YenilenebilirOgrenciler" class="btn btn-secondary btn-lg">
+        <i class="fas fa-arrow-left me-2"></i>Ýptal
+ </a>
+         <button type="submit" class="btn btn-warning btn-lg" id="yenileBtn">
+       <i class="fas fa-sync-alt me-2"></i>Üyeliði Yenile
+    </button>
+        </div>
+          </form>
+   }
+   </div>
+            </div>
+        </div>
+ </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+        // Ödeme planý deðiþtiðinde detaylarý getir
+    $('#yeniOdemePlaniId').on('change', function() {
+   var planId = $(this).val();
+  
+   if (planId) {
+        $.ajax({
+  url: '@Url.Action("GetOdemePlaniInfo", "OgrenciUyelikYenileme")',
+         type: 'GET',
+       data: { odemePlaniId: planId },
+  success: function(data) {
+   // Plan detaylarýný göster
+  var detayHtml = `
+      <div class="col-md-3">
+    <strong>Toplam Tutar:</strong><br/>
+       <span class="text-success fs-5"><span style="font-family: Arial, sans-serif;">&#8378;</span> ${data.toplamTutar.toLocaleString('tr-TR', {minimumFractionDigits: 2})}</span>
+      </div>
+     <div class="col-md-3">
+<strong>Taksit Sayýsý:</strong><br/>
+    <span class="badge bg-primary fs-6">${data.taksitSayisi} Taksit</span>
+       </div>
+  <div class="col-md-3">
+     <strong>Taksit Tutarý:</strong><br/>
+      <span class="badge bg-info fs-6"><span style="font-family: Arial, sans-serif;">&#8378;</span> ${data.taksitTutari.toLocaleString('tr-TR', {minimumFractionDigits: 2})}</span>
+       </div>
+    <div class="col-md-3">
+        <strong>Vade:</strong><br/>
+        <span class="badge bg-warning text-dark">${data.vade || '-'} gün</span>
+     </div>
+     `;
+  $('#planDetay').html(detayHtml);
+$('#planDetayContainer').slideDown();
+    
+          // Yeni dönem özetini güncelle
+    updateYeniDonemOzet(data.toplamTutar);
+   },
+      error: function() {
+     alert('Ödeme planý bilgileri alýnýrken bir hata oluþtu.');
+   }
+     });
+   } else {
+  $('#planDetayContainer').slideUp();
+        $('#yeniDonemOzet').slideUp();
+    }
+   });
+
+       // Ýndirim tutarý deðiþtiðinde özeti güncelle
+  $('#indirimTutari').on('input', function() {
+   var planId = $('#yeniOdemePlaniId').val();
+     if (planId) {
+       // Seçili planýn toplam tutarýný al
+  $.ajax({
+           url: '@Url.Action("GetOdemePlaniInfo", "OgrenciUyelikYenileme")',
+       type: 'GET',
+            data: { odemePlaniId: planId },
+      success: function(data) {
+      updateYeniDonemOzet(data.toplamTutar);
+     }
+  });
+   }
+        });
+
+      function updateYeniDonemOzet(toplamTutar) {
+            var indirim = parseFloat($('#indirimTutari').val()) || 0;
+  var indirimliTutar = toplamTutar - indirim;
+      
+  $('#yeniDonemToplam').html('<span style="font-family: Arial, sans-serif;">&#8378;</span> ' + toplamTutar.toLocaleString('tr-TR', {minimumFractionDigits: 2}));
+    $('#indirimliTutar').html('<span style="font-family: Arial, sans-serif;">&#8378;</span> ' + indirimliTutar.toLocaleString('tr-TR', {minimumFractionDigits: 2}));
+    $('#yeniDonemOzet').slideDown();
+  }
+
+      // Form submit kontrolü
+       $('#yenilemeForm').on('submit', function(e) {
+    var planId = $('#yeniOdemePlaniId').val();
+   
+     if (!planId) {
+         e.preventDefault();
+      alert('Lütfen bir ödeme planý seçin.');
+     return false;
+    }
+
+            var onay = confirm('Üyelik yenileme iþlemini onaylýyor musunuz?\n\nBu iþlem geri alýnamaz ve yeni taksitler oluþturulacaktýr.');
+      if (!onay) {
+  e.preventDefault();
+     return false;
+   }
+
+       // Butonu devre dýþý býrak
+    $('#yenileBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Yenileniyor...');
+        });
+ });
+ </script>
+}

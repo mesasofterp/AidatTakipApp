@@ -25,6 +25,7 @@ namespace StudentApp.Data
         public DbSet<Seanslar> Seanslar { get; set; }
         public DbSet<SeansGunler> SeansGunler { get; set; }
         public DbSet<OgrenciUyelikDondurma> OgrenciUyelikDondurma { get; set; }
+        public DbSet<OgrenciUyelikYenileme> OgrenciUyelikYenileme { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -291,6 +292,41 @@ namespace StudentApp.Data
                 entity.HasOne(e => e.Ogrenci)
                     .WithMany()
                     .HasForeignKey(e => e.OgrenciId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // Configure OgrenciUyelikYenileme entity
+            modelBuilder.Entity<OgrenciUyelikYenileme>(entity =>
+            {
+                entity.ToTable("OgrenciUyelikYenileme");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.YenilemeTarihi).IsRequired();
+                entity.Property(e => e.YenilemeBaslangicTarihi).IsRequired();
+                entity.Property(e => e.EskiDonemToplamTutar).HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.YeniDonemToplamTutar).HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.EskiDonemKalanBorc).HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.IndirimTutari).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.IndirimAciklama).HasMaxLength(500);
+                entity.Property(e => e.OtomatikYenileme).IsRequired();
+                entity.Property(e => e.Durum).IsRequired();
+                entity.Property(e => e.YenileyenKullanici).HasMaxLength(100);
+
+                // Foreign key relationship - Öðrenci
+                entity.HasOne(e => e.Ogrenci)
+                    .WithMany()
+                    .HasForeignKey(e => e.OgrenciId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                // Foreign key relationship - Eski Ödeme Planý
+                entity.HasOne(e => e.EskiOdemePlani)
+                    .WithMany()
+                    .HasForeignKey(e => e.EskiOdemePlaniId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                // Foreign key relationship - Yeni Ödeme Planý
+                entity.HasOne(e => e.YeniOdemePlani)
+                    .WithMany()
+                    .HasForeignKey(e => e.YeniOdemePlaniId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
         }
